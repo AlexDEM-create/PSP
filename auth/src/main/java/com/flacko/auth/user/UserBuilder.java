@@ -1,13 +1,15 @@
 package com.flacko.auth.user;
 
-public interface UserBuilder {
+import com.flacko.auth.user.exception.UserMissingRequiredAttributeException;
 
-    UserBuilder withId(String id);
+public interface UserBuilder {
 
     UserBuilder withLogin(String login);
 
     UserBuilder withPassword(String password);
 
     UserBuilder withRole(Role role);
+
+    User build() throws UserMissingRequiredAttributeException;
 
 }

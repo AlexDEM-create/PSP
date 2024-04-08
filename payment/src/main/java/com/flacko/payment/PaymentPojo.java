@@ -1,4 +1,4 @@
-package com.flacko.auth.user;
+package com.flacko.payment;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,14 +6,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Currency;
 
-@Entity(name = "users")
+@Entity(name = "payments")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserPojo implements User {
+public class PaymentPojo implements Payment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,18 +25,31 @@ public class UserPojo implements User {
     @Column(nullable = false)
     private String id;
 
-    @Column(nullable = false)
-    private String login;
+    // make foreign key to merchants table
+    @Column(name = "merchant_id", nullable = false)
+    private String merchantId;
+
+    // make foreign key to traders table
+    @Column(name = "trader_id", nullable = false)
+    private String traderId;
+
+    // make foreign key to cards table
+    @Column(name = "card_id", nullable = false)
+    private String cardId;
 
     @Column(nullable = false)
-    private String password;
+    private BigDecimal amount;
+
+    @Column(nullable = false)
+    private Currency currency;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    private PaymentDirection direction;
 
-    @Column(name = "is_banned", nullable = false)
-    private boolean isBanned = false;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "current_state", nullable = false)
+    private PaymentState currentState;
 
     @Column(name = "created_date", nullable = false)
     private Instant createdDate = Instant.now();

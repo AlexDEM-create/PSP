@@ -1,5 +1,7 @@
 package com.flacko.auth.user;
 
+import com.flacko.auth.user.exception.UserNotFoundException;
+
 import java.util.List;
 
 public interface UserService {

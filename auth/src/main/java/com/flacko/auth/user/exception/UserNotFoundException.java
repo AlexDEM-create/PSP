@@ -1,4 +1,4 @@
-package com.flacko.auth.user;
+package com.flacko.auth.user.exception;
 
 public class UserNotFoundException extends Exception {
 
