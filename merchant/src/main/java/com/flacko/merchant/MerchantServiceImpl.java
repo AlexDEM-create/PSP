@@ -21,16 +21,16 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public Merchant update(String id, Merchant merchant) {
-        Merchant existingMerchant = get(id);
+    public Merchant update(int merchantId, Merchant merchant) {
+        Merchant existingMerchant = get(merchantId);
         existingMerchant.setName(merchant.getName());
         return merchantRepository.save(existingMerchant);
     }
 
     @Override
     public Merchant get(String id) {
-        return merchantRepository.findById(id)
-                .orElseThrow(() -> new MerchantNotFoundException(id));
+        return merchantRepository.findById(merchantId)
+                .orElseThrow(() -> new MerchantNotFoundException(merchantId));
     }
 
     @Override

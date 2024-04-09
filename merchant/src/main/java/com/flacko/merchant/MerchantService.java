@@ -4,8 +4,8 @@ import java.util.List;
 
 public interface MerchantService {
     Merchant create(Merchant merchant);
-    Merchant update(String id, Merchant merchant);
-    Merchant get(String id);
+    Merchant update(int merchantId, Merchant merchant);
+    Merchant get(int merchantId);
     List<Merchant> list();
-    void delete(String id);
+    void delete(int merchantId);
 }
