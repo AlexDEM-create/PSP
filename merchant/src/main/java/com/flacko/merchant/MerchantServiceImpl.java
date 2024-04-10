@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @Transactional
@@ -21,16 +22,16 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public Merchant update(int merchantId, Merchant merchant) {
-        Merchant existingMerchant = get(merchantId);
+    public Merchant update(String id, Merchant merchant) {
+        Merchant existingMerchant = get(id);
         existingMerchant.setName(merchant.getName());
         return merchantRepository.save(existingMerchant);
     }
 
     @Override
-    public Merchant get(String id) {
-        return merchantRepository.findById(merchantId)
-                .orElseThrow(() -> new MerchantNotFoundException(merchantId));
+    public Merchant get(String id) throws MerchantNotFoundException {
+        return merchantRepository.findById(id)
+                .orElseThrow(() -> new MerchantNotFoundException(id));
     }
 
     @Override

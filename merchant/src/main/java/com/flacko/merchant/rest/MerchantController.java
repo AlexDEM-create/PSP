@@ -40,4 +40,3 @@ public class MerchantController {
         return ResponseEntity.noContent().build();
     }
 }
-
