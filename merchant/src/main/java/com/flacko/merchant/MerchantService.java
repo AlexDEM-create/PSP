@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface MerchantService {
     Merchant create(Merchant merchant);
-    Merchant update(String id, Merchant merchant);
+    Merchant update(String id, Merchant merchant) throws MerchantNotFoundException;
     Merchant get(String id) throws MerchantNotFoundException;
     List<Merchant> list();
 

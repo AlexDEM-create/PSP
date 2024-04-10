@@ -22,7 +22,7 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public Merchant update(String id, Merchant merchant) {
+    public Merchant update(String id, Merchant merchant) throws MerchantNotFoundException {
         Merchant existingMerchant = get(id);
         existingMerchant.setName(merchant.getName());
         return merchantRepository.save(existingMerchant);
