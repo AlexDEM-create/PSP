@@ -29,7 +29,7 @@ public abstract class MerchantBuilderImpl implements InitializableMerchantBuilde
         pojoBuilder = MerchantPojo.builder()
                 .id(existingMerchant.getId())
                 .name(existingMerchant.getName())
-                .userid(existingMerchant.getUserId())
+                .userid(existingMerchant.getUserid())
                 .createdDate(existingMerchant.getCreatedDate())
                 .updatedDate(Instant.now());
         return this;

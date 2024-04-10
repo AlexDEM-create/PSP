@@ -2,6 +2,7 @@ package com.flacko.merchant;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +10,7 @@ import java.time.Instant;
 
 @Entity(name = "merchants")
 @Data
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class MerchantPojo {
@@ -32,4 +34,3 @@ public class MerchantPojo {
 
     //TODO merchantid --> id, primary key , userId
 
-}
