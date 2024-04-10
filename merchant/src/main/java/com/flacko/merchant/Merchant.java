@@ -1,17 +1,34 @@
 package com.flacko.merchant;
 
+import com.flacko.merchant.exception.MerchantMissingRequiredAttributeException;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
 @Data
-public class Merchant implements MerchantBuilder{
+public class Merchant implements MerchantBuilder {
     private String id;
     private String name;
     private String userid;
     private Instant createdDate;
     private Instant updatedDate;
+
+    @Override
+    public MerchantBuilder withId(String id) {
+        return null;
+    }
+
+    @Override
+    public MerchantBuilder withName(String name) {
+        return null;
+    }
+
+    @Override
+    public Merchant build() throws MerchantMissingRequiredAttributeException {
+        return null;
+    }
+}
 
     //TODO добавить геттеры + userid
 
