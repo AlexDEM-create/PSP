@@ -10,6 +10,10 @@ public interface UserBuilder {
 
     UserBuilder withRole(Role role);
 
+    UserBuilder withBanned();
+
+    UserBuilder withArchived();
+
     User build() throws UserMissingRequiredAttributeException;
 
 }

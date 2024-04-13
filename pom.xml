@@ -8,6 +8,7 @@
         <module>merchant</module>
         <module>trader</module>
         <module>card</module>
+        <module>terminal</module>
         <module>payment</module>
         <module>appeal</module>
         <module>currency</module>

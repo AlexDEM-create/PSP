@@ -29,16 +29,16 @@ public class PaymentController {
         return paymentRestMapper.mapModelToResponse(paymentService.get(paymentId));
     }
 
-    @PostMapping("/initiate/incoming")
-    public PaymentInitiateResponse initiateIncoming(@RequestBody PaymentInitiateRequest paymentInitiateRequest) {
-        return paymentRestMapper.mapToInitiateResponse(
-                paymentService.create(paymentRestMapper.mapToModel(paymentInitiateRequest)));
-    }
-
-    @PostMapping("/initiate/outgoing")
-    public PaymentInitiateResponse initiateOutgoing(@RequestBody PaymentInitiateRequest paymentInitiateRequest) {
-        return paymentRestMapper.mapToInitiateResponse(
-                paymentService.create(paymentRestMapper.mapToModel(paymentInitiateRequest)));
-    }
+//    @PostMapping("/initiate/incoming")
+//    public PaymentInitiateResponse initiateIncoming(@RequestBody PaymentInitiateRequest paymentInitiateRequest) {
+//        return paymentRestMapper.mapToInitiateResponse(
+//                paymentService.create(paymentRestMapper.mapToModel(paymentInitiateRequest)));
+//    }
+//
+//    @PostMapping("/initiate/outgoing")
+//    public PaymentInitiateResponse initiateOutgoing(@RequestBody PaymentInitiateRequest paymentInitiateRequest) {
+//        return paymentRestMapper.mapToInitiateResponse(
+//                paymentService.create(paymentRestMapper.mapToModel(paymentInitiateRequest)));
+//    }
 
 }

@@ -1,4 +1,4 @@
-package com.flacko.auth.user;
+package com.flacko.terminal;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.util.Optional;
 
-@Entity(name = "users")
+@Entity(name = "terminals")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserPojo implements User {
+public class TerminalPojo implements Terminal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,18 +24,18 @@ public class UserPojo implements User {
     @Column(nullable = false)
     private String id;
 
-    @Column(nullable = false)
-    private String login;
+    // make foreign key to traders table
+    @Column(name = "trader_id", nullable = false)
+    private String traderId;
 
     @Column(nullable = false)
-    private String password;
+    private boolean verified = false;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
+    @Column
+    private String model;
 
-    @Column(nullable = false)
-    private boolean banned = false;
+    @Column(name = "operating_system")
+    private String operatingSystem;
 
     @Column(name = "created_date", nullable = false)
     private Instant createdDate = Instant.now();
@@ -43,8 +43,16 @@ public class UserPojo implements User {
     @Column(name = "updated_date", nullable = false)
     private Instant updatedDate = createdDate;
 
-    @Column(name = "updated_date", nullable = false)
+    @Column(name = "deleted_date")
     private Instant deletedDate;
+
+    public Optional<String> getModel() {
+        return Optional.ofNullable(model);
+    }
+
+    public Optional<String> getOperatingSystem() {
+        return Optional.ofNullable(operatingSystem);
+    }
 
     public Optional<Instant> getDeletedDate() {
         return Optional.ofNullable(deletedDate);

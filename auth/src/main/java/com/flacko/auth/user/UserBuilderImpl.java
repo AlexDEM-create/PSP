@@ -7,12 +7,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @RequiredArgsConstructor
 public class UserBuilderImpl implements InitializableUserBuilder {
+
+    private final Instant now = Instant.now();
 
     private final PasswordEncoder passwordEncoder;
 
@@ -21,7 +24,7 @@ public class UserBuilderImpl implements InitializableUserBuilder {
     @Override
     public UserBuilder initializeNew() {
         pojoBuilder = UserPojo.builder()
-                .isBanned(false);
+                .banned(false);
         return this;
     }
 
@@ -32,7 +35,8 @@ public class UserBuilderImpl implements InitializableUserBuilder {
                 .id(existingUser.getId())
                 .login(existingUser.getLogin())
                 .password(existingUser.getPassword())
-                .role(existingUser.getRole());
+                .role(existingUser.getRole())
+                .updatedDate(now);
         return this;
     }
 
@@ -51,6 +55,18 @@ public class UserBuilderImpl implements InitializableUserBuilder {
     @Override
     public UserBuilder withRole(Role role) {
         pojoBuilder.role(role);
+        return this;
+    }
+
+    @Override
+    public UserBuilder withBanned() {
+        pojoBuilder.banned(true);
+        return this;
+    }
+
+    @Override
+    public UserBuilder withArchived() {
+        pojoBuilder.deletedDate(now);
         return this;
     }
 
