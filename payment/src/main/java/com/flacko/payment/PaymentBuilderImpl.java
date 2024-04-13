@@ -41,7 +41,7 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
         pojoBuilder.merchantId(merchantId);
         return this;
     }
-
+//todo
     @Override
     public PaymentBuilder withTraderId(String traderId) {
         pojoBuilder.traderId(traderId);
