@@ -1,19 +1,15 @@
-package com.flacko.auth.user;
+package com.flacko.payment.verification.bank;
 
 import java.time.Instant;
 import java.util.Optional;
 
-public interface User {
+public interface Bank {
 
     String getId();
 
-    String getLogin();
+    String getName();
 
-    String getPassword();
-
-    Role getRole();
-
-    boolean isBanned();
+    String getCountry();
 
     Instant getCreatedDate();
 

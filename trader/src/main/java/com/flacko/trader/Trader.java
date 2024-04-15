@@ -7,6 +7,7 @@ public interface Trader {
     String getName();
     String getUserId();
     String getTradersTeam();
+    boolean isOnline();
 
     TraderBuilder withId(String id);
     TraderBuilder withName(String name);

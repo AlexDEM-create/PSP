@@ -1,5 +1,6 @@
 package com.flacko.merchant;
 
+import com.flacko.auth.id.IdGenerator;
 import com.flacko.merchant.MerchantBuilder;
 import com.flacko.merchant.MerchantPojo;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,7 @@ public abstract class MerchantBuilderImpl implements InitializableMerchantBuilde
     @Override
     public MerchantBuilder initializeNew() {
         pojoBuilder = MerchantPojo.builder()
-                .createdDate(Instant.now())
-                .updatedDate(Instant.now());
+                .id(new IdGenerator().generateId());
         return this;
     }
 

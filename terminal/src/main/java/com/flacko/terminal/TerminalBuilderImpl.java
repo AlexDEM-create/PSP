@@ -1,5 +1,6 @@
 package com.flacko.terminal;
 
+import com.flacko.auth.id.IdGenerator;
 import com.flacko.terminal.exception.TerminalMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -21,6 +22,7 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
     @Override
     public TerminalBuilder initializeNew() {
         pojoBuilder = TerminalPojo.builder()
+                .id(new IdGenerator().generateId())
                 .verified(false);
         return this;
     }
@@ -74,12 +76,12 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
         return terminal;
     }
 
-    private void validate(TerminalPojo terminal) throws TerminalMissingRequiredAttributeException {
-        if (terminal.getId() == null || terminal.getId().isEmpty()) {
+    private void validate(TerminalPojo pojo) throws TerminalMissingRequiredAttributeException {
+        if (pojo.getId() == null || pojo.getId().isEmpty()) {
             throw new TerminalMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (terminal.getTraderId() == null || terminal.getTraderId().isEmpty()) {
-            throw new TerminalMissingRequiredAttributeException("traderId", Optional.of(terminal.getId()));
+        if (pojo.getTraderId() == null || pojo.getTraderId().isEmpty()) {
+            throw new TerminalMissingRequiredAttributeException("traderId", Optional.of(pojo.getId()));
         }
     }
 

@@ -1,5 +1,6 @@
 package com.flacko.payment;
 
+import com.flacko.auth.id.IdGenerator;
 import com.flacko.payment.exception.PaymentMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -19,6 +20,7 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
     @Override
     public PaymentBuilder initializeNew() {
         pojoBuilder = PaymentPojo.builder()
+                .id(new IdGenerator().generateId())
                 .currentState(PaymentState.INITIATED);
         return this;
     }
@@ -41,7 +43,8 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
         pojoBuilder.merchantId(merchantId);
         return this;
     }
-//todo
+
+    //todo
     @Override
     public PaymentBuilder withTraderId(String traderId) {
         pojoBuilder.traderId(traderId);
@@ -67,21 +70,21 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
         return payment;
     }
 
-    private void validate(PaymentPojo payment) throws PaymentMissingRequiredAttributeException {
-        if (payment.getId() == null || payment.getId().isEmpty()) {
+    private void validate(PaymentPojo pojo) throws PaymentMissingRequiredAttributeException {
+        if (pojo.getId() == null || pojo.getId().isEmpty()) {
             throw new PaymentMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (payment.getMerchantId() == null || payment.getMerchantId().isEmpty()) {
-            throw new PaymentMissingRequiredAttributeException("merchantId", Optional.of(payment.getId()));
+        if (pojo.getMerchantId() == null || pojo.getMerchantId().isEmpty()) {
+            throw new PaymentMissingRequiredAttributeException("merchantId", Optional.of(pojo.getId()));
         }
-        if (payment.getTraderId() == null || payment.getTraderId().isEmpty()) {
-            throw new PaymentMissingRequiredAttributeException("traderId", Optional.of(payment.getId()));
+        if (pojo.getTraderId() == null || pojo.getTraderId().isEmpty()) {
+            throw new PaymentMissingRequiredAttributeException("traderId", Optional.of(pojo.getId()));
         }
-        if (payment.getCardId() == null || payment.getCardId().isEmpty()) {
-            throw new PaymentMissingRequiredAttributeException("cardId", Optional.of(payment.getId()));
+        if (pojo.getCardId() == null || pojo.getCardId().isEmpty()) {
+            throw new PaymentMissingRequiredAttributeException("cardId", Optional.of(pojo.getId()));
         }
-        if (payment.getCurrentState() == null) {
-            throw new PaymentMissingRequiredAttributeException("currentState", Optional.of(payment.getId()));
+        if (pojo.getCurrentState() == null) {
+            throw new PaymentMissingRequiredAttributeException("currentState", Optional.of(pojo.getId()));
         }
     }
 

@@ -1,4 +1,4 @@
-package com.flacko.auth.user;
+package com.flacko.payment.verification.bank;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.util.Optional;
 
-@Entity(name = "users")
+@Entity(name = "banks")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserPojo implements User {
+public class BankPojo implements Bank {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,35 +25,22 @@ public class UserPojo implements User {
     private String id;
 
     @Column(nullable = false)
-    private String login;
+    private String name;
 
     @Column(nullable = false)
-    private String password;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
-
-    @Column(nullable = false)
-    private boolean banned = false;
+    private String country;
 
     @Column(name = "created_date", nullable = false)
-    private Instant createdDate;
+    private Instant createdDate = Instant.now();
 
     @Column(name = "updated_date", nullable = false)
-    private Instant updatedDate;
+    private Instant updatedDate = createdDate;
 
     @Column(name = "deleted_date")
     private Instant deletedDate;
 
     public Optional<Instant> getDeletedDate() {
         return Optional.ofNullable(deletedDate);
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        createdDate = Instant.now();
-        updatedDate = createdDate;
     }
 
 }
