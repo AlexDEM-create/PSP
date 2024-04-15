@@ -16,19 +16,19 @@ public class TraderServiceImpl implements TraderService {
     private final TraderRepository traderRepository;
 
     @Override
-    public Trader create(Trader trader) {
+    public TraderBuilder create(Trader trader) {
         return traderRepository.save(trader);
     }
 
     @Override
-    public Trader update(String id, Trader trader) throws TraderNotFoundException {
+    public TraderBuilder update(String id, Trader trader) throws TraderNotFoundException {
         Trader existingTrader = get(id);
         existingTrader.setName(trader.getName());
         return traderRepository.save(existingTrader);
     }
 
     @Override
-    public Trader get(String id) throws TraderNotFoundException {
+    public TraderBuilder get(String id) throws TraderNotFoundException {
         return traderRepository.findById(id)
                 .orElseThrow(() -> new TraderNotFoundException(id));
     }

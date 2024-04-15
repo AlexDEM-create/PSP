@@ -1,5 +1,6 @@
 package com.flacko.trader;
 
+import com.flacko.trader.exception.TraderMissingRequiredAttributeException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,11 +18,22 @@ import java.time.Instant;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class TraderPojo {
+public class TraderPojo implements Trader {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @Column(name = "primary_key", nullable = false)
+    private Long primaryKey;
+
+    @Column(nullable = false)
     private String id;
+
+
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Column(name = "id", nullable = false)
+//    private String id;
 
     @Column(nullable = false)
     private String name;
@@ -29,13 +41,23 @@ public class TraderPojo {
     @Column(name = "userid", nullable = false)
     private String userid;
 
-    @Column(name = "traders_team")
-    private String tradersTeam;
+    @Column(name = "trader_team_id")
+    private String traderTeamId;
 
     @Column(name = "created_date", nullable = false)
     private Instant createdDate = Instant.now();
 
     @Column(name = "updated_date", nullable = false)
     private Instant updatedDate = createdDate;
+
+    @Override
+    public String getUserId() {
+        return null;
+    }
+
+    @Override
+    public String getTraderTeamId() {
+        return null;
+    }
 }
 

@@ -16,27 +16,27 @@ public class TraderController {
     private final TraderService traderService;
 
     @GetMapping
-    public ResponseEntity<List<Trader>> list() {
+    public TraderResponse<List<Trader>> list() {
         return ResponseEntity.ok(traderService.list());
     }
 
     @PostMapping
-    public ResponseEntity<Trader> create(@RequestBody Trader trader) {
+    public TraderResponse<Trader> create(@RequestBody Trader trader) {
         return ResponseEntity.ok(traderService.create(trader));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Trader> update(@PathVariable String id, @RequestBody Trader trader) throws TraderNotFoundException {
+    public TraderResponse<Trader> update(@PathVariable String id, @RequestBody Trader trader) throws TraderNotFoundException {
         return ResponseEntity.ok(traderService.update(id, trader));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Trader> get(@PathVariable String id) throws TraderNotFoundException {
+    public TraderResponse<Trader> get(@PathVariable String id) throws TraderNotFoundException {
         return ResponseEntity.ok(traderService.get(id));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public TraderResponse<Void> delete(@PathVariable String id) {
         traderService.delete(id);
         return ResponseEntity.noContent().build();
     }

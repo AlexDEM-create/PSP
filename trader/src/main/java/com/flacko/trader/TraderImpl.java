@@ -10,7 +10,7 @@ public class TraderImpl implements Trader, TraderBuilder {
     public String id;
     public String name;
     public String userId;
-    public String tradersTeam;
+    public String traderTeamId;
 
     @Override
     public TraderBuilder withId(String id) {

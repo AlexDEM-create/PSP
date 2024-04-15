@@ -9,5 +9,4 @@ public interface TraderService {
     Trader update(String id, Trader trader) throws TraderNotFoundException;
     Trader get(String id) throws TraderNotFoundException;
     List<Trader> list();
-    void delete(String id);
 }
