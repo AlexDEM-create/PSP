@@ -5,6 +5,8 @@ import java.util.Optional;
 
 public interface User {
 
+    Long getPrimaryKey();
+
     String getId();
 
     String getLogin();

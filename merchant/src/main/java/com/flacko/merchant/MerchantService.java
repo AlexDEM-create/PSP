@@ -5,13 +5,14 @@ import com.flacko.merchant.exception.MerchantNotFoundException;
 import java.util.List;
 
 public interface MerchantService {
-    Merchant create(Merchant merchant);
-    Merchant update(String id, Merchant merchant) throws MerchantNotFoundException;
-    Merchant get(String id) throws MerchantNotFoundException;
-    List<Merchant> list();
+    MerchantBuilder create();
 
-    void delete(String id);
+    MerchantBuilder update(String id) throws MerchantNotFoundException;
+
+    MerchantBuilder get(String id) throws MerchantNotFoundException;
+
+    List<MerchantBuilder> list();
+
 }
-//    void delete(int merchantId);
 
 

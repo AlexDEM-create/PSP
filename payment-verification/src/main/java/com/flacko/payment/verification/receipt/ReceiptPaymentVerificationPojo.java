@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.Currency;
 import java.util.Map;
 
-@Entity(name = "payments")
+@Entity(name = "receipt_payment_verifications")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -66,6 +66,11 @@ public class ReceiptPaymentVerificationPojo implements ReceiptPaymentVerificatio
     private byte[] uploadedFile;
 
     @Column(name = "created_date", nullable = false)
-    private Instant createdDate = Instant.now();
+    private Instant createdDate;
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = Instant.now();
+    }
 
 }

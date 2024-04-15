@@ -18,6 +18,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ReceiptPaymentVerificationBuilderImpl implements InitializableReceiptPaymentVerificationBuilder {
 
+    private final ReceiptPaymentVerificationRepository receiptPaymentVerificationRepository;
+
     private ReceiptPaymentVerificationPojo.ReceiptPaymentVerificationPojoBuilder pojoBuilder;
 
     @Override
@@ -97,6 +99,7 @@ public class ReceiptPaymentVerificationBuilderImpl implements InitializableRecei
     public ReceiptPaymentVerification build() throws ReceiptPaymentVerificationMissingRequiredAttributeException {
         ReceiptPaymentVerificationPojo payment = pojoBuilder.build();
         validate(payment);
+        receiptPaymentVerificationRepository.save(payment);
         return payment;
     }
 

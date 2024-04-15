@@ -52,9 +52,15 @@ public class PaymentPojo implements Payment {
     private PaymentState currentState;
 
     @Column(name = "created_date", nullable = false)
-    private Instant createdDate = Instant.now();
+    private Instant createdDate;
 
     @Column(name = "updated_date", nullable = false)
-    private Instant updatedDate = createdDate;
+    private Instant updatedDate;
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = Instant.now();
+        updatedDate = createdDate;
+    }
 
 }

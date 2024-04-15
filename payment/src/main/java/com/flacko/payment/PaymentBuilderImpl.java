@@ -15,6 +15,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PaymentBuilderImpl implements InitializablePaymentBuilder {
 
+    private final PaymentRepository paymentRepository;
+
     private PaymentPojo.PaymentPojoBuilder pojoBuilder;
 
     @Override
@@ -27,13 +29,17 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
 
     @Override
     public PaymentBuilder initializeExisting(Payment existingPayment) {
-        // need to solve the problem with primary key
         pojoBuilder = PaymentPojo.builder()
+                .primaryKey(existingPayment.getPrimaryKey())
                 .id(existingPayment.getId())
                 .merchantId(existingPayment.getMerchantId())
                 .traderId(existingPayment.getTraderId())
                 .cardId(existingPayment.getCardId())
+                .amount(existingPayment.getAmount())
+                .currency(existingPayment.getCurrency())
+                .direction(existingPayment.getDirection())
                 .currentState(existingPayment.getCurrentState())
+                .createdDate(existingPayment.getCreatedDate())
                 .updatedDate(Instant.now());
         return this;
     }
@@ -44,7 +50,6 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
         return this;
     }
 
-    //todo
     @Override
     public PaymentBuilder withTraderId(String traderId) {
         pojoBuilder.traderId(traderId);
@@ -67,6 +72,7 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
     public Payment build() throws PaymentMissingRequiredAttributeException {
         PaymentPojo payment = pojoBuilder.build();
         validate(payment);
+        paymentRepository.save(payment);
         return payment;
     }
 
@@ -83,8 +89,23 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
         if (pojo.getCardId() == null || pojo.getCardId().isEmpty()) {
             throw new PaymentMissingRequiredAttributeException("cardId", Optional.of(pojo.getId()));
         }
+        if (pojo.getAmount() == null) {
+            throw new PaymentMissingRequiredAttributeException("amount", Optional.of(pojo.getId()));
+        }
+        if (pojo.getCurrency() == null) {
+            throw new PaymentMissingRequiredAttributeException("currency", Optional.of(pojo.getId()));
+        }
+        if (pojo.getDirection() == null) {
+            throw new PaymentMissingRequiredAttributeException("direction", Optional.of(pojo.getId()));
+        }
         if (pojo.getCurrentState() == null) {
             throw new PaymentMissingRequiredAttributeException("currentState", Optional.of(pojo.getId()));
+        }
+        if (pojo.getCreatedDate() == null) {
+            throw new PaymentMissingRequiredAttributeException("createdDate", Optional.of(pojo.getId()));
+        }
+        if (pojo.getUpdatedDate() == null) {
+            throw new PaymentMissingRequiredAttributeException("updatedDate", Optional.of(pojo.getId()));
         }
     }
 

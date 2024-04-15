@@ -18,6 +18,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class SmsPaymentVerificationBuilderImpl implements InitializableSmsPaymentVerificationBuilder {
 
+    private final SmsPaymentVerificationRepository smsPaymentVerificationRepository;
+
     private SmsPaymentVerificationPojo.SmsPaymentVerificationPojoBuilder pojoBuilder;
 
     @Override
@@ -73,6 +75,7 @@ public class SmsPaymentVerificationBuilderImpl implements InitializableSmsPaymen
     public SmsPaymentVerification build() throws SmsPaymentVerificationMissingRequiredAttributeException {
         SmsPaymentVerificationPojo payment = pojoBuilder.build();
         validate(payment);
+        smsPaymentVerificationRepository.save(payment);
         return payment;
     }
 

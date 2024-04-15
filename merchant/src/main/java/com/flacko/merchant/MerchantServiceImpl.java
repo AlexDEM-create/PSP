@@ -3,6 +3,7 @@ package com.flacko.merchant;
 
 import com.flacko.merchant.exception.MerchantNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,33 +16,32 @@ import java.util.stream.StreamSupport;
 @RequiredArgsConstructor
 public class MerchantServiceImpl implements MerchantService {
     private final MerchantRepository merchantRepository;
-
+    private final ApplicationContext context;
     @Override
-    public Merchant create(Merchant merchant) {
-        return merchantRepository.save(merchant);
+    public MerchantBuilder create() {
+        return context.getBean(MerchantBuilderImpl.class)
+                .initializeNew();
     }
 
     @Override
-    public Merchant update(String id, Merchant merchant) throws MerchantNotFoundException {
-        Merchant existingMerchant = get(id);
-        existingMerchant.setName(merchant.getName());
-        return merchantRepository.save(existingMerchant);
+    public MerchantBuilder update(String id) throws MerchantNotFoundException {
+        Merchant existingMerchant = (Merchant)get(id);
+        return context.getBean(MerchantBuilderImpl.class)
+                .initializeExisting(existingMerchant);
     }
 
     @Override
-    public Merchant get(String id) throws MerchantNotFoundException {
-        return merchantRepository.findById(id)
-                .orElseThrow(() -> new MerchantNotFoundException(id));
+    public MerchantBuilder get(String id) throws MerchantNotFoundException {
+        return context.getBean(MerchantBuilderImpl.class)
+                .initializeExisting(merchantRepository.findById(id)
+                        .orElseThrow(() -> new MerchantNotFoundException(id)));
     }
 
     @Override
-    public List<Merchant> list() {
+    public List<MerchantBuilder> list() {
         return StreamSupport.stream(merchantRepository.findAll().spliterator(), false)
+                .map(merchant -> context.getBean(MerchantBuilderImpl.class)
+                        .initializeExisting(merchant))
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public void delete(String id) {
-
     }
 }

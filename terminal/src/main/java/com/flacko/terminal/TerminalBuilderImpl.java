@@ -17,6 +17,8 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
 
     private final Instant now = Instant.now();
 
+    private final TerminalRepository terminalRepository;
+
     private TerminalPojo.TerminalPojoBuilder pojoBuilder;
 
     @Override
@@ -31,11 +33,15 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
     public TerminalBuilder initializeExisting(Terminal existingTerminal) {
         // need to solve the problem with primary key
         pojoBuilder = TerminalPojo.builder()
+                .primaryKey(existingTerminal.getPrimaryKey())
                 .id(existingTerminal.getId())
                 .traderId(existingTerminal.getTraderId())
+                .verified(existingTerminal.isVerified())
                 .model(existingTerminal.getModel().orElse(null))
                 .operatingSystem(existingTerminal.getOperatingSystem().orElse(null))
-                .updatedDate(now);
+                .createdDate(existingTerminal.getCreatedDate())
+                .updatedDate(now)
+                .deletedDate(existingTerminal.getDeletedDate().orElse(null));
         return this;
     }
 
@@ -73,6 +79,7 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
     public Terminal build() throws TerminalMissingRequiredAttributeException {
         TerminalPojo terminal = pojoBuilder.build();
         validate(terminal);
+        terminalRepository.save(terminal);
         return terminal;
     }
 
@@ -82,6 +89,12 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
         }
         if (pojo.getTraderId() == null || pojo.getTraderId().isEmpty()) {
             throw new TerminalMissingRequiredAttributeException("traderId", Optional.of(pojo.getId()));
+        }
+        if (pojo.getCreatedDate() == null) {
+            throw new TerminalMissingRequiredAttributeException("createdDate", Optional.of(pojo.getId()));
+        }
+        if (pojo.getUpdatedDate() == null) {
+            throw new TerminalMissingRequiredAttributeException("updatedDate", Optional.of(pojo.getId()));
         }
     }
 

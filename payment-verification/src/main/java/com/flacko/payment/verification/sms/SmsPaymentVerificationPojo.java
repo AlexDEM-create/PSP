@@ -12,7 +12,7 @@ import java.time.Instant;
 import java.util.Currency;
 import java.util.Map;
 
-@Entity(name = "payments")
+@Entity(name = "sms_payment_verifications")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -54,6 +54,11 @@ public class SmsPaymentVerificationPojo implements SmsPaymentVerification {
     private Map<String, Object> data;
 
     @Column(name = "created_date", nullable = false)
-    private Instant createdDate = Instant.now();
+    private Instant createdDate;
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = Instant.now();
+    }
 
 }
