@@ -30,16 +30,11 @@ public class TraderPojo implements Trader {
     private String id;
 
 
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "id", nullable = false)
-//    private String id;
-
     @Column(nullable = false)
     private String name;
 
     @Column(name = "userid", nullable = false)
-    private String userid;
+    private String userId;
 
     @Column(name = "trader_team_id")
     private String traderTeamId;

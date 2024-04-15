@@ -6,31 +6,49 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.util.Optional;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @RequiredArgsConstructor
-public class TraderBuilderImpl   implements InitializableTraderBuilder {
-
-    private final Instant now = Instant.now();
+public class TraderBuilderImpl implements InitializableTraderBuilder {
 
     private TraderPojo.TraderPojoBuilder pojoBuilder;
 
     @Override
+    public TraderBuilder initializeNew() {
+        pojoBuilder = TraderPojo.builder();
+        return this;
+    }
+
+    @Override
+    public TraderBuilder initializeExisting(Trader existingTrader) {
+        pojoBuilder = TraderPojo.builder()
+                .id(existingTrader.getId())
+                .name(existingTrader.getName())
+                //.userId(existingTrader.getUserId())
+                .traderTeamId(existingTrader.getTraderTeamId());
+        pojoBuilder.userId(existingTrader.getUserId());
+
+        return this;
+    }
+
+    @Override
     public TraderBuilder withId(String id) {
-        return null;
+        pojoBuilder.id(id);
+        return this;
     }
 
     @Override
     public TraderBuilder withName(String name) {
-        return null;
+        pojoBuilder.name(name);
+        return this;
     }
 
     @Override
-    public TraderBuilder withUserId(String name) {
-        return null;
+    public TraderBuilder withUserId(String userId) {
+        pojoBuilder.userId(userId);
+        return this;
     }
 
     @Override
@@ -39,97 +57,28 @@ public class TraderBuilderImpl   implements InitializableTraderBuilder {
     }
 
     @Override
+    public TraderBuilder withTraderTeamId(String traderTeamId) {
+        pojoBuilder.traderTeamId(traderTeamId);
+        return this;
+    }
+
+    @Override
     public Trader build() throws TraderMissingRequiredAttributeException {
-        return null;
+        TraderPojo trader = pojoBuilder.build();
+        validate(trader);
+        return trader;
     }
 
-    @Override
-    public TraderBuilder initializeNew() {
-        pojoBuilder = TraderPojo.builder()
-                .createdDate(now)
-                .updatedDate(now);
-        return this;
+    private void validate(TraderPojo trader) throws TraderMissingRequiredAttributeException {
+        if (trader.getId() == null || trader.getId().isEmpty()) {
+            throw new TraderMissingRequiredAttributeException("id", Optional.empty());
+        }
+        if (trader.getName() == null || trader.getName().isEmpty()) {
+            throw new TraderMissingRequiredAttributeException("name", Optional.of(trader.getName()));
+        }
+        if (trader.getUserId() == null || trader.getUserId().isEmpty()) {
+            throw new TraderMissingRequiredAttributeException("userId", Optional.of(trader.getId()));
+        }
     }
 
-    @Override
-    public TraderBuilder initializeExisting(Trader existingTrader) {
-        this.id = existingTrader.getId();
-        this.name = existingTrader.getName();
-        this.userId = existingTrader.getUserId();
-        this.tradersTeam = existingTrader.getTradersTeam();
-        return this;
-    }
 }
-
-
-
-
-//    private final Instant now = Instant.now();
-//
-//    private MerchantPojo.MerchantPojoBuilder pojoBuilder;
-//
-
-
-//    @Override
-    public MerchantBuilder initializeNew() {
-        pojoBuilder = MerchantPojo.builder()
-                .createdDate(now)
-                .updatedDate(now);
-        return this;
-    }
-//
-//
-//    @Override
-//    public MerchantBuilder initializeExisting(Merchant existingMerchant) {
-//        pojoBuilder = MerchantPojo.builder()
-//                .id(existingMerchant.getId())
-//                .name(existingMerchant.getName())
-//                .createdDate(existingMerchant.getCreatedDate())
-//                .updatedDate(now);
-//        pojoBuilder.userId(existingMerchant.getUserId().orElse(null));
-//        return this;
-//    }
-//
-//    @Override
-//    public MerchantBuilder withId(String id) {
-//        pojoBuilder.id(id);
-//        return this;
-//    }
-//
-//    @Override
-//    public MerchantBuilder withName(String name) {
-//        pojoBuilder.name(name);
-//        return this;
-//    }
-//
-//    @Override
-//    public MerchantBuilder withUserId(String userId) {
-//        pojoBuilder.userId(userId);
-//        return this;
-//    }
-//
-//    @Override
-//    public MerchantBuilder withArchived() {
-//        pojoBuilder.deletedDate(now);
-//        return this;
-//    }
-//
-//    @Override
-//    public Merchant build() throws MerchantMissingRequiredAttributeException {
-//        MerchantPojo merchant = pojoBuilder.build();
-//        validate(merchant);
-//        return merchant;
-//    }
-//
-//    private void validate(MerchantPojo merchant) throws MerchantMissingRequiredAttributeException {
-//        if (merchant.getId() == null || merchant.getId().isEmpty()) {
-//            throw new MerchantMissingRequiredAttributeException("id", Optional.empty());
-//        }
-//        if (merchant.getName() == null || merchant.getName().isEmpty()) {
-//            throw new MerchantMissingRequiredAttributeException("name", Optional.of(merchant.getId()));
-//        }
-//        if (merchant.getUserId() == null || merchant.getUserId().isEmpty()) {
-//            throw new MerchantMissingRequiredAttributeException("userId", Optional.of(merchant.getId()));
-//        }
-//    }
-//}
