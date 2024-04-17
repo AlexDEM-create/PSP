@@ -30,6 +30,7 @@ public class SecurityConfig {
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String LOGIN_PATH = "/login";
     public static final String TOKEN_REFRESH_PATH = "/token/refresh";
+    public static final String USERS_PATH = "/users";
 
     private final AuthenticationProvider authenticationProvider;
 
@@ -42,6 +43,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(LOGIN_PATH, TOKEN_REFRESH_PATH).permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(OPTIONS).permitAll())
+                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, USERS_PATH))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/merchants", "/traders")
                         .hasAuthority(USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.PUT, "/merchants/*", "/traders/*")
@@ -52,7 +54,8 @@ public class SecurityConfig {
                         .hasAnyAuthority(TRADER_ADMIN.name(), TRADER_SUPPORT.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/payments", "/appeals")
                         .hasAuthority(MERCHANT_ADMIN.name()))
-                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                // change to authenticated()
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
                 .authenticationProvider(authenticationProvider)
                 .addFilter(authenticationFilter)
                 .addFilterBefore(new AuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)

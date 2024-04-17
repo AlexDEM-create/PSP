@@ -5,6 +5,8 @@ import java.util.Optional;
 
 public interface Terminal {
 
+    Long getPrimaryKey();
+
     String getId();
 
     String getTraderId();

@@ -1,5 +1,6 @@
 package com.flacko.merchant;
 
+import com.flacko.auth.id.IdGenerator;
 import com.flacko.merchant.exception.MerchantMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -16,13 +17,14 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
 
     private final Instant now = Instant.now();
 
+    private final MerchantRepository merchantRepository;
+
     private MerchantPojo.MerchantPojoBuilder pojoBuilder;
 
     @Override
     public MerchantBuilder initializeNew() {
         pojoBuilder = MerchantPojo.builder()
-                .createdDate(now)
-                .updatedDate(now);
+                .id(new IdGenerator().generateId());
         return this;
     }
 
@@ -30,11 +32,13 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
     @Override
     public MerchantBuilder initializeExisting(Merchant existingMerchant) {
         pojoBuilder = MerchantPojo.builder()
+                .primaryKey(existingMerchant.getPrimaryKey())
                 .id(existingMerchant.getId())
                 .name(existingMerchant.getName())
+                .userId(existingMerchant.getUserId())
                 .createdDate(existingMerchant.getCreatedDate())
-                .updatedDate(now);
-        pojoBuilder.userId(existingMerchant.getUserId().orElse(null));
+                .updatedDate(now)
+                .deletedDate(existingMerchant.getDeletedDate().orElse(null));
         return this;
     }
 
@@ -66,6 +70,7 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
     public Merchant build() throws MerchantMissingRequiredAttributeException {
         MerchantPojo merchant = pojoBuilder.build();
         validate(merchant);
+        merchantRepository.save(merchant);
         return merchant;
     }
 
@@ -78,6 +83,12 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
         }
         if (merchant.getUserId() == null || merchant.getUserId().isEmpty()) {
             throw new MerchantMissingRequiredAttributeException("userId", Optional.of(merchant.getId()));
+        }
+        if (merchant.getCreatedDate() == null) {
+            throw new MerchantMissingRequiredAttributeException("createdDate", Optional.of(merchant.getId()));
+        }
+        if (merchant.getUpdatedDate() == null) {
+            throw new MerchantMissingRequiredAttributeException("updatedDate", Optional.of(merchant.getId()));
         }
     }
 }
