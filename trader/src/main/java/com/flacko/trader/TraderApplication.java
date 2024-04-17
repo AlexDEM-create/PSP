@@ -1,6 +1,7 @@
 package com.flacko.trader;
 
-import com.flacko.auth.SecurityConfig;
+import com.flacko.auth.security.AuthorizationConfig;
+import com.flacko.auth.security.SecurityConfig;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,7 +12,7 @@ import java.util.TimeZone;
 
 @SpringBootApplication
 @EnableWebSecurity
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, AuthorizationConfig.class})
 public class TraderApplication {
 
     public static void main(String[] args) {

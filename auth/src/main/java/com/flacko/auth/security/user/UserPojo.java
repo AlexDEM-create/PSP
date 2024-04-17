@@ -1,4 +1,4 @@
-package com.flacko.payment.verification.bank.pattern;
+package com.flacko.auth.security.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.util.Optional;
 
-@Entity(name = "bank_patterns")
+@Entity(name = "users")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class BankPatternPojo implements BankPattern {
+public class UserPojo implements User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,14 +25,17 @@ public class BankPatternPojo implements BankPattern {
     private String id;
 
     @Column(nullable = false)
-    private String pattern;
+    private String login;
+
+    @Column(nullable = false)
+    private String password;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BankPatternType type;
+    private Role role;
 
-    @Column(name = "bank_id", nullable = false)
-    private String bankId;
+    @Column(nullable = false)
+    private boolean banned = false;
 
     @Column(name = "created_date", nullable = false)
     private Instant createdDate;

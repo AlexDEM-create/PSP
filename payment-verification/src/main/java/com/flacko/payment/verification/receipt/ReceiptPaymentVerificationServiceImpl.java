@@ -79,7 +79,7 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
                     .toList();
 
             ResponseEntity<ReceiptExtractedData> response = restTemplate.postForEntity(
-                    "http://url/payment-verification/receipt/extract-data",
+                    "http://localhost:5000/payment-verification/receipt/extract-data",
                     new ReceiptExtractDataRequest(fileAbsolutePath, patterns),
                     ReceiptExtractedData.class);
 
