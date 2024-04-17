@@ -6,4 +6,8 @@ public class ReceiptPaymentVerificationValidationException extends Exception {
         super(message);
     }
 
+    public ReceiptPaymentVerificationValidationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

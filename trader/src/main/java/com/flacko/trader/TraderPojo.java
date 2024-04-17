@@ -1,6 +1,10 @@
 package com.flacko.trader;
 
-import jakarta.persistence.*;
+import com.flacko.trader.exception.TraderMissingRequiredAttributeException;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +18,7 @@ import java.util.Optional;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class TraderPojo {
+public class TraderPojo implements Trader {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +29,10 @@ public class TraderPojo {
     private String id;
 
     @Column(name = "userid", nullable = false)
-    private String userid;
+    private String userId;
 
-    @Column(name = "traders_team")
-    private String tradersTeam;
+    @Column(name = "trader_team_id")
+    private String traderTeamId;
 
     @Column(name = "created_date", nullable = false)
     private Instant createdDate;

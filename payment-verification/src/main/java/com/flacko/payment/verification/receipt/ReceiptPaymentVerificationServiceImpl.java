@@ -80,7 +80,7 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
 
             ResponseEntity<ReceiptExtractedData> response = restTemplate.postForEntity(
                     "http://localhost:5000/payment-verification/receipt/extract-data",
-                    new ReceiptExtractDataRequest(fileAbsolutePath, patterns),
+                    new ReceiptExtractDataRequest(file, patterns),
                     ReceiptExtractedData.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
@@ -88,10 +88,12 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
                 receiptPaymentVerificationRepository.save(receiptPaymentVerification);
                 return receiptPaymentVerification;
             } else {
-                throw new ReceiptPaymentVerificationValidationException("Failed to extract data from receipt.");
+                throw new ReceiptPaymentVerificationValidationException("Failed to extract data from receipt. "
+                        + response);
             }
         } catch (Exception e) {
-            throw new ReceiptPaymentVerificationValidationException("An error occurred during receipt verification.");
+            throw new ReceiptPaymentVerificationValidationException("An error occurred during receipt verification.",
+                    e);
         }
     }
 

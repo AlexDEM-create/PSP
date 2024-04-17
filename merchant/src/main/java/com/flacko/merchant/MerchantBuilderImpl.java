@@ -79,7 +79,7 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
             throw new MerchantMissingRequiredAttributeException("id", Optional.empty());
         }
         if (merchant.getName() == null || merchant.getName().isEmpty()) {
-            throw new MerchantMissingRequiredAttributeException("name", Optional.of(merchant.getId()));
+            throw new MerchantMissingRequiredAttributeException("name", Optional.of(merchant.getName()));
         }
         if (merchant.getUserId() == null || merchant.getUserId().isEmpty()) {
             throw new MerchantMissingRequiredAttributeException("userId", Optional.of(merchant.getId()));

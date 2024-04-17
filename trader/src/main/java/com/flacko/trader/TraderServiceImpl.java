@@ -2,6 +2,7 @@ package com.flacko.trader;
 
 import com.flacko.trader.exception.TraderNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,33 +15,34 @@ import java.util.stream.StreamSupport;
 @RequiredArgsConstructor
 public class TraderServiceImpl implements TraderService {
     private final TraderRepository traderRepository;
-
+    private final ApplicationContext context;
     @Override
-    public Trader create(Trader trader) {
-        return traderRepository.save(trader);
+    public TraderBuilder create() {
+        return context.getBean(TraderBuilderImpl.class)
+                .initializeNew();
     }
 
     @Override
-    public Trader update(String id, Trader trader) throws TraderNotFoundException {
-        Trader existingTrader = get(id);
-        existingTrader.setName(trader.getName());
-        return traderRepository.save(existingTrader);
+    public TraderBuilder update(String id) throws TraderNotFoundException {
+        Trader existingTrader = (Trader)get(id);
+        return context.getBean(TraderBuilderImpl.class)
+                .initializeExisting(existingTrader);
+    }
+
+
+
+    @Override
+    public TraderBuilder get(String id) throws TraderNotFoundException {
+        return context.getBean(TraderBuilderImpl.class)
+                .initializeExisting(traderRepository.findById(Long.valueOf(id))
+                        .orElseThrow(() -> new TraderNotFoundException(id)));
     }
 
     @Override
-    public Trader get(String id) throws TraderNotFoundException {
-        return traderRepository.findById(id)
-                .orElseThrow(() -> new TraderNotFoundException(id));
-    }
-
-    @Override
-    public List<Trader> list() {
+    public List<TraderBuilder> list() {
         return StreamSupport.stream(traderRepository.findAll().spliterator(), false)
+                .map(trader -> context.getBean(TraderBuilderImpl.class)
+                        .initializeExisting(trader))
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public void delete(String id) {
-        traderRepository.deleteById(id);
     }
 }

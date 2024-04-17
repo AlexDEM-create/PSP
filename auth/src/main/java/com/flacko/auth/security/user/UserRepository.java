@@ -9,10 +9,10 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends CrudRepository<UserPojo, Long> {
 
-    @Query("SELECT u FROM users u WHERE u.login = ?1")
+    @Query("SELECT u FROM UserPojo u WHERE u.login = :login")
     Optional<User> findByLogin(String login);
 
-    @Query("SELECT u FROM users u WHERE u.id = ?1")
+    @Query("SELECT u FROM UserPojo u WHERE u.id = :id")
     Optional<User> findById(String id);
 
 }

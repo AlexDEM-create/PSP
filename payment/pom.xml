@@ -8,7 +8,7 @@
         <artifactId>flacko-pay</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
-    <artifactId>paymentVerification</artifactId>
+    <artifactId>payment</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <dependencies>
         <dependency>
