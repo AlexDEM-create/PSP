@@ -21,7 +21,7 @@ def verify_data(patterns, text):
     for pattern in patterns:
         match = re.match(pattern, text, re.MULTILINE | re.DOTALL)
         if match:
-            return match.groups()
+            return {key: unidecode(value) for key, value in match.groupdict().items()}
     return None
 
 
@@ -49,7 +49,7 @@ def upload_receipt():
         file_data = extract_data_from_pdf(file)
 
         # Verify data integrity
-        data = [unidecode(entry) for entry in verify_data(patterns, file_data)]
+        data = verify_data(patterns, file_data)
 
         if data is not None:
             return jsonify(data)
