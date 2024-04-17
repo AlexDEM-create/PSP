@@ -33,7 +33,7 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public MerchantBuilder get(String id) throws MerchantNotFoundException {
         return context.getBean(MerchantBuilderImpl.class)
-                .initializeExisting(merchantRepository.findById(id)
+                .initializeExisting(merchantRepository.findById(Long.valueOf(id))
                         .orElseThrow(() -> new MerchantNotFoundException(id)));
     }
 
