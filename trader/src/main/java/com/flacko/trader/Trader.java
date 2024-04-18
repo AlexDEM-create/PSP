@@ -7,5 +7,4 @@ public interface Trader {
     String getName();
     String getUserId();
     String getTraderTeamId();
-    void setName(String name);
 }

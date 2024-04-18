@@ -1,8 +1,11 @@
 package com.flacko.auth.user;
 
 import java.time.Instant;
+import java.util.Optional;
 
 public interface User {
+
+    Long getPrimaryKey();
 
     String getId();
 
@@ -17,5 +20,7 @@ public interface User {
     Instant getCreatedDate();
 
     Instant getUpdatedDate();
+
+    Optional<Instant> getDeletedDate();
 
 }

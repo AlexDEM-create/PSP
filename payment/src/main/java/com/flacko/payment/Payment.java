@@ -6,6 +6,8 @@ import java.util.Currency;
 
 public interface Payment {
 
+    Long getPrimaryKey();
+
     String getId();
 
     String getMerchantId();

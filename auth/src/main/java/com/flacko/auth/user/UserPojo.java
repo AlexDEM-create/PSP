@@ -38,16 +38,22 @@ public class UserPojo implements User {
     private boolean banned = false;
 
     @Column(name = "created_date", nullable = false)
-    private Instant createdDate = Instant.now();
+    private Instant createdDate;
 
     @Column(name = "updated_date", nullable = false)
-    private Instant updatedDate = createdDate;
+    private Instant updatedDate;
 
-    @Column(name = "updated_date", nullable = false)
+    @Column(name = "deleted_date")
     private Instant deletedDate;
 
     public Optional<Instant> getDeletedDate() {
         return Optional.ofNullable(deletedDate);
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = Instant.now();
+        updatedDate = createdDate;
     }
 
 }

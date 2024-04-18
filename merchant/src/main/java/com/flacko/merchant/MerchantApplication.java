@@ -17,8 +17,10 @@ public class MerchantApplication {
     public static void main(String[] args) {
         SpringApplication.run(MerchantApplication.class, args);
     }
+
     @PostConstruct
     public void init() {
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Moscow"));
     }
+
 }

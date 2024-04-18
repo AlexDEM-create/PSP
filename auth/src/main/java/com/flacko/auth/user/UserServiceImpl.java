@@ -1,8 +1,8 @@
 package com.flacko.auth.user;
 
+import com.flacko.auth.spring.ServiceLocator;
 import com.flacko.auth.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +16,7 @@ import java.util.stream.StreamSupport;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final ApplicationContext context;
+    private final ServiceLocator serviceLocator;
 
     @Override
     public List<User> list() {
@@ -32,14 +32,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserBuilder create() {
-        return context.getBean(UserBuilderImpl.class)
+        return serviceLocator.create(InitializableUserBuilder.class)
                 .initializeNew();
     }
 
     @Override
     public UserBuilder update(String id) throws UserNotFoundException {
         User existingUser = get(id);
-        return context.getBean(UserBuilderImpl.class)
+        return serviceLocator.create(InitializableUserBuilder.class)
                 .initializeExisting(existingUser);
     }
 

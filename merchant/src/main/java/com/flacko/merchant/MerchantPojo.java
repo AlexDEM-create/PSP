@@ -14,7 +14,7 @@ import java.util.Optional;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class MerchantPojo implements Merchant{
+public class MerchantPojo implements Merchant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,26 +27,27 @@ public class MerchantPojo implements Merchant{
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private boolean verified = false;
-
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false)
     private String userId;
 
     @Column(name = "created_date", nullable = false)
-    private Instant createdDate = Instant.now();
+    private Instant createdDate;
 
     @Column(name = "updated_date", nullable = false)
-    private Instant updatedDate = createdDate;
+    private Instant updatedDate;
 
     @Column(name = "deleted_date")
     private Instant deletedDate;
 
-    public Optional<String> getUserId() {
-        return Optional.ofNullable(userId);
-    }
     public Optional<Instant> getDeletedDate() {
         return Optional.ofNullable(deletedDate);
     }
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = Instant.now();
+        updatedDate = createdDate;
+    }
+
 }
 

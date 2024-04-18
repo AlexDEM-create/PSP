@@ -29,7 +29,7 @@ public class TerminalPojo implements Terminal {
     private String traderId;
 
     @Column(nullable = false)
-    private boolean verified = false;
+    private boolean verified;
 
     @Column
     private String model;
@@ -38,10 +38,10 @@ public class TerminalPojo implements Terminal {
     private String operatingSystem;
 
     @Column(name = "created_date", nullable = false)
-    private Instant createdDate = Instant.now();
+    private Instant createdDate;
 
     @Column(name = "updated_date", nullable = false)
-    private Instant updatedDate = createdDate;
+    private Instant updatedDate;
 
     @Column(name = "deleted_date")
     private Instant deletedDate;
@@ -56,6 +56,12 @@ public class TerminalPojo implements Terminal {
 
     public Optional<Instant> getDeletedDate() {
         return Optional.ofNullable(deletedDate);
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = Instant.now();
+        updatedDate = createdDate;
     }
 
 }

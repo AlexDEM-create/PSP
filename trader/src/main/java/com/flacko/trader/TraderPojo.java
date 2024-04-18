@@ -9,9 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @Entity(name = "traders")
 @Data
@@ -19,7 +19,6 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TraderPojo implements Trader {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +28,6 @@ public class TraderPojo implements Trader {
     @Column(nullable = false)
     private String id;
 
-
-    @Column(nullable = false)
-    private String name;
-
     @Column(name = "userid", nullable = false)
     private String userId;
 
@@ -40,19 +35,23 @@ public class TraderPojo implements Trader {
     private String traderTeamId;
 
     @Column(name = "created_date", nullable = false)
-    private Instant createdDate = Instant.now();
+    private Instant createdDate;
 
     @Column(name = "updated_date", nullable = false)
-    private Instant updatedDate = createdDate;
+    private Instant updatedDate;
 
-    @Override
-    public String getUserId() {
-        return null;
+    @Column(name = "deleted_date")
+    private Instant deletedDate;
+
+    public Optional<Instant> getDeletedDate() {
+        return Optional.ofNullable(deletedDate);
     }
 
-    @Override
-    public String getTraderTeamId() {
-        return null;
+    @PrePersist
+    protected void onCreate() {
+        createdDate = Instant.now();
+        updatedDate = createdDate;
     }
+
 }
 
