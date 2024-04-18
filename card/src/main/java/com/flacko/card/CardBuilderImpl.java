@@ -35,7 +35,7 @@ public class CardBuilderImpl implements InitializableCardBuilder {
                 .cardDate(existingCard.getCardDate())
                 .bankId(existingCard.getBankId())
                 .isActive(existingCard.isActive())
-                .traderId(existingCard.getTraderId())
+                .traderId(existingCard.getTraderId().orElse(null))
                 .createdDate(existingCard.getCreatedDate())
                 .updatedDate(now);
         return this;
@@ -100,7 +100,12 @@ public class CardBuilderImpl implements InitializableCardBuilder {
         if (card.getCardId() == null || card.getCardId().isEmpty()) {
             throw new CardMissingRequiredAttributeException("cardId", Optional.empty());
         }
-        //... add all the necessary validations here for the other fields like cardName, cardNumber, etc
+         if (card.getCardName() == null || card.getCardName().isEmpty()) {
+            throw new CardMissingRequiredAttributeException("cardName", Optional.empty());
+         }
+         if (card.getCardNumber() == null || card.getCardNumber().isEmpty()) {
+            throw new CardMissingRequiredAttributeException("cardNumber", Optional.empty());
+         }
     }
 }
 
