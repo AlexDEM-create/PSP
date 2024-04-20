@@ -14,4 +14,3 @@ public interface TraderTeamService {
 
     TraderTeam get(String id) throws TraderTeamNotFoundException;
 }
-
