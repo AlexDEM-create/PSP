@@ -1,13 +1,13 @@
 package com.flacko.auth.security.user.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.flacko.auth.security.user.Role;
+import com.flacko.auth.security.user.UserRole;
 
 import java.time.ZonedDateTime;
 
 public record UserResponse(@JsonProperty(ID) String id,
                            @JsonProperty(LOGIN) String login,
-                           @JsonProperty(ROLE) Role role,
+                           @JsonProperty(ROLE) UserRole role,
                            @JsonProperty(BANNED) boolean banned,
                            @JsonProperty(CREATED_DATE) ZonedDateTime createdDate,
                            @JsonProperty(UPDATED_DATE) ZonedDateTime updatedDate) {

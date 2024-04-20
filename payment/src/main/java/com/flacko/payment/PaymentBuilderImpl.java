@@ -1,6 +1,7 @@
 package com.flacko.payment;
 
 import com.flacko.auth.id.IdGenerator;
+import com.flacko.payment.exception.PaymentIllegalStateTransitionException;
 import com.flacko.payment.exception.PaymentMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -18,6 +19,8 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
     private final PaymentRepository paymentRepository;
 
     private PaymentPojo.PaymentPojoBuilder pojoBuilder;
+    private String id;
+    private PaymentState currentState;
 
     @Override
     public PaymentBuilder initializeNew() {
@@ -41,6 +44,8 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
                 .currentState(existingPayment.getCurrentState())
                 .createdDate(existingPayment.getCreatedDate())
                 .updatedDate(Instant.now());
+        id = existingPayment.getId();
+        currentState = existingPayment.getCurrentState();
         return this;
     }
 
@@ -63,8 +68,11 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
     }
 
     @Override
-    public PaymentBuilder withCurrentState(PaymentState currentState) {
-        pojoBuilder.currentState(currentState);
+    public PaymentBuilder withState(PaymentState newState) throws PaymentIllegalStateTransitionException {
+        if (!currentState.canChangeTo(newState)) {
+            throw new PaymentIllegalStateTransitionException(id, currentState, newState);
+        }
+        pojoBuilder.currentState(newState);
         return this;
     }
 

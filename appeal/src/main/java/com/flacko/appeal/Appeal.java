@@ -1,12 +1,19 @@
-
 package com.flacko.appeal;
+
+import java.time.Instant;
 
 public interface Appeal {
 
+    Long getPrimaryKey();
+
     String getId();
 
-    Enum getAppealStatus();
-
     String getPaymentId();
+
+    AppealState getCurrentState();
+
+    Instant getCreatedDate();
+
+    Instant getUpdatedDate();
 
 }

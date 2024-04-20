@@ -13,7 +13,7 @@ public interface User {
 
     String getPassword();
 
-    Role getRole();
+    UserRole getRole();
 
     boolean isBanned();
 

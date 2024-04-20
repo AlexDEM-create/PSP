@@ -60,7 +60,7 @@ public class UserBuilderImpl implements InitializableUserBuilder {
     }
 
     @Override
-    public UserBuilder withRole(Role role) {
+    public UserBuilder withRole(UserRole role) {
         pojoBuilder.role(role);
         return this;
     }

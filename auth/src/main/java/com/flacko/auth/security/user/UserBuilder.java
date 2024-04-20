@@ -8,7 +8,7 @@ public interface UserBuilder {
 
     UserBuilder withPassword(String password);
 
-    UserBuilder withRole(Role role);
+    UserBuilder withRole(UserRole role);
 
     UserBuilder withBanned();
 

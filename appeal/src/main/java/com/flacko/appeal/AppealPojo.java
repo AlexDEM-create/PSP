@@ -6,7 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "appeals")
+import java.time.Instant;
+
+@Entity
+@Table(name = "appeals")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -21,11 +24,23 @@ public class AppealPojo implements Appeal {
     @Column(nullable = false)
     private String id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private AppealStatus appealStatus;
-
     @Column(name = "payment_id", nullable = false)
     private String paymentId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "current_state", nullable = false)
+    private AppealState currentState;
+
+    @Column(name = "created_date", nullable = false)
+    private Instant createdDate;
+
+    @Column(name = "updated_date", nullable = false)
+    private Instant updatedDate;
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = Instant.now();
+        updatedDate = createdDate;
+    }
 
 }

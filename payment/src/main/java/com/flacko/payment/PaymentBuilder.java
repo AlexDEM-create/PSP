@@ -1,5 +1,6 @@
 package com.flacko.payment;
 
+import com.flacko.payment.exception.PaymentIllegalStateTransitionException;
 import com.flacko.payment.exception.PaymentMissingRequiredAttributeException;
 
 public interface PaymentBuilder {
@@ -10,7 +11,7 @@ public interface PaymentBuilder {
 
     PaymentBuilder withCardId(String cardId);
 
-    PaymentBuilder withCurrentState(PaymentState currentState);
+    PaymentBuilder withState(PaymentState newState) throws PaymentIllegalStateTransitionException;
 
     Payment build() throws PaymentMissingRequiredAttributeException;
 

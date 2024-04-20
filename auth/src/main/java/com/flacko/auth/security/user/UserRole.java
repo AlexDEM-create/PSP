@@ -1,6 +1,6 @@
 package com.flacko.auth.security.user;
 
-public enum Role {
+public enum UserRole {
     USER_ADMIN,
     USER_SUPPORT,
     MERCHANT,

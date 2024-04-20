@@ -16,7 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.flacko.auth.security.user.Role.*;
+import static com.flacko.auth.security.user.UserRole.*;
 import static org.springframework.http.HttpMethod.OPTIONS;
 
 @Configuration
