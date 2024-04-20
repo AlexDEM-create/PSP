@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public record ReceiptExtractDataRequest(@JsonProperty(FILE_ABSOLUTE_PATH) String fileAbsolutePath,
+public record ReceiptExtractDataRequest(@JsonProperty(FILE) byte[] file,
                                         @JsonProperty(PATTERNS) List<String> patterns) {
 
-    private static final String FILE_ABSOLUTE_PATH = "file_absolute_path";
+    private static final String FILE = "file";
     private static final String PATTERNS = "patterns";
 
 }

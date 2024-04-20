@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class TraderRestMapper {
     TraderResponse mapModelToResponse(Trader trader) {
-        return new TraderResponse(trader.getId(), trader.getName());
+        return new TraderResponse(trader.getId(), trader.getUserId());
     }
 }

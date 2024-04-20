@@ -1,6 +1,6 @@
 package com.flacko.appeal;
 
-import com.flacko.auth.SecurityConfig;
+import com.flacko.auth.security.SecurityConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;

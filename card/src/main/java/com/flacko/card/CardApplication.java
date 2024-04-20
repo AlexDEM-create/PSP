@@ -1,6 +1,5 @@
 package com.flacko.card;
 
-import com.flacko.auth.SecurityConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Import;
@@ -8,7 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 @SpringBootApplication
 @EnableWebSecurity
-@Import(SecurityConfig.class)
+@Import({SecurityConfig.class, AuthorizationConfig.class})
 public class CardApplication {
 
     public static void main(String[] args) {

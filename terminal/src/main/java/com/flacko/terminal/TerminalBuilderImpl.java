@@ -90,12 +90,13 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
         if (pojo.getTraderId() == null || pojo.getTraderId().isEmpty()) {
             throw new TerminalMissingRequiredAttributeException("traderId", Optional.of(pojo.getId()));
         }
-        if (pojo.getCreatedDate() == null) {
-            throw new TerminalMissingRequiredAttributeException("createdDate", Optional.of(pojo.getId()));
-        }
-        if (pojo.getUpdatedDate() == null) {
-            throw new TerminalMissingRequiredAttributeException("updatedDate", Optional.of(pojo.getId()));
-        }
+        // it's populated on PrePersist
+//        if (pojo.getCreatedDate() == null) {
+//            throw new TerminalMissingRequiredAttributeException("createdDate", Optional.of(pojo.getId()));
+//        }
+//        if (pojo.getUpdatedDate() == null) {
+//            throw new TerminalMissingRequiredAttributeException("updatedDate", Optional.of(pojo.getId()));
+//        }
     }
 
 }

@@ -55,13 +55,12 @@ public class ReceiptPaymentVerificationPojo implements ReceiptPaymentVerificatio
     @Column(name = "commission_currency", nullable = false)
     private Currency commissionCurrency;
 
-    private String dataJSON;
-
     // https://www.baeldung.com/hibernate-persist-json-object
     @Convert(converter = HashMapConverter.class)
     @Column(nullable = false)
     private Map<String, Object> data;
 
+    @Lob
     @Column(name = "uploaded_file", nullable = false, length = MAX_RECEIPT_SIZE)
     private byte[] uploadedFile;
 

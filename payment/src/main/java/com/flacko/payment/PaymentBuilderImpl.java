@@ -101,12 +101,13 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
         if (pojo.getCurrentState() == null) {
             throw new PaymentMissingRequiredAttributeException("currentState", Optional.of(pojo.getId()));
         }
-        if (pojo.getCreatedDate() == null) {
-            throw new PaymentMissingRequiredAttributeException("createdDate", Optional.of(pojo.getId()));
-        }
-        if (pojo.getUpdatedDate() == null) {
-            throw new PaymentMissingRequiredAttributeException("updatedDate", Optional.of(pojo.getId()));
-        }
+        // it's populated on PrePersist
+//        if (pojo.getCreatedDate() == null) {
+//            throw new PaymentMissingRequiredAttributeException("createdDate", Optional.of(pojo.getId()));
+//        }
+//        if (pojo.getUpdatedDate() == null) {
+//            throw new PaymentMissingRequiredAttributeException("updatedDate", Optional.of(pojo.getId()));
+//        }
     }
 
 }
