@@ -1,5 +1,6 @@
 package com.flacko.card;
 
+import com.flacko.auth.id.IdGenerator;
 import com.flacko.card.exception.CardMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -16,52 +17,35 @@ public class CardBuilderImpl implements InitializableCardBuilder {
 
     private final Instant now = Instant.now();
 
+    private final CardRepository cardRepository;
+
     private CardPojo.CardPojoBuilder pojoBuilder;
 
     @Override
     public CardBuilder initializeNew() {
         pojoBuilder = CardPojo.builder()
-                .createdDate(now)
-                .updatedDate(now);
+                .id(new IdGenerator().generateId());
         return this;
     }
 
     @Override
     public CardBuilder initializeExisting(Card existingCard) {
         pojoBuilder = CardPojo.builder()
-                .cardId(existingCard.getCardId())
-                .cardNumber(existingCard.getCardNumber())
-                .cardName(existingCard.getCardName())
-                .cardDate(existingCard.getCardDate())
+                .primaryKey(existingCard.getPrimaryKey())
+                .id(existingCard.getId())
+                .number(existingCard.getNumber())
                 .bankId(existingCard.getBankId())
-                .isActive(existingCard.isActive())
-                .traderId(existingCard.getTraderId().orElse(null))
+                .traderTeamId(existingCard.getTraderTeamId())
+                .busy(existingCard.isBusy())
                 .createdDate(existingCard.getCreatedDate())
-                .updatedDate(now);
+                .updatedDate(now)
+                .deletedDate(existingCard.getDeletedDate().orElse(null));
         return this;
     }
 
     @Override
-    public CardBuilder withCardId(String id) {
-        pojoBuilder.cardId(id);
-        return this;
-    }
-
-    @Override
-    public CardBuilder withCardNumber(String number) {
-        pojoBuilder.cardNumber(number);
-        return this;
-    }
-
-    @Override
-    public CardBuilder withCardName(String name) {
-        pojoBuilder.cardName(name);
-        return this;
-    }
-
-    @Override
-    public CardBuilder withCardDate(Instant date) {
-        pojoBuilder.cardDate(date);
+    public CardBuilder withNumber(String number) {
+        pojoBuilder.number(number);
         return this;
     }
 
@@ -72,14 +56,14 @@ public class CardBuilderImpl implements InitializableCardBuilder {
     }
 
     @Override
-    public CardBuilder withActive(boolean isActive) {
-        pojoBuilder.isActive(isActive);
+    public CardBuilder withTraderTeamId(String traderTeamId) {
+        pojoBuilder.traderTeamId(traderTeamId);
         return this;
     }
 
     @Override
-    public CardBuilder withTraderId(String id) {
-        pojoBuilder.traderId(id);
+    public CardBuilder withBusy(boolean busy) {
+        pojoBuilder.busy(busy);
         return this;
     }
 
@@ -93,19 +77,23 @@ public class CardBuilderImpl implements InitializableCardBuilder {
     public Card build() throws CardMissingRequiredAttributeException {
         CardPojo card = pojoBuilder.build();
         validate(card);
+        cardRepository.save(card);
         return card;
     }
 
-    private void validate(CardPojo card) throws CardMissingRequiredAttributeException {
-        if (card.getCardId() == null || card.getCardId().isEmpty()) {
-            throw new CardMissingRequiredAttributeException("cardId", Optional.empty());
+    private void validate(CardPojo pojo) throws CardMissingRequiredAttributeException {
+        if (pojo.getId() == null || pojo.getId().isEmpty()) {
+            throw new CardMissingRequiredAttributeException("id", Optional.empty());
         }
-         if (card.getCardName() == null || card.getCardName().isEmpty()) {
-            throw new CardMissingRequiredAttributeException("cardName", Optional.empty());
-         }
-         if (card.getCardNumber() == null || card.getCardNumber().isEmpty()) {
-            throw new CardMissingRequiredAttributeException("cardNumber", Optional.empty());
-         }
+        if (pojo.getNumber() == null || pojo.getNumber().isEmpty()) {
+            throw new CardMissingRequiredAttributeException("number", Optional.empty());
+        }
+        if (pojo.getBankId() == null || pojo.getBankId().isEmpty()) {
+            throw new CardMissingRequiredAttributeException("bankId", Optional.empty());
+        }
+        if (pojo.getTraderTeamId() == null || pojo.getTraderTeamId().isEmpty()) {
+            throw new CardMissingRequiredAttributeException("traderTeamId", Optional.empty());
+        }
     }
-}
 
+}

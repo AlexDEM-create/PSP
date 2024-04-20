@@ -1,8 +1,8 @@
 package com.flacko.terminal;
 
+import com.flacko.auth.spring.ServiceLocator;
 import com.flacko.terminal.exception.TerminalNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +16,7 @@ import java.util.stream.StreamSupport;
 public class TerminalServiceImpl implements TerminalService {
 
     private final TerminalRepository terminalRepository;
-    private final ApplicationContext context;
+    private final ServiceLocator serviceLocator;
 
     @Override
     public List<Terminal> list() {
@@ -32,14 +32,14 @@ public class TerminalServiceImpl implements TerminalService {
 
     @Override
     public TerminalBuilder create() {
-        return context.getBean(TerminalBuilderImpl.class)
+        return serviceLocator.create(InitializableTerminalBuilder.class)
                 .initializeNew();
     }
 
     @Override
     public TerminalBuilder update(String id) throws TerminalNotFoundException {
         Terminal existingTerminal = get(id);
-        return context.getBean(TerminalBuilderImpl.class)
+        return serviceLocator.create(InitializableTerminalBuilder.class)
                 .initializeExisting(existingTerminal);
     }
 

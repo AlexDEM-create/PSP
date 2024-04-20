@@ -13,8 +13,8 @@ public interface PaymentRepository extends CrudRepository<PaymentPojo, Long> {
     @Query("SELECT p FROM payments p WHERE p.id = ?1")
     Optional<Payment> findById(String id);
 
-    @Query("SELECT p FROM payments p WHERE p.traderId = ?1")
-    List<Payment> listByTraderId(String traderId);
+    @Query("SELECT p FROM payments p WHERE p.traderTeamId = ?1")
+    List<Payment> listByTraderTeamId(String traderTeamId);
 
     @Query("SELECT p FROM payments p WHERE p.merchantId = ?1")
     List<Payment> listByMerchantId(String merchantId);

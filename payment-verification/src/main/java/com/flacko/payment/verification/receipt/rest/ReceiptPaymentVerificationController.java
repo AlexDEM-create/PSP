@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class ReceiptPaymentVerificationController {
 
     private static final String FILE = "file";
-    private static final String TRADER_ID = "trader_id";
+    private static final String TRADER_TEAM_ID = "trader_team_id";
     private static final String PAYMENT_ID = "payment_id";
     private static final String MERCHANT_ID = "merchant_id";
 

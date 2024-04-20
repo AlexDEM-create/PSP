@@ -6,7 +6,7 @@ public interface PaymentBuilder {
 
     PaymentBuilder withMerchantId(String merchantId);
 
-    PaymentBuilder withTraderId(String traderId);
+    PaymentBuilder withTraderTeamId(String traderTeamId);
 
     PaymentBuilder withCardId(String cardId);
 

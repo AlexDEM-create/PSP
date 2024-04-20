@@ -9,12 +9,13 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.util.Optional;
 
-@Entity(name = "cards")
+@Entity
+@Table(name = "cards")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class CardPojo implements Card{
+public class CardPojo implements Card {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,39 +23,37 @@ public class CardPojo implements Card{
     private Long primaryKey;
 
     @Column(nullable = false)
-    private String cardId;
+    private String id;
 
-    @Column(name = "card_number", nullable = false)
-    private String cardNumber;
+    @Column(name = "number", nullable = false)
+    private String number;
 
-    @Column(name = "card_name", nullable = false)
-    private String cardName;
-
-    @Column(name = "card_date", nullable = false)
-    private Instant cardDate;
-
-    @Column(name = "bank_id")
+    @Column(name = "bank_id", nullable = false)
     private String bankId;
 
-    @Column(nullable = false)
-    private boolean isActive = false;
+    @Column(name = "trader_team_id", nullable = false)
+    private String traderTeamId;
 
-    @Column(name = "trader_id")
-    private String traderId;
+    @Column(name = "busy", nullable = false)
+    private boolean busy;
 
     @Column(name = "created_date", nullable = false)
-    private Instant createdDate = Instant.now();
+    private Instant createdDate;
 
     @Column(name = "updated_date", nullable = false)
-    private Instant updatedDate = createdDate;
+    private Instant updatedDate;
 
     @Column(name = "deleted_date")
     private Instant deletedDate;
 
-    public Optional<String> getTraderId() {
-        return Optional.ofNullable(traderId);
-    }
     public Optional<Instant> getDeletedDate() {
         return Optional.ofNullable(deletedDate);
     }
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = Instant.now();
+        updatedDate = createdDate;
+    }
+
 }

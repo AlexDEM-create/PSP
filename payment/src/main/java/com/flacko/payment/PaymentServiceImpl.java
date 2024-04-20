@@ -1,8 +1,8 @@
 package com.flacko.payment;
 
+import com.flacko.auth.spring.ServiceLocator;
 import com.flacko.payment.exception.PaymentNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +16,7 @@ import java.util.stream.StreamSupport;
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
-    private final ApplicationContext context;
+    private final ServiceLocator serviceLocator;
 
     @Override
     public List<Payment> list() {
@@ -32,14 +32,14 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentBuilder create() {
-        return context.getBean(PaymentBuilderImpl.class)
+        return serviceLocator.create(InitializablePaymentBuilder.class)
                 .initializeNew();
     }
 
     @Override
     public PaymentBuilder update(String id) throws PaymentNotFoundException {
         Payment existingPayment = get(id);
-        return context.getBean(PaymentBuilderImpl.class)
+        return serviceLocator.create(InitializablePaymentBuilder.class)
                 .initializeExisting(existingPayment);
     }
 

@@ -4,14 +4,23 @@ import java.time.Instant;
 import java.util.Optional;
 
 public interface Card {
-    String getCardId();
-    String getCardNumber();
-    String getCardName();
-    Instant getCardDate();
+
+    Long getPrimaryKey();
+
+    String getId();
+
+    String getNumber();
+
     String getBankId();
-    boolean isActive();
-    Optional<String> getTraderId();
+
+    String getTraderTeamId();
+
+    boolean isBusy();
+
     Instant getCreatedDate();
+
     Instant getUpdatedDate();
+
     Optional<Instant> getDeletedDate();
+
 }

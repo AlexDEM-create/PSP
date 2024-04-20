@@ -19,7 +19,6 @@ public class UserController {
     private final UserService userService;
     private final UserRestMapper userRestMapper;
 
-
     @GetMapping
     public List<UserResponse> list() {
         return userService.list()

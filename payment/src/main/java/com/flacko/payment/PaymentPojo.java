@@ -10,7 +10,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Currency;
 
-@Entity(name = "payments")
+@Entity
+@Table(name = "payments")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -30,8 +31,8 @@ public class PaymentPojo implements Payment {
     private String merchantId;
 
     // make foreign key to traders table
-    @Column(name = "trader_id", nullable = false)
-    private String traderId;
+    @Column(name = "trader_team_id", nullable = false)
+    private String traderTeamId;
 
     // make foreign key to cards table
     @Column(name = "card_id", nullable = false)

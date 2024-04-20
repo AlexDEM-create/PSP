@@ -1,11 +1,10 @@
 package com.flacko.payment.verification.receipt;
 
-import com.flacko.payment.verification.bank.pattern.BankPatternRepository;
+import com.flacko.auth.spring.ServiceLocator;
 import com.flacko.payment.verification.receipt.exception.*;
 import com.flacko.payment.verification.receipt.rest.ReceiptPaymentVerificationRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
@@ -45,9 +44,8 @@ import static com.flacko.payment.verification.receipt.ReceiptPaymentVerification
 public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVerificationService {
 
     private final ReceiptPaymentVerificationRepository receiptPaymentVerificationRepository;
-    private final ApplicationContext context;
+    private final ServiceLocator serviceLocator;
     private final RestTemplate restTemplate;
-    private final BankPatternRepository bankPatternRepository;
 
     @Override
     public List<ReceiptPaymentVerification> list() {
@@ -125,7 +123,7 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
     }
 
     private ReceiptPaymentVerificationPojo createReceiptPaymentVerification(ReceiptExtractedData extractedData, ReceiptPaymentVerificationRequest receiptPaymentVerificationRequest) throws IOException, ReceiptPaymentVerificationMissingRequiredAttributeException, ReceiptPaymentVerificationCurrencyNotSupportedException, ReceiptPaymentVerificationInvalidAmountException {
-        ReceiptPaymentVerificationBuilder builder = context.getBean(ReceiptPaymentVerificationBuilderImpl.class)
+        ReceiptPaymentVerificationBuilder builder = serviceLocator.create(ReceiptPaymentVerificationBuilderImpl.class)
                 .initializeNew();
         System.out.println(extractedData);
         builder.withPaymentId(receiptPaymentVerificationRequest.paymentId())

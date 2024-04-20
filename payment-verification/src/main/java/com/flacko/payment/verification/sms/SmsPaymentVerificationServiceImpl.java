@@ -1,8 +1,8 @@
 package com.flacko.payment.verification.sms;
 
+import com.flacko.auth.spring.ServiceLocator;
 import com.flacko.payment.verification.sms.exception.SmsPaymentVerificationNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +16,7 @@ import java.util.stream.StreamSupport;
 public class SmsPaymentVerificationServiceImpl implements SmsPaymentVerificationService {
 
     private final SmsPaymentVerificationRepository smsPaymentVerificationRepository;
-    private final ApplicationContext context;
+    private final ServiceLocator serviceLocator;
 
     @Override
     public List<SmsPaymentVerification> list() {
@@ -32,7 +32,7 @@ public class SmsPaymentVerificationServiceImpl implements SmsPaymentVerification
 
     @Override
     public SmsPaymentVerificationBuilder create() {
-        return context.getBean(SmsPaymentVerificationBuilderImpl.class)
+        return serviceLocator.create(InitializableSmsPaymentVerificationBuilder.class)
                 .initializeNew();
     }
 

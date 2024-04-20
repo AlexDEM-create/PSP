@@ -35,7 +35,7 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
         pojoBuilder = TerminalPojo.builder()
                 .primaryKey(existingTerminal.getPrimaryKey())
                 .id(existingTerminal.getId())
-                .traderId(existingTerminal.getTraderId())
+                .traderTeamId(existingTerminal.getTraderTeamId())
                 .verified(existingTerminal.isVerified())
                 .model(existingTerminal.getModel().orElse(null))
                 .operatingSystem(existingTerminal.getOperatingSystem().orElse(null))
@@ -46,8 +46,8 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
     }
 
     @Override
-    public TerminalBuilder withTraderId(String traderId) {
-        pojoBuilder.traderId(traderId);
+    public TerminalBuilder withTraderTeamId(String traderTeamId) {
+        pojoBuilder.traderTeamId(traderTeamId);
         return this;
     }
 
@@ -87,16 +87,9 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
         if (pojo.getId() == null || pojo.getId().isEmpty()) {
             throw new TerminalMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (pojo.getTraderId() == null || pojo.getTraderId().isEmpty()) {
-            throw new TerminalMissingRequiredAttributeException("traderId", Optional.of(pojo.getId()));
+        if (pojo.getTraderTeamId() == null || pojo.getTraderTeamId().isEmpty()) {
+            throw new TerminalMissingRequiredAttributeException("traderTeamId", Optional.of(pojo.getId()));
         }
-        // it's populated on PrePersist
-//        if (pojo.getCreatedDate() == null) {
-//            throw new TerminalMissingRequiredAttributeException("createdDate", Optional.of(pojo.getId()));
-//        }
-//        if (pojo.getUpdatedDate() == null) {
-//            throw new TerminalMissingRequiredAttributeException("updatedDate", Optional.of(pojo.getId()));
-//        }
     }
 
 }

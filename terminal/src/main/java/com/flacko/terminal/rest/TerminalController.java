@@ -37,7 +37,7 @@ public class TerminalController {
     public TerminalResponse create(@RequestBody TerminalCreateRequest terminalCreateRequest)
             throws TerminalMissingRequiredAttributeException {
         TerminalBuilder builder = terminalService.create();
-        builder.withTraderId(terminalCreateRequest.traderId());
+        builder.withTraderTeamId(terminalCreateRequest.traderTeamId());
         if (terminalCreateRequest.model().isPresent()) {
             builder.withModel(terminalCreateRequest.model().get());
         }

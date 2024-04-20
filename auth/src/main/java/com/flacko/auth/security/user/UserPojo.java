@@ -36,7 +36,7 @@ public class UserPojo implements User {
     private Role role;
 
     @Column(nullable = false)
-    private boolean banned = false;
+    private boolean banned;
 
     @Column(name = "created_date", nullable = false)
     private Instant createdDate;
@@ -53,6 +53,7 @@ public class UserPojo implements User {
 
     @PrePersist
     protected void onCreate() {
+        banned = false;
         createdDate = Instant.now();
         updatedDate = createdDate;
     }

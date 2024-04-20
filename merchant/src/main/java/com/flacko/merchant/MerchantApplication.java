@@ -5,14 +5,16 @@ import com.flacko.auth.security.SecurityConfig;
 import jakarta.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.TimeZone;
 
 @SpringBootApplication
-@EnableWebSecurity
-@Import({SecurityConfig.class, AuthorizationConfig.class})
+@Import({AuthorizationConfig.class, SecurityConfig.class})
+@EnableJpaRepositories(basePackages = {"com.flacko"})
+@EntityScan(basePackages = {"com.flacko"})
 public class MerchantApplication {
 
     public static void main(String[] args) {

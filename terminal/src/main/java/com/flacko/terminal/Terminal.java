@@ -9,7 +9,7 @@ public interface Terminal {
 
     String getId();
 
-    String getTraderId();
+    String getTraderTeamId();
 
     boolean isVerified();
 

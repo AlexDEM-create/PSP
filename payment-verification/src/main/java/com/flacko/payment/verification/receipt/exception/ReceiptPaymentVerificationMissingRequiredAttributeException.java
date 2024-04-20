@@ -4,10 +4,9 @@ import java.util.Optional;
 
 public class ReceiptPaymentVerificationMissingRequiredAttributeException extends Exception {
 
-    public ReceiptPaymentVerificationMissingRequiredAttributeException(String attributeName,
-                                                                       Optional<String> receiptPaymentVerificationId) {
-        super("Missing required " + attributeName + " attribute for receipt payment verification "
-                + receiptPaymentVerificationId);
+    public ReceiptPaymentVerificationMissingRequiredAttributeException(String attributeName, Optional<String> id) {
+        super(String.format("Missing required %s attribute for receipt payment verification %s", attributeName,
+                id.orElse("unknown")));
     }
 
 }

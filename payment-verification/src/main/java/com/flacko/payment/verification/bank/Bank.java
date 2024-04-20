@@ -5,6 +5,8 @@ import java.util.Optional;
 
 public interface Bank {
 
+    Long getPrimaryKey();
+
     String getId();
 
     String getName();

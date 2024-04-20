@@ -12,7 +12,8 @@ import java.time.Instant;
 import java.util.Currency;
 import java.util.Map;
 
-@Entity(name = "sms_payment_verifications")
+@Entity
+@Table(name = "sms_payment_verifications")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor

@@ -1,9 +1,9 @@
 package com.flacko.merchant;
 
 
+import com.flacko.auth.spring.ServiceLocator;
 import com.flacko.merchant.exception.MerchantNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,33 +15,33 @@ import java.util.stream.StreamSupport;
 @Transactional
 @RequiredArgsConstructor
 public class MerchantServiceImpl implements MerchantService {
+
     private final MerchantRepository merchantRepository;
-    private final ApplicationContext context;
+    private final ServiceLocator serviceLocator;
+
+    @Override
+    public List<Merchant> list() {
+        return StreamSupport.stream(merchantRepository.findAll().spliterator(), false)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Merchant get(String id) throws MerchantNotFoundException {
+        return merchantRepository.findById(id)
+                .orElseThrow(() -> new MerchantNotFoundException(id));
+    }
+
     @Override
     public MerchantBuilder create() {
-        return context.getBean(MerchantBuilderImpl.class)
+        return serviceLocator.create(InitializableMerchantBuilder.class)
                 .initializeNew();
     }
 
     @Override
     public MerchantBuilder update(String id) throws MerchantNotFoundException {
-        Merchant existingMerchant = (Merchant)get(id);
-        return context.getBean(MerchantBuilderImpl.class)
+        Merchant existingMerchant = get(id);
+        return serviceLocator.create(InitializableMerchantBuilder.class)
                 .initializeExisting(existingMerchant);
     }
 
-    @Override
-    public MerchantBuilder get(String id) throws MerchantNotFoundException {
-        return context.getBean(MerchantBuilderImpl.class)
-                .initializeExisting(merchantRepository.findById(Long.valueOf(id))
-                        .orElseThrow(() -> new MerchantNotFoundException(id)));
-    }
-
-    @Override
-    public List<MerchantBuilder> list() {
-        return StreamSupport.stream(merchantRepository.findAll().spliterator(), false)
-                .map(merchant -> context.getBean(MerchantBuilderImpl.class)
-                        .initializeExisting(merchant))
-                .collect(Collectors.toList());
-    }
 }

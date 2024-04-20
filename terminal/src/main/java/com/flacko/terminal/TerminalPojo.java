@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.util.Optional;
 
-@Entity(name = "terminals")
+@Entity
+@Table(name = "terminals")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -25,8 +26,8 @@ public class TerminalPojo implements Terminal {
     private String id;
 
     // make foreign key to traders table
-    @Column(name = "trader_id", nullable = false)
-    private String traderId;
+    @Column(name = "trader_team_id", nullable = false)
+    private String traderTeamId;
 
     @Column(nullable = false)
     private boolean verified;

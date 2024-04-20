@@ -4,8 +4,8 @@ import java.util.Optional;
 
 public class TerminalMissingRequiredAttributeException extends Exception {
 
-    public TerminalMissingRequiredAttributeException(String attributeName, Optional<String> terminalId) {
-        super("Missing required " + attributeName + " attribute for terminal " + terminalId);
+    public TerminalMissingRequiredAttributeException(String attributeName, Optional<String> id) {
+        super(String.format("Missing required %s attribute for terminal %s", attributeName, id.orElse("unknown")));
     }
 
 }

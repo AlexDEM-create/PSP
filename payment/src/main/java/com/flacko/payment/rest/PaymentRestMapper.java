@@ -12,7 +12,7 @@ public class PaymentRestMapper {
         // add timezone from authorization
         return new PaymentResponse(payment.getId(),
                 payment.getMerchantId(),
-                payment.getTraderId(),
+                payment.getTraderTeamId(),
                 payment.getCardId(),
                 payment.getAmount(),
                 payment.getCurrency(),

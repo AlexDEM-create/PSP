@@ -13,7 +13,7 @@ public interface TerminalRepository extends CrudRepository<TerminalPojo, Long> {
     @Query("SELECT t FROM terminals t WHERE t.id = ?1")
     Optional<Terminal> findById(String id);
 
-    @Query("SELECT t FROM terminals t WHERE t.traderId = ?1")
-    List<Terminal> listByTraderId(String traderId);
+    @Query("SELECT t FROM terminals t WHERE t.traderTeamId = ?1")
+    List<Terminal> listByTraderTeamId(String traderTeamId);
 
 }

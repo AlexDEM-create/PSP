@@ -6,7 +6,8 @@ import lombok.*;
 import java.time.Instant;
 import java.util.Optional;
 
-@Entity(name = "bank_patterns")
+@Entity
+@Table(name = "bank_patterns")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor

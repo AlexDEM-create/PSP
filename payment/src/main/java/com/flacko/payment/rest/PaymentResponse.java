@@ -10,7 +10,7 @@ import java.util.Currency;
 
 public record PaymentResponse(@JsonProperty(ID) String id,
                               @JsonProperty(MERCHANT_ID) String merchantId,
-                              @JsonProperty(TRADER_ID) String traderId,
+                              @JsonProperty(TRADER_TEAM_ID) String traderTeamId,
                               @JsonProperty(CARD_ID) String cardId,
                               @JsonProperty(AMOUNT) BigDecimal amount,
                               @JsonProperty(CURRENCY) Currency currency,
@@ -21,7 +21,7 @@ public record PaymentResponse(@JsonProperty(ID) String id,
 
     private static final String ID = "id";
     private static final String MERCHANT_ID = "merchant_id";
-    private static final String TRADER_ID = "trader_id";
+    private static final String TRADER_TEAM_ID = "trader_team_id";
     private static final String CARD_ID = "card_id";
     private static final String AMOUNT = "amount";
     private static final String CURRENCY = "currency";

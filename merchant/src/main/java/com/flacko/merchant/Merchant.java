@@ -1,5 +1,6 @@
 package com.flacko.merchant;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -12,6 +13,12 @@ public interface Merchant {
     String getName();
 
     String getUserId();
+
+    BigDecimal getIncomingFeeRate();
+
+    BigDecimal getOutgoingFeeRate();
+
+    boolean isOutgoingTrafficStopped();
 
     Instant getCreatedDate();
 

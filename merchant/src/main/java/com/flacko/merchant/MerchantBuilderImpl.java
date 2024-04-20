@@ -7,6 +7,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -36,15 +37,12 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
                 .id(existingMerchant.getId())
                 .name(existingMerchant.getName())
                 .userId(existingMerchant.getUserId())
+                .incomingFeeRate(existingMerchant.getIncomingFeeRate())
+                .outgoingFeeRate(existingMerchant.getOutgoingFeeRate())
+                .outgoingTrafficStopped(existingMerchant.isOutgoingTrafficStopped())
                 .createdDate(existingMerchant.getCreatedDate())
                 .updatedDate(now)
                 .deletedDate(existingMerchant.getDeletedDate().orElse(null));
-        return this;
-    }
-
-    @Override
-    public MerchantBuilder withId(String id) {
-        pojoBuilder.id(id);
         return this;
     }
 
@@ -57,6 +55,24 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
     @Override
     public MerchantBuilder withUserId(String userId) {
         pojoBuilder.userId(userId);
+        return this;
+    }
+
+    @Override
+    public MerchantBuilder withIncomingFeeRate(BigDecimal incomingFeeRate) {
+        pojoBuilder.incomingFeeRate(incomingFeeRate);
+        return this;
+    }
+
+    @Override
+    public MerchantBuilder withOutgoingFeeRate(BigDecimal outgoingFeeRate) {
+        pojoBuilder.outgoingFeeRate(outgoingFeeRate);
+        return this;
+    }
+
+    @Override
+    public MerchantBuilder withOutgoingTrafficStopped(boolean outgoingTrafficStopped) {
+        pojoBuilder.outgoingTrafficStopped(outgoingTrafficStopped);
         return this;
     }
 
@@ -74,21 +90,22 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
         return merchant;
     }
 
-    private void validate(MerchantPojo merchant) throws MerchantMissingRequiredAttributeException {
-        if (merchant.getId() == null || merchant.getId().isEmpty()) {
+    private void validate(MerchantPojo pojo) throws MerchantMissingRequiredAttributeException {
+        if (pojo.getId() == null || pojo.getId().isEmpty()) {
             throw new MerchantMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (merchant.getName() == null || merchant.getName().isEmpty()) {
-            throw new MerchantMissingRequiredAttributeException("name", Optional.of(merchant.getName()));
+        if (pojo.getName() == null || pojo.getName().isEmpty()) {
+            throw new MerchantMissingRequiredAttributeException("name", Optional.of(pojo.getName()));
         }
-        if (merchant.getUserId() == null || merchant.getUserId().isEmpty()) {
-            throw new MerchantMissingRequiredAttributeException("userId", Optional.of(merchant.getId()));
+        if (pojo.getUserId() == null || pojo.getUserId().isEmpty()) {
+            throw new MerchantMissingRequiredAttributeException("userId", Optional.of(pojo.getId()));
         }
-        if (merchant.getCreatedDate() == null) {
-            throw new MerchantMissingRequiredAttributeException("createdDate", Optional.of(merchant.getId()));
+        if (pojo.getIncomingFeeRate() == null) {
+            throw new MerchantMissingRequiredAttributeException("incomingFeeRate", Optional.of(pojo.getId()));
         }
-        if (merchant.getUpdatedDate() == null) {
-            throw new MerchantMissingRequiredAttributeException("updatedDate", Optional.of(merchant.getId()));
+        if (pojo.getOutgoingFeeRate() == null) {
+            throw new MerchantMissingRequiredAttributeException("outgoingFeeRate", Optional.of(pojo.getId()));
         }
     }
+
 }

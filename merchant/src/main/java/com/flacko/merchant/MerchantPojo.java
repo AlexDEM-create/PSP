@@ -6,10 +6,12 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
 
-@Entity(name = "merchants")
+@Entity
+@Table(name = "merchants")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -24,11 +26,20 @@ public class MerchantPojo implements Merchant {
     @Column(nullable = false)
     private String id;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @Column(name = "user_id", nullable = false)
     private String userId;
+
+    @Column(name = "incoming_fee_rate", nullable = false)
+    private BigDecimal incomingFeeRate;
+
+    @Column(name = "outgoing_fee_rate", nullable = false)
+    private BigDecimal outgoingFeeRate;
+
+    @Column(name = "outgoing_traffic_stopped", nullable = false)
+    private boolean outgoingTrafficStopped;
 
     @Column(name = "created_date", nullable = false)
     private Instant createdDate;
@@ -45,6 +56,7 @@ public class MerchantPojo implements Merchant {
 
     @PrePersist
     protected void onCreate() {
+        outgoingTrafficStopped = false;
         createdDate = Instant.now();
         updatedDate = createdDate;
     }

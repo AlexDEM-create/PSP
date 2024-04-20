@@ -9,13 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/merchants")
 public class MerchantController {
+
     private final MerchantService merchantService;
     private final MerchantRestMapper merchantRestMapper;
 
@@ -23,35 +23,23 @@ public class MerchantController {
     public List<MerchantResponse> list() {
         return merchantService.list()
                 .stream()
-                .map(merchant -> {
-                    try {
-                        return merchant.build();
-                    } catch (MerchantMissingRequiredAttributeException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
                 .map(merchantRestMapper::mapModelToResponse)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{merchantId}")
     public MerchantResponse get(@PathVariable String merchantId) throws MerchantNotFoundException {
-        return merchantRestMapper.mapModelToResponse((Merchant) merchantService.get(merchantId));
+        return merchantRestMapper.mapModelToResponse(merchantService.get(merchantId));
     }
 
     @PostMapping
-    public MerchantResponse create(@RequestBody MerchantInitiateRequest merchantInitiateRequest)
+    public MerchantResponse create(@RequestBody MerchantCreateRequest merchantCreateRequest)
             throws MerchantMissingRequiredAttributeException {
         MerchantBuilder builder = merchantService.create();
-        builder.withId(merchantInitiateRequest.id());
-        if (merchantInitiateRequest.name().isPresent()) {
-            builder.withName(merchantInitiateRequest.name().get());
-        }
-        if (merchantInitiateRequest.userId().isPresent()) {
-            builder.withUserId(merchantInitiateRequest.userId().get());
-        }
+        builder.withName(merchantCreateRequest.name())
+                .withUserId(merchantCreateRequest.userId())
+                .withIncomingFeeRate(merchantCreateRequest.incomingFeeRate())
+                .withOutgoingFeeRate(merchantCreateRequest.outgoingFeeRate());
         Merchant merchant = builder.build();
         return merchantRestMapper.mapModelToResponse(merchant);
     }

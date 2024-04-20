@@ -5,6 +5,8 @@ import java.util.Optional;
 
 public interface BankPattern {
 
+    Long getPrimaryKey();
+
     String getId();
 
     String getPattern();

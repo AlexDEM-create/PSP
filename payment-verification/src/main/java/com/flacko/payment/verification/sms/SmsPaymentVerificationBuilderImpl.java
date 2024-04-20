@@ -107,10 +107,6 @@ public class SmsPaymentVerificationBuilderImpl implements InitializableSmsPaymen
         if (pojo.getData() == null || pojo.getData().isEmpty()) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("data", Optional.of(pojo.getId()));
         }
-        // it's populated on PrePersist
-//        if (pojo.getCreatedDate() == null) {
-//            throw new SmsPaymentVerificationMissingRequiredAttributeException("createdDate", Optional.of(pojo.getId()));
-//        }
     }
 
 

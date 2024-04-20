@@ -1,27 +1,19 @@
 package com.flacko.card;
 
-import com.flacko.card.Card;
-
-import java.time.Instant;
+import com.flacko.card.exception.CardMissingRequiredAttributeException;
 
 public interface CardBuilder {
 
-    CardBuilder withCardId(String id);
+    CardBuilder withNumber(String number);
 
-    CardBuilder withCardNumber(String number);
+    CardBuilder withBankId(String bankId);
 
-    CardBuilder withCardName(String name);
+    CardBuilder withTraderTeamId(String traderTeamId);
 
-    CardBuilder withCardDate(Instant date);
-
-    CardBuilder withBankId(String id);
-
-    CardBuilder withActive(boolean isActive);
-
-    CardBuilder withTraderId(String id);
+    CardBuilder withBusy(boolean busy);
 
     CardBuilder withArchived();
 
-    Card build() throws com.flacko.card.exception.CardMissingRequiredAttributeException;
+    Card build() throws CardMissingRequiredAttributeException;
 
 }

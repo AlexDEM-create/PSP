@@ -12,7 +12,7 @@ public interface Payment {
 
     String getMerchantId();
 
-    String getTraderId();
+    String getTraderTeamId();
 
     String getCardId();
 

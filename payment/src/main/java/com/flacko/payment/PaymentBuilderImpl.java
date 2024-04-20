@@ -33,7 +33,7 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
                 .primaryKey(existingPayment.getPrimaryKey())
                 .id(existingPayment.getId())
                 .merchantId(existingPayment.getMerchantId())
-                .traderId(existingPayment.getTraderId())
+                .traderTeamId(existingPayment.getTraderTeamId())
                 .cardId(existingPayment.getCardId())
                 .amount(existingPayment.getAmount())
                 .currency(existingPayment.getCurrency())
@@ -51,8 +51,8 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
     }
 
     @Override
-    public PaymentBuilder withTraderId(String traderId) {
-        pojoBuilder.traderId(traderId);
+    public PaymentBuilder withTraderTeamId(String traderTeamId) {
+        pojoBuilder.traderTeamId(traderTeamId);
         return this;
     }
 
@@ -83,8 +83,8 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
         if (pojo.getMerchantId() == null || pojo.getMerchantId().isEmpty()) {
             throw new PaymentMissingRequiredAttributeException("merchantId", Optional.of(pojo.getId()));
         }
-        if (pojo.getTraderId() == null || pojo.getTraderId().isEmpty()) {
-            throw new PaymentMissingRequiredAttributeException("traderId", Optional.of(pojo.getId()));
+        if (pojo.getTraderTeamId() == null || pojo.getTraderTeamId().isEmpty()) {
+            throw new PaymentMissingRequiredAttributeException("traderTeamId", Optional.of(pojo.getId()));
         }
         if (pojo.getCardId() == null || pojo.getCardId().isEmpty()) {
             throw new PaymentMissingRequiredAttributeException("cardId", Optional.of(pojo.getId()));
@@ -101,13 +101,6 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
         if (pojo.getCurrentState() == null) {
             throw new PaymentMissingRequiredAttributeException("currentState", Optional.of(pojo.getId()));
         }
-        // it's populated on PrePersist
-//        if (pojo.getCreatedDate() == null) {
-//            throw new PaymentMissingRequiredAttributeException("createdDate", Optional.of(pojo.getId()));
-//        }
-//        if (pojo.getUpdatedDate() == null) {
-//            throw new PaymentMissingRequiredAttributeException("updatedDate", Optional.of(pojo.getId()));
-//        }
     }
 
 }

@@ -142,10 +142,6 @@ public class ReceiptPaymentVerificationBuilderImpl implements InitializableRecei
         if (pojo.getUploadedFile() == null) {
             throw new ReceiptPaymentVerificationMissingRequiredAttributeException("uploadedFile", Optional.of(pojo.getId()));
         }
-        // it's populated on PrePersist
-//        if (pojo.getCreatedDate() == null) {
-//            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("createdDate", Optional.of(pojo.getId()));
-//        }
     }
 
 

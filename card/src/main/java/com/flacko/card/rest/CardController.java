@@ -9,13 +9,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/cards")
 public class CardController {
+
     private final CardService cardService;
     private final CardRestMapper cardRestMapper;
 
@@ -23,38 +23,25 @@ public class CardController {
     public List<CardResponse> list() {
         return cardService.list()
                 .stream()
-                .map(card -> {
-                    try {
-                        return card.build();
-                    } catch (CardMissingRequiredAttributeException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
                 .map(cardRestMapper::mapModelToResponse)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{cardId}")
     public CardResponse get(@PathVariable String cardId) throws CardNotFoundException {
-        return cardRestMapper.mapModelToResponse((Card) cardService.get(cardId));
+        return cardRestMapper.mapModelToResponse(cardService.get(cardId));
     }
 
-//    @PostMapping
-//    public CardResponse create(@RequestBody CardInitiateRequest cardInitiateRequest)
-//            throws CardMissingRequiredAttributeException {
-//        CardBuilder builder = cardService.create();
-//        builder.withCardId(cardInitiateRequest.cardId());
-//        if (cardInitiateRequest.cardName().isPresent()) {
-//            builder.withCardName(cardInitiateRequest.cardName().get());
-//        }
-//        if (cardInitiateRequest.cardNumber().isPresent()) {
-//            builder.withCardNumber(cardInitiateRequest.cardNumber().get());
-//        }
-//        Card card = builder.build();
-//        return cardRestMapper.mapModelToResponse(card);
-//    }
+    @PostMapping
+    public CardResponse create(@RequestBody CardCreateRequest cardCreateRequest)
+            throws CardMissingRequiredAttributeException {
+        CardBuilder builder = cardService.create();
+        builder.withNumber(cardCreateRequest.number())
+                .withBankId(cardCreateRequest.bankId())
+                .withTraderTeamId(cardCreateRequest.traderTeamId());
+        Card card = builder.build();
+        return cardRestMapper.mapModelToResponse(card);
+    }
 
     @DeleteMapping("/{cardId}")
     public CardResponse archive(@PathVariable String cardId)

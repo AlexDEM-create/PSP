@@ -4,7 +4,7 @@ import com.flacko.terminal.exception.TerminalMissingRequiredAttributeException;
 
 public interface TerminalBuilder {
 
-    TerminalBuilder withTraderId(String traderId);
+    TerminalBuilder withTraderTeamId(String traderTeamId);
 
     TerminalBuilder withVerified();
 

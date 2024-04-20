@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.util.Optional;
 
-@Entity(name = "banks")
+@Entity
+@Table(name = "banks")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor

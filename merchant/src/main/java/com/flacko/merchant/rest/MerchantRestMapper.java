@@ -8,11 +8,16 @@ import java.time.ZoneId;
 
 @Component
 public class MerchantRestMapper {
+
     MerchantResponse mapModelToResponse(Merchant merchant) {
-        MerchantResponse merchantResponse = new MerchantResponse(merchant.getId(),
+        return new MerchantResponse(merchant.getId(),
                 merchant.getName(),
+                merchant.getUserId(),
+                merchant.getIncomingFeeRate(),
+                merchant.getOutgoingFeeRate(),
+                merchant.isOutgoingTrafficStopped(),
                 merchant.getCreatedDate().atZone(ZoneId.systemDefault()),
                 merchant.getUpdatedDate().atZone(ZoneId.systemDefault()));
-        return merchantResponse;
     }
+
 }

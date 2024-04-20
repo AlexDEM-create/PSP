@@ -9,6 +9,8 @@ public interface ReceiptPaymentVerification {
 
     int MAX_RECEIPT_SIZE = 256 * 1024;
 
+    Long getPrimaryKey();
+
     String getId();
 
     String getPaymentId();

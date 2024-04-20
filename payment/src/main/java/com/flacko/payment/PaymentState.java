@@ -26,4 +26,5 @@ public enum PaymentState {
     public boolean canChangeTo(PaymentState newState) {
         return nextPossibleStates.contains(newState);
     }
+
 }

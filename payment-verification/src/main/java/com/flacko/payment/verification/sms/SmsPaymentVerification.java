@@ -7,6 +7,8 @@ import java.util.Map;
 
 public interface SmsPaymentVerification {
 
+    Long getPrimaryKey();
+
     String getId();
 
     String getPaymentId();

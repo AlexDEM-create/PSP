@@ -6,7 +6,7 @@
     <modules>
         <module>auth</module>
         <module>merchant</module>
-        <module>trader</module>
+        <module>trader-team</module>
         <module>card</module>
         <module>terminal</module>
         <module>payment-verification</module>

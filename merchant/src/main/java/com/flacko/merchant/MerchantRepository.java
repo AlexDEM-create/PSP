@@ -9,7 +9,7 @@ import java.util.Optional;
 @Repository
 public interface MerchantRepository extends CrudRepository<MerchantPojo, Long> {
 
-    @Query("SELECT m FROM merchants m WHERE m.id = ?1")
+    @Query("SELECT m FROM MerchantPojo m WHERE m.id = :id")
     Optional<Merchant> findById(String id);
 
 }

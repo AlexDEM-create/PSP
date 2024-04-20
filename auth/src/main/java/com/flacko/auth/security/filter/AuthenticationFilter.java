@@ -68,4 +68,5 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         response.setContentType(APPLICATION_JSON_VALUE);
         OBJECT_MAPPER.writeValue(response.getOutputStream(), tokens);
     }
+
 }

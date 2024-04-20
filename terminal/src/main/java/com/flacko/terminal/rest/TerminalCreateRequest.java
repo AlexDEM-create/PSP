@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Optional;
 
-public record TerminalCreateRequest(@JsonProperty(TRADER_ID) String traderId,
+public record TerminalCreateRequest(@JsonProperty(TRADER_TEAM_ID) String traderTeamId,
                                     @JsonProperty(MODEL) Optional<String> model,
                                     @JsonProperty(OPERATING_SYSTEM) Optional<String> operatingSystem) {
 
-    private static final String TRADER_ID = "trader_id";
+    private static final String TRADER_TEAM_ID = "trader_team_id";
     private static final String MODEL = "model";
     private static final String OPERATING_SYSTEM = "operating_system";
 
