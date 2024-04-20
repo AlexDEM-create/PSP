@@ -99,12 +99,13 @@ public class UserBuilderImpl implements InitializableUserBuilder {
         if (pojo.getRole() == null) {
             throw new UserMissingRequiredAttributeException("role", Optional.of(pojo.getId()));
         }
-        if (pojo.getCreatedDate() == null) {
-            throw new UserMissingRequiredAttributeException("createdDate", Optional.of(pojo.getId()));
-        }
-        if (pojo.getUpdatedDate() == null) {
-            throw new UserMissingRequiredAttributeException("updatedDate", Optional.of(pojo.getId()));
-        }
+        // it's populated on PrePersist
+//        if (pojo.getCreatedDate() == null) {
+//            throw new UserMissingRequiredAttributeException("createdDate", Optional.of(pojo.getId()));
+//        }
+//        if (pojo.getUpdatedDate() == null) {
+//            throw new UserMissingRequiredAttributeException("updatedDate", Optional.of(pojo.getId()));
+//        }
     }
 
 }

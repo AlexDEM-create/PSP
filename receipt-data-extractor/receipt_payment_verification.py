@@ -1,11 +1,24 @@
-import PyPDF2
+import logging
 import re
+
+import PyPDF2
 from flask import Flask, request, jsonify
 from unidecode import unidecode
 
 app = Flask(__name__)
 
 ALLOWED_EXTENSIONS = {'pdf'}
+
+file_handler = logging.FileHandler('record.log')
+file_handler.setLevel(logging.DEBUG)
+
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+logger.addHandler(file_handler)
 
 
 def allowed_file(filename):
@@ -28,27 +41,24 @@ def verify_data(patterns, text):
 @app.route('/payment-verification/receipt/extract-data', methods=['POST'])
 def upload_receipt():
     if 'file' not in request.files:
-        return jsonify({'error': 'No file part'})
+        return jsonify({'error': 'No file part'}), 403
 
     file = request.files['file']
 
     if file.filename == '':
-        return jsonify({'error': 'No selected file'})
+        return jsonify({'error': 'No selected file'}), 403
 
     if 'patterns' not in request.form:
-        return jsonify({'error': 'No patterns part'})
+        return jsonify({'error': 'No patterns part'}), 403
 
     patterns = request.form.getlist('patterns')
 
     if file and allowed_file(file.filename):
-        # Verify file size
         if file.content_length > 256 * 1024:
-            return jsonify({'error': 'File size exceeds 256 KB limit'})
+            return jsonify({'error': 'File size exceeds 256 KB limit'}), 403
 
-        # Extract data from PDF
         file_data = extract_data_from_pdf(file)
 
-        # Verify data integrity
         data = verify_data(patterns, file_data)
 
         if data is not None:
@@ -56,7 +66,7 @@ def upload_receipt():
         else:
             return jsonify({'error': 'Payment was not verified'}), 403
 
-    return jsonify({'error': 'Invalid file format'})
+    return jsonify({'error': 'Invalid file format'}), 403
 
 
 if __name__ == '__main__':

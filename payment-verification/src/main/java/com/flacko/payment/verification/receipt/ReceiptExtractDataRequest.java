@@ -1,11 +1,10 @@
 package com.flacko.payment.verification.receipt;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public record ReceiptExtractDataRequest(@JsonProperty(FILE) MultipartFile file,
+public record ReceiptExtractDataRequest(@JsonProperty(FILE) byte[] file,
                                         @JsonProperty(PATTERNS) List<String> patterns) {
 
     private static final String FILE = "file";

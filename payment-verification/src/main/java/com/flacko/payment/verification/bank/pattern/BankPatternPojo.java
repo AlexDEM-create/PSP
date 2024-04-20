@@ -1,10 +1,7 @@
 package com.flacko.payment.verification.bank.pattern;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.Optional;
@@ -14,6 +11,7 @@ import java.util.Optional;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class BankPatternPojo implements BankPattern {
 
     @Id
@@ -24,7 +22,7 @@ public class BankPatternPojo implements BankPattern {
     @Column(nullable = false)
     private String id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 4000)
     private String pattern;
 
     @Enumerated(EnumType.STRING)
