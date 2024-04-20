@@ -25,8 +25,7 @@ public class TraderBuilderImpl implements InitializableTraderBuilder {
     public TraderBuilder initializeExisting(Trader existingTrader) {
         pojoBuilder = TraderPojo.builder()
                 .id(existingTrader.getId())
-                .name(existingTrader.getName())
-                //.userId(existingTrader.getUserId())
+                .userId(existingTrader.getUserId())
                 .traderTeamId(existingTrader.getTraderTeamId());
         pojoBuilder.userId(existingTrader.getUserId());
 
@@ -36,12 +35,6 @@ public class TraderBuilderImpl implements InitializableTraderBuilder {
     @Override
     public TraderBuilder withId(String id) {
         pojoBuilder.id(id);
-        return this;
-    }
-
-    @Override
-    public TraderBuilder withName(String name) {
-        pojoBuilder.name(name);
         return this;
     }
 
@@ -72,9 +65,6 @@ public class TraderBuilderImpl implements InitializableTraderBuilder {
     private void validate(TraderPojo trader) throws TraderMissingRequiredAttributeException {
         if (trader.getId() == null || trader.getId().isEmpty()) {
             throw new TraderMissingRequiredAttributeException("id", Optional.empty());
-        }
-        if (trader.getName() == null || trader.getName().isEmpty()) {
-            throw new TraderMissingRequiredAttributeException("name", Optional.of(trader.getName()));
         }
         if (trader.getUserId() == null || trader.getUserId().isEmpty()) {
             throw new TraderMissingRequiredAttributeException("userId", Optional.of(trader.getId()));
