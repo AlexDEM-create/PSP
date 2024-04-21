@@ -16,6 +16,11 @@
             <artifactId>auth</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.flacko</groupId>
+            <artifactId>trader-team</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>

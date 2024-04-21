@@ -1,5 +1,8 @@
 package com.flacko.trader.team;
 
+import com.flacko.auth.security.user.exception.UserNotFoundException;
+import com.flacko.trader.team.exception.TraderTeamIllegalLeaderException;
+import com.flacko.trader.team.exception.TraderTeamInvalidFeeRateException;
 import com.flacko.trader.team.exception.TraderTeamMissingRequiredAttributeException;
 
 import java.math.BigDecimal;
@@ -24,6 +27,7 @@ public interface TraderTeamBuilder {
 
     TraderTeamBuilder withArchived();
 
-    TraderTeam build() throws TraderTeamMissingRequiredAttributeException;
+    TraderTeam build() throws TraderTeamMissingRequiredAttributeException, UserNotFoundException,
+            TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException;
 
 }

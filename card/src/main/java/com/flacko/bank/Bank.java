@@ -1,20 +1,17 @@
-package com.flacko.payment.verification.bank.pattern;
+package com.flacko.bank;
 
 import java.time.Instant;
 import java.util.Optional;
 
-public interface BankPattern {
+public interface Bank {
 
     Long getPrimaryKey();
 
     String getId();
 
-    String getPattern();
+    String getName();
 
-    BankPatternType getType();
-
-    // add foreign key to banks table
-    String getBankId();
+    String getCountry();
 
     Instant getCreatedDate();
 

@@ -1,19 +1,21 @@
-package com.flacko.payment.verification.bank.pattern;
+package com.flacko.bank;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.Optional;
 
 @Entity
-@Table(name = "bank_patterns")
+@Table(name = "banks")
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class BankPatternPojo implements BankPattern {
+public class BankPojo implements Bank {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,15 +25,11 @@ public class BankPatternPojo implements BankPattern {
     @Column(nullable = false)
     private String id;
 
-    @Column(nullable = false, length = 4000)
-    private String pattern;
-
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BankPatternType type;
+    private String name;
 
-    @Column(name = "bank_id", nullable = false)
-    private String bankId;
+    @Column(nullable = false)
+    private String country;
 
     @Column(name = "created_date", nullable = false)
     private Instant createdDate;

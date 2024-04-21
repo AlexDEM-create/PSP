@@ -1,6 +1,9 @@
 package com.flacko.payment.verification.sms;
 
+import com.flacko.payment.exception.PaymentNotFoundException;
+import com.flacko.payment.verification.sms.exception.SmsPaymentVerificationInvalidCardLastFourDigitsException;
 import com.flacko.payment.verification.sms.exception.SmsPaymentVerificationMissingRequiredAttributeException;
+import com.flacko.payment.verification.sms.exception.SmsPaymentVerificationUnexpectedAmountException;
 
 import java.math.BigDecimal;
 import java.util.Currency;
@@ -22,6 +25,8 @@ public interface SmsPaymentVerificationBuilder {
 
     SmsPaymentVerificationBuilder withData(Map<String, Object> data);
 
-    SmsPaymentVerification build() throws SmsPaymentVerificationMissingRequiredAttributeException;
+    SmsPaymentVerification build() throws SmsPaymentVerificationMissingRequiredAttributeException,
+            SmsPaymentVerificationInvalidCardLastFourDigitsException, PaymentNotFoundException,
+            SmsPaymentVerificationUnexpectedAmountException;
 
 }

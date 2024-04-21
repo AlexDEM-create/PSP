@@ -1,8 +1,11 @@
 package com.flacko.trader.team.rest;
 
+import com.flacko.auth.security.user.exception.UserNotFoundException;
 import com.flacko.trader.team.TraderTeam;
 import com.flacko.trader.team.TraderTeamBuilder;
 import com.flacko.trader.team.TraderTeamService;
+import com.flacko.trader.team.exception.TraderTeamIllegalLeaderException;
+import com.flacko.trader.team.exception.TraderTeamInvalidFeeRateException;
 import com.flacko.trader.team.exception.TraderTeamMissingRequiredAttributeException;
 import com.flacko.trader.team.exception.TraderTeamNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +36,8 @@ public class TraderTeamController {
 
     @PostMapping
     public TraderTeamResponse create(@RequestBody TraderTeamCreateRequest traderTeamCreateRequest)
-            throws TraderTeamMissingRequiredAttributeException {
+            throws TraderTeamMissingRequiredAttributeException, UserNotFoundException,
+            TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException {
         TraderTeamBuilder builder = traderTeamService.create();
         builder.withName(traderTeamCreateRequest.name())
                 .withUserId(traderTeamCreateRequest.userId())
@@ -48,7 +52,8 @@ public class TraderTeamController {
 
     @DeleteMapping("/{traderTeamId}")
     public TraderTeamResponse archive(@PathVariable String traderTeamId)
-            throws TraderTeamNotFoundException, TraderTeamMissingRequiredAttributeException {
+            throws TraderTeamNotFoundException, TraderTeamMissingRequiredAttributeException, UserNotFoundException,
+            TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException {
         TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
         builder.withArchived();
         TraderTeam traderTeam = builder.build();
@@ -57,7 +62,8 @@ public class TraderTeamController {
 
     @PostMapping("/{traderTeamId}/kick-out")
     public TraderTeamResponse kickOut(@PathVariable String traderTeamId)
-            throws TraderTeamNotFoundException, TraderTeamMissingRequiredAttributeException {
+            throws TraderTeamNotFoundException, TraderTeamMissingRequiredAttributeException, UserNotFoundException,
+            TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException {
         TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
         builder.withKickedOut(true);
         TraderTeam traderTeam = builder.build();

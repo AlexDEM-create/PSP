@@ -1,6 +1,12 @@
 package com.flacko.trader.team;
 
 import com.flacko.auth.id.IdGenerator;
+import com.flacko.auth.security.user.User;
+import com.flacko.auth.security.user.UserRole;
+import com.flacko.auth.security.user.UserService;
+import com.flacko.auth.security.user.exception.UserNotFoundException;
+import com.flacko.trader.team.exception.TraderTeamIllegalLeaderException;
+import com.flacko.trader.team.exception.TraderTeamInvalidFeeRateException;
 import com.flacko.trader.team.exception.TraderTeamMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -19,6 +25,7 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
     private final Instant now = Instant.now();
 
     private final TraderTeamRepository traderTeamRepository;
+    private final UserService userService;
 
     private TraderTeamPojo.TraderTeamPojoBuilder pojoBuilder;
 
@@ -103,14 +110,16 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
     }
 
     @Override
-    public TraderTeam build() throws TraderTeamMissingRequiredAttributeException {
+    public TraderTeam build() throws TraderTeamMissingRequiredAttributeException, UserNotFoundException,
+            TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException {
         TraderTeamPojo traderTeam = pojoBuilder.build();
         validate(traderTeam);
         traderTeamRepository.save(traderTeam);
         return traderTeam;
     }
 
-    private void validate(TraderTeamPojo pojo) throws TraderTeamMissingRequiredAttributeException {
+    private void validate(TraderTeamPojo pojo) throws TraderTeamMissingRequiredAttributeException,
+            UserNotFoundException, TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException {
         if (pojo.getId() == null || pojo.getId().isEmpty()) {
             throw new TraderTeamMissingRequiredAttributeException("id", Optional.empty());
         }
@@ -119,21 +128,36 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
         }
         if (pojo.getUserId() == null || pojo.getUserId().isEmpty()) {
             throw new TraderTeamMissingRequiredAttributeException("userId", Optional.of(pojo.getId()));
+        } else {
+            userService.get(pojo.getUserId());
         }
         if (pojo.getLeaderId() == null || pojo.getLeaderId().isEmpty()) {
             throw new TraderTeamMissingRequiredAttributeException("leaderId", Optional.of(pojo.getId()));
+        } else {
+            User user = userService.get(pojo.getLeaderId());
+            if (user.getRole() != UserRole.TRADER_TEAM_LEADER) {
+                throw new TraderTeamIllegalLeaderException(pojo.getLeaderId(), pojo.getId());
+            }
         }
         if (pojo.getTraderIncomingFeeRate() == null) {
             throw new TraderTeamMissingRequiredAttributeException("traderIncomingFeeRate", Optional.of(pojo.getId()));
+        } else if (pojo.getTraderIncomingFeeRate().compareTo(BigDecimal.ZERO) < 0) {
+            throw new TraderTeamInvalidFeeRateException("traderIncomingFeeRate", pojo.getId());
         }
         if (pojo.getTraderOutgoingFeeRate() == null) {
             throw new TraderTeamMissingRequiredAttributeException("traderOutgoingFeeRate", Optional.of(pojo.getId()));
+        } else if (pojo.getTraderOutgoingFeeRate().compareTo(BigDecimal.ZERO) < 0) {
+            throw new TraderTeamInvalidFeeRateException("traderOutgoingFeeRate", pojo.getId());
         }
         if (pojo.getLeaderIncomingFeeRate() == null) {
             throw new TraderTeamMissingRequiredAttributeException("leaderIncomingFeeRate", Optional.of(pojo.getId()));
+        } else if (pojo.getLeaderIncomingFeeRate().compareTo(BigDecimal.ZERO) < 0) {
+            throw new TraderTeamInvalidFeeRateException("leaderIncomingFeeRate", pojo.getId());
         }
         if (pojo.getLeaderOutgoingFeeRate() == null) {
             throw new TraderTeamMissingRequiredAttributeException("leaderOutgoingFeeRate", Optional.of(pojo.getId()));
+        } else if (pojo.getTraderOutgoingFeeRate().compareTo(BigDecimal.ZERO) < 0) {
+            throw new TraderTeamInvalidFeeRateException("leaderOutgoingFeeRate", pojo.getId());
         }
     }
 

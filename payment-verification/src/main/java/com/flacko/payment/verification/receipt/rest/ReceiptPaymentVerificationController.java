@@ -1,7 +1,9 @@
 package com.flacko.payment.verification.receipt.rest;
 
 import com.flacko.payment.verification.receipt.ReceiptPaymentVerificationService;
+import com.flacko.payment.verification.receipt.exception.ReceiptPaymentVerificationFailedException;
 import com.flacko.payment.verification.receipt.exception.ReceiptPaymentVerificationNotFoundException;
+import com.flacko.payment.verification.receipt.exception.ReceiptPaymentVerificationRequestValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +40,8 @@ public class ReceiptPaymentVerificationController {
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ReceiptPaymentVerificationResponse verify(@RequestParam(FILE) MultipartFile file,
-                                                     @RequestParam(PAYMENT_ID) String paymentId) throws Exception {
+                                                     @RequestParam(PAYMENT_ID) String paymentId)
+            throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException {
         ReceiptPaymentVerificationRequest receiptPaymentVerificationRequest = new ReceiptPaymentVerificationRequest(file, paymentId);
         return receiptPaymentVerificationRestMapper.mapModelToResponse(
                 receiptPaymentVerificationService.verify(receiptPaymentVerificationRequest));

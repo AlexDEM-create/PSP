@@ -1,10 +1,13 @@
 package com.flacko.card.rest;
 
+import com.flacko.bank.exception.BankNotFoundException;
 import com.flacko.card.Card;
 import com.flacko.card.CardBuilder;
 import com.flacko.card.CardService;
+import com.flacko.card.exception.CardInvalidNumberException;
 import com.flacko.card.exception.CardMissingRequiredAttributeException;
 import com.flacko.card.exception.CardNotFoundException;
+import com.flacko.trader.team.exception.TraderTeamNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +37,8 @@ public class CardController {
 
     @PostMapping
     public CardResponse create(@RequestBody CardCreateRequest cardCreateRequest)
-            throws CardMissingRequiredAttributeException {
+            throws CardMissingRequiredAttributeException, TraderTeamNotFoundException, CardInvalidNumberException,
+            BankNotFoundException {
         CardBuilder builder = cardService.create();
         builder.withNumber(cardCreateRequest.number())
                 .withBankId(cardCreateRequest.bankId())
@@ -45,7 +49,8 @@ public class CardController {
 
     @DeleteMapping("/{cardId}")
     public CardResponse archive(@PathVariable String cardId)
-            throws CardNotFoundException, CardMissingRequiredAttributeException {
+            throws CardNotFoundException, CardMissingRequiredAttributeException, TraderTeamNotFoundException,
+            CardInvalidNumberException, BankNotFoundException {
         CardBuilder builder = cardService.update(cardId);
         builder.withArchived();
         Card card = builder.build();

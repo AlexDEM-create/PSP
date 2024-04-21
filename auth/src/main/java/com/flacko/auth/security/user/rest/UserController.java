@@ -3,8 +3,10 @@ package com.flacko.auth.security.user.rest;
 import com.flacko.auth.security.user.User;
 import com.flacko.auth.security.user.UserBuilder;
 import com.flacko.auth.security.user.UserService;
+import com.flacko.auth.security.user.exception.UserLoginAlreadyInUseException;
 import com.flacko.auth.security.user.exception.UserMissingRequiredAttributeException;
 import com.flacko.auth.security.user.exception.UserNotFoundException;
+import com.flacko.auth.security.user.exception.UserWeakPasswordException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +36,7 @@ public class UserController {
 
     @PostMapping
     public UserResponse create(@RequestBody UserCreateRequest userCreateRequest)
-            throws UserMissingRequiredAttributeException {
+            throws UserMissingRequiredAttributeException, UserLoginAlreadyInUseException, UserWeakPasswordException {
         UserBuilder builder = userService.create();
         builder.withLogin(userCreateRequest.login())
                 .withPassword(userCreateRequest.password())
@@ -45,7 +47,8 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     public UserResponse archive(@PathVariable String userId)
-            throws UserNotFoundException, UserMissingRequiredAttributeException {
+            throws UserNotFoundException, UserMissingRequiredAttributeException, UserLoginAlreadyInUseException,
+            UserWeakPasswordException {
         UserBuilder builder = userService.update(userId);
         builder.withArchived();
         User user = builder.build();
@@ -54,7 +57,8 @@ public class UserController {
 
     @PostMapping("/{userId}/ban")
     public UserResponse ban(@PathVariable String userId)
-            throws UserNotFoundException, UserMissingRequiredAttributeException {
+            throws UserNotFoundException, UserMissingRequiredAttributeException, UserLoginAlreadyInUseException,
+            UserWeakPasswordException {
         UserBuilder builder = userService.update(userId);
         builder.withBanned();
         User user = builder.build();

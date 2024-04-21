@@ -1,6 +1,8 @@
 package com.flacko.auth.security.user;
 
+import com.flacko.auth.security.user.exception.UserLoginAlreadyInUseException;
 import com.flacko.auth.security.user.exception.UserMissingRequiredAttributeException;
+import com.flacko.auth.security.user.exception.UserWeakPasswordException;
 
 public interface UserBuilder {
 
@@ -14,6 +16,6 @@ public interface UserBuilder {
 
     UserBuilder withArchived();
 
-    User build() throws UserMissingRequiredAttributeException;
+    User build() throws UserMissingRequiredAttributeException, UserLoginAlreadyInUseException, UserWeakPasswordException;
 
 }

@@ -1,6 +1,8 @@
 package com.flacko.merchant.exception;
 
-public class MerchantNotFoundException extends Exception {
+import com.flacko.auth.exception.NotFoundException;
+
+public class MerchantNotFoundException extends NotFoundException {
 
     public MerchantNotFoundException(String id) {
         super(String.format("Merchant %s not found", id));

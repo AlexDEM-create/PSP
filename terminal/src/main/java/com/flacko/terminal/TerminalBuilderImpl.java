@@ -2,6 +2,8 @@ package com.flacko.terminal;
 
 import com.flacko.auth.id.IdGenerator;
 import com.flacko.terminal.exception.TerminalMissingRequiredAttributeException;
+import com.flacko.trader.team.TraderTeamService;
+import com.flacko.trader.team.exception.TraderTeamNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -18,6 +20,7 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
     private final Instant now = Instant.now();
 
     private final TerminalRepository terminalRepository;
+    private final TraderTeamService traderTeamService;
 
     private TerminalPojo.TerminalPojoBuilder pojoBuilder;
 
@@ -76,19 +79,22 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
     }
 
     @Override
-    public Terminal build() throws TerminalMissingRequiredAttributeException {
+    public Terminal build() throws TerminalMissingRequiredAttributeException, TraderTeamNotFoundException {
         TerminalPojo terminal = pojoBuilder.build();
         validate(terminal);
         terminalRepository.save(terminal);
         return terminal;
     }
 
-    private void validate(TerminalPojo pojo) throws TerminalMissingRequiredAttributeException {
+    private void validate(TerminalPojo pojo) throws TerminalMissingRequiredAttributeException,
+            TraderTeamNotFoundException {
         if (pojo.getId() == null || pojo.getId().isEmpty()) {
             throw new TerminalMissingRequiredAttributeException("id", Optional.empty());
         }
         if (pojo.getTraderTeamId() == null || pojo.getTraderTeamId().isEmpty()) {
             throw new TerminalMissingRequiredAttributeException("traderTeamId", Optional.of(pojo.getId()));
+        } else {
+            traderTeamService.get(pojo.getTraderTeamId());
         }
     }
 

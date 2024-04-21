@@ -1,6 +1,9 @@
 package com.flacko.card;
 
+import com.flacko.bank.exception.BankNotFoundException;
+import com.flacko.card.exception.CardInvalidNumberException;
 import com.flacko.card.exception.CardMissingRequiredAttributeException;
+import com.flacko.trader.team.exception.TraderTeamNotFoundException;
 
 public interface CardBuilder {
 
@@ -14,6 +17,6 @@ public interface CardBuilder {
 
     CardBuilder withArchived();
 
-    Card build() throws CardMissingRequiredAttributeException;
+    Card build() throws CardMissingRequiredAttributeException, TraderTeamNotFoundException, CardInvalidNumberException, BankNotFoundException;
 
 }

@@ -1,5 +1,7 @@
 package com.flacko.merchant;
 
+import com.flacko.auth.security.user.exception.UserNotFoundException;
+import com.flacko.merchant.exception.MerchantInvalidFeeRateException;
 import com.flacko.merchant.exception.MerchantMissingRequiredAttributeException;
 
 import java.math.BigDecimal;
@@ -18,6 +20,7 @@ public interface MerchantBuilder {
 
     MerchantBuilder withArchived();
 
-    Merchant build() throws MerchantMissingRequiredAttributeException;
+    Merchant build() throws MerchantMissingRequiredAttributeException, UserNotFoundException,
+            MerchantInvalidFeeRateException;
 
 }

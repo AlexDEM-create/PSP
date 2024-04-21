@@ -1,6 +1,7 @@
 package com.flacko.terminal;
 
 import com.flacko.terminal.exception.TerminalMissingRequiredAttributeException;
+import com.flacko.trader.team.exception.TraderTeamNotFoundException;
 
 public interface TerminalBuilder {
 
@@ -14,6 +15,6 @@ public interface TerminalBuilder {
 
     TerminalBuilder withArchived();
 
-    Terminal build() throws TerminalMissingRequiredAttributeException;
+    Terminal build() throws TerminalMissingRequiredAttributeException, TraderTeamNotFoundException;
 
 }

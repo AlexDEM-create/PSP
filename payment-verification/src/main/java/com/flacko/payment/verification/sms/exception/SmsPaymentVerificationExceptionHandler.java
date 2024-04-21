@@ -1,5 +1,6 @@
 package com.flacko.payment.verification.sms.exception;
 
+import com.flacko.auth.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -8,9 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class SmsPaymentVerificationExceptionHandler {
 
-    @ExceptionHandler(SmsPaymentVerificationNotFoundException.class)
-    public ResponseEntity<String> handleSmsPaymentVerificationNotFoundException(
-            SmsPaymentVerificationNotFoundException e) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 

@@ -1,4 +1,4 @@
-package com.flacko.payment.verification.bank.pattern;
+package com.flacko.bank.pattern;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;

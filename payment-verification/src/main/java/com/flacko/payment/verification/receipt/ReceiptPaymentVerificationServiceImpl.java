@@ -1,6 +1,7 @@
 package com.flacko.payment.verification.receipt;
 
 import com.flacko.auth.spring.ServiceLocator;
+import com.flacko.payment.exception.PaymentNotFoundException;
 import com.flacko.payment.verification.receipt.exception.*;
 import com.flacko.payment.verification.receipt.rest.ReceiptPaymentVerificationRequest;
 import lombok.RequiredArgsConstructor;
@@ -110,9 +111,8 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
 
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                ReceiptPaymentVerificationPojo receiptPaymentVerification = createReceiptPaymentVerification(Objects.requireNonNull(response.getBody()), receiptPaymentVerificationRequest);
-                receiptPaymentVerificationRepository.save(receiptPaymentVerification);
-                return receiptPaymentVerification;
+                return createReceiptPaymentVerification(Objects.requireNonNull(response.getBody()),
+                        receiptPaymentVerificationRequest);
             } else {
                 log.warn(String.format("Payment %s verification failed. verificationResponse=%s", receiptPaymentVerificationRequest.paymentId(), response));
                 throw new ReceiptPaymentVerificationFailedException(receiptPaymentVerificationRequest.paymentId());
@@ -122,7 +122,12 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
         }
     }
 
-    private ReceiptPaymentVerificationPojo createReceiptPaymentVerification(ReceiptExtractedData extractedData, ReceiptPaymentVerificationRequest receiptPaymentVerificationRequest) throws IOException, ReceiptPaymentVerificationMissingRequiredAttributeException, ReceiptPaymentVerificationCurrencyNotSupportedException, ReceiptPaymentVerificationInvalidAmountException {
+    private ReceiptPaymentVerification createReceiptPaymentVerification(
+            ReceiptExtractedData extractedData, ReceiptPaymentVerificationRequest receiptPaymentVerificationRequest)
+            throws IOException, ReceiptPaymentVerificationMissingRequiredAttributeException,
+            ReceiptPaymentVerificationCurrencyNotSupportedException, ReceiptPaymentVerificationInvalidAmountException,
+            PaymentNotFoundException, ReceiptPaymentVerificationUnexpectedAmountException,
+            ReceiptPaymentVerificationInvalidCardLastFourDigitsException {
         ReceiptPaymentVerificationBuilder builder = serviceLocator.create(ReceiptPaymentVerificationBuilderImpl.class)
                 .initializeNew();
         System.out.println(extractedData);
@@ -137,7 +142,7 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
                 .withCommissionCurrency(parseCurrency(extractedData.getCommissionCurrency()))
                 .withData(extractedData.getData())
                 .withUploadedFile(receiptPaymentVerificationRequest.file().getBytes());
-        return (ReceiptPaymentVerificationPojo) builder.build();
+        return builder.build();
     }
 
     private BigDecimal parseBigDecimal(String amount) throws ReceiptPaymentVerificationInvalidAmountException {

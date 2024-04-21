@@ -4,8 +4,11 @@ import com.flacko.appeal.Appeal;
 import com.flacko.appeal.AppealBuilder;
 import com.flacko.appeal.AppealService;
 import com.flacko.appeal.AppealState;
+import com.flacko.appeal.exception.AppealIllegalPaymentCurrentStateException;
+import com.flacko.appeal.exception.AppealIllegalStateTransitionException;
 import com.flacko.appeal.exception.AppealMissingRequiredAttributeException;
 import com.flacko.appeal.exception.AppealNotFoundException;
+import com.flacko.payment.exception.PaymentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +38,8 @@ public class AppealController {
 
     @PostMapping
     public AppealResponse create(@RequestBody AppealCreateRequest appealCreateRequest)
-            throws AppealMissingRequiredAttributeException {
+            throws AppealMissingRequiredAttributeException, PaymentNotFoundException,
+            AppealIllegalPaymentCurrentStateException {
         AppealBuilder builder = appealService.create();
         builder.withPaymentId(appealCreateRequest.paymentId());
         Appeal appeal = builder.build();
@@ -44,7 +48,8 @@ public class AppealController {
 
     @PostMapping("/{appealId}/resolve")
     public AppealResponse resolve(@PathVariable String appealId)
-            throws AppealNotFoundException, AppealMissingRequiredAttributeException {
+            throws AppealNotFoundException, AppealMissingRequiredAttributeException,
+            AppealIllegalStateTransitionException, PaymentNotFoundException, AppealIllegalPaymentCurrentStateException {
         AppealBuilder builder = appealService.update(appealId);
         builder.withState(AppealState.RESOLVED);
         Appeal appeal = builder.build();
@@ -53,7 +58,8 @@ public class AppealController {
 
     @PostMapping("/{appealId}/reject")
     public AppealResponse reject(@PathVariable String appealId)
-            throws AppealNotFoundException, AppealMissingRequiredAttributeException {
+            throws AppealNotFoundException, AppealMissingRequiredAttributeException,
+            AppealIllegalStateTransitionException, PaymentNotFoundException, AppealIllegalPaymentCurrentStateException {
         AppealBuilder builder = appealService.update(appealId);
         builder.withState(AppealState.REJECTED);
         Appeal appeal = builder.build();

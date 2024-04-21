@@ -1,4 +1,4 @@
-package com.flacko.payment.verification.bank.pattern;
+package com.flacko.bank.pattern;
 
 public enum BankPatternType {
     SMS, PUSH_NOTIFICATION, RECEIPT

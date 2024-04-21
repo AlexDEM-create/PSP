@@ -5,6 +5,7 @@ import com.flacko.terminal.TerminalBuilder;
 import com.flacko.terminal.TerminalService;
 import com.flacko.terminal.exception.TerminalMissingRequiredAttributeException;
 import com.flacko.terminal.exception.TerminalNotFoundException;
+import com.flacko.trader.team.exception.TraderTeamNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +36,7 @@ public class TerminalController {
 
     @PostMapping
     public TerminalResponse create(@RequestBody TerminalCreateRequest terminalCreateRequest)
-            throws TerminalMissingRequiredAttributeException {
+            throws TerminalMissingRequiredAttributeException, TraderTeamNotFoundException {
         TerminalBuilder builder = terminalService.create();
         builder.withTraderTeamId(terminalCreateRequest.traderTeamId());
         if (terminalCreateRequest.model().isPresent()) {
@@ -50,7 +51,7 @@ public class TerminalController {
 
     @DeleteMapping("/{terminalId}")
     public TerminalResponse archive(@PathVariable String terminalId)
-            throws TerminalNotFoundException, TerminalMissingRequiredAttributeException {
+            throws TerminalNotFoundException, TerminalMissingRequiredAttributeException, TraderTeamNotFoundException {
         TerminalBuilder builder = terminalService.update(terminalId);
         builder.withArchived();
         Terminal terminal = builder.build();
@@ -59,7 +60,7 @@ public class TerminalController {
 
     @PostMapping("/{terminalId}/verify")
     public TerminalResponse verify(@PathVariable String terminalId)
-            throws TerminalNotFoundException, TerminalMissingRequiredAttributeException {
+            throws TerminalNotFoundException, TerminalMissingRequiredAttributeException, TraderTeamNotFoundException {
         TerminalBuilder builder = terminalService.update(terminalId);
         builder.withVerified();
         Terminal terminal = builder.build();
