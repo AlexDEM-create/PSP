@@ -9,6 +9,7 @@
         <module>trader-team</module>
         <module>card</module>
         <module>terminal</module>
+        <module>payment</module>
         <module>payment-verification</module>
         <module>appeal</module>
         <module>currency</module>

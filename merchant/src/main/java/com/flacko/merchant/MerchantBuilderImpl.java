@@ -3,8 +3,13 @@ package com.flacko.merchant;
 import com.flacko.auth.id.IdGenerator;
 import com.flacko.auth.security.user.UserService;
 import com.flacko.auth.security.user.exception.UserNotFoundException;
+import com.flacko.balance.BalanceService;
+import com.flacko.balance.EntityType;
+import com.flacko.balance.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.merchant.exception.MerchantInvalidFeeRateException;
 import com.flacko.merchant.exception.MerchantMissingRequiredAttributeException;
+import com.flacko.merchant.exception.MerchantNotFoundException;
+import com.flacko.trader.team.exception.TraderTeamNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -23,6 +28,7 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
 
     private final MerchantRepository merchantRepository;
     private final UserService userService;
+    private final BalanceService balanceService;
 
     private MerchantPojo.MerchantPojoBuilder pojoBuilder;
 
@@ -88,10 +94,17 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
 
     @Override
     public Merchant build() throws MerchantMissingRequiredAttributeException, UserNotFoundException,
-            MerchantInvalidFeeRateException {
+            MerchantInvalidFeeRateException, TraderTeamNotFoundException, MerchantNotFoundException,
+            BalanceMissingRequiredAttributeException {
         MerchantPojo merchant = pojoBuilder.build();
         validate(merchant);
         merchantRepository.save(merchant);
+
+        balanceService.create()
+                .withEntityId(merchant.getId())
+                .withEntityType(EntityType.MERCHANT)
+                .build();
+
         return merchant;
     }
 
