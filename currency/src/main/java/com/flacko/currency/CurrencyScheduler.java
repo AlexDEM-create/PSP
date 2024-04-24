@@ -1,24 +1,28 @@
 package com.flacko.currency;
 
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-@Component
 public class CurrencyScheduler {
 
     private final CurrencyParser currencyParser;
 
-    public CurrencyScheduler(CurrencyParser currencyParser) {
-        this.currencyParser = currencyParser;
+    public CurrencyScheduler(CurrencyService currencyService) {
+        this.currencyParser = new CurrencyParser(currencyService);
+        scheduleUpdateCurrencyRate();
     }
 
-    @Scheduled(fixedRate = 3600000) // Запуск каждый час
-    public void updateCurrencyRate() {
-        try {
-            currencyParser.parseAndSaveCurrency(); // Обновление курса валюты и сохранение в базу данных
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void scheduleUpdateCurrencyRate() {
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(() -> {
+            try {
+                currencyParser.parseAndSaveCurrency();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 0, 1, TimeUnit.SECONDS);
     }
 }
+
 
