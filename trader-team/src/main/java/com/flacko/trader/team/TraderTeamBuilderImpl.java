@@ -5,9 +5,14 @@ import com.flacko.auth.security.user.User;
 import com.flacko.auth.security.user.UserRole;
 import com.flacko.auth.security.user.UserService;
 import com.flacko.auth.security.user.exception.UserNotFoundException;
+import com.flacko.balance.BalanceService;
+import com.flacko.balance.EntityType;
+import com.flacko.balance.exception.BalanceMissingRequiredAttributeException;
+import com.flacko.merchant.exception.MerchantNotFoundException;
 import com.flacko.trader.team.exception.TraderTeamIllegalLeaderException;
 import com.flacko.trader.team.exception.TraderTeamInvalidFeeRateException;
 import com.flacko.trader.team.exception.TraderTeamMissingRequiredAttributeException;
+import com.flacko.trader.team.exception.TraderTeamNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -26,6 +31,7 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
 
     private final TraderTeamRepository traderTeamRepository;
     private final UserService userService;
+    private final BalanceService balanceService;
 
     private TraderTeamPojo.TraderTeamPojoBuilder pojoBuilder;
 
@@ -111,10 +117,17 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
 
     @Override
     public TraderTeam build() throws TraderTeamMissingRequiredAttributeException, UserNotFoundException,
-            TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException {
+            TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, TraderTeamNotFoundException,
+            MerchantNotFoundException, BalanceMissingRequiredAttributeException {
         TraderTeamPojo traderTeam = pojoBuilder.build();
         validate(traderTeam);
         traderTeamRepository.save(traderTeam);
+
+        balanceService.create()
+                .withEntityId(traderTeam.getId())
+                .withEntityType(EntityType.TRADER_TEAM)
+                .build();
+
         return traderTeam;
     }
 
