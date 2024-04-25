@@ -10,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,14 +38,14 @@ public class MerchantControllerTests {
         merchantService.create()
                 .withName("testMerchant1")
                 .withUserId("testUser1")
-                .withIncomingFeeRate(0.05)
-                .withOutgoingFeeRate(0.05)
+                .withIncomingFeeRate(BigDecimal.valueOf(0.05))
+                .withOutgoingFeeRate(BigDecimal.valueOf(0.05))
                 .build();
         merchantService.create()
                 .withName("testMerchant2")
                 .withUserId("testUser2")
-                .withIncomingFeeRate(0.05)
-                .withOutgoingFeeRate(0.05)
+                .withIncomingFeeRate(BigDecimal.valueOf(0.05))
+                .withOutgoingFeeRate(BigDecimal.valueOf(0.05))
                 .build();
 
         this.mockMvc.perform(get("/merchants"))
