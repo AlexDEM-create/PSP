@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>com.flacko</groupId>
-            <artifactId>auth</artifactId>
+            <artifactId>security</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -25,6 +25,13 @@
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20240303</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.flacko</groupId>
+            <artifactId>user-impl</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

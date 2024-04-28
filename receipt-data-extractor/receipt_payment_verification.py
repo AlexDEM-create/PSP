@@ -1,7 +1,6 @@
+import PyPDF2
 import logging
 import re
-
-import PyPDF2
 from flask import Flask, request, jsonify
 from unidecode import unidecode
 
