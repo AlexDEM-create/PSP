@@ -1,6 +1,7 @@
 package com.flacko.payment.verification.sms.impl;
 
 import com.flacko.common.converter.HashMapConverter;
+import com.flacko.common.currency.Currency;
 import com.flacko.payment.verification.sms.service.SmsPaymentVerification;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Currency;
 import java.util.Map;
 
 @Entity

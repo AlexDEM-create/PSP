@@ -36,7 +36,11 @@
         <module>appeal-impl</module>
         <module>appeal-webapp</module>
 
-        <module>currency</module>
+        <module>currency-service</module>
+        <module>currency-impl</module>
+        <module>currency-webapp</module>
+
+
         <module>reporting</module>
         <module>notification</module>
         <module>security</module>

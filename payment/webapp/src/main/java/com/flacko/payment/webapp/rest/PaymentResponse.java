@@ -1,12 +1,12 @@
 package com.flacko.payment.webapp.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.flacko.common.currency.Currency;
 import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.PaymentDirection;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.Currency;
 
 public record PaymentResponse(@JsonProperty(ID) String id,
                               @JsonProperty(MERCHANT_ID) String merchantId,

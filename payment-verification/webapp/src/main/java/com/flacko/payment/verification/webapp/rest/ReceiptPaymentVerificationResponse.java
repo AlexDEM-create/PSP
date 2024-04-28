@@ -1,10 +1,10 @@
 package com.flacko.payment.verification.webapp.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.flacko.common.currency.Currency;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
-import java.util.Currency;
 import java.util.Map;
 
 public record ReceiptPaymentVerificationResponse(@JsonProperty(ID) String id,

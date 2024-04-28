@@ -1,8 +1,9 @@
 package com.flacko.payment.verification.sms.service;
 
+import com.flacko.common.currency.Currency;
+
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Currency;
 import java.util.Map;
 
 public interface SmsPaymentVerification {

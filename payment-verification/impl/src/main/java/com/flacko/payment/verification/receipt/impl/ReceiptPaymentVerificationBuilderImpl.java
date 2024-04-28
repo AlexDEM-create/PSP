@@ -1,5 +1,6 @@
 package com.flacko.payment.verification.receipt.impl;
 
+import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.PaymentNotFoundException;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.payment.service.Payment;
@@ -17,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.Currency;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;

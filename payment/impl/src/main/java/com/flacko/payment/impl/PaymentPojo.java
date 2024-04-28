@@ -1,5 +1,6 @@
 package com.flacko.payment.impl;
 
+import com.flacko.common.currency.Currency;
 import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.Payment;
 import com.flacko.payment.service.PaymentDirection;
@@ -11,7 +12,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Currency;
 
 @Entity
 @Table(name = "payments")

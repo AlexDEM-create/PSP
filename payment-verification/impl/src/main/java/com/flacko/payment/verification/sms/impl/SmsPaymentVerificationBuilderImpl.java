@@ -1,5 +1,6 @@
 package com.flacko.payment.verification.sms.impl;
 
+import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.PaymentNotFoundException;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.payment.service.Payment;
@@ -16,7 +17,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.Currency;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;

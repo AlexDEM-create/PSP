@@ -1,12 +1,12 @@
 package com.flacko.payment.verification.sms.service;
 
+import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.PaymentNotFoundException;
 import com.flacko.payment.verification.sms.service.exception.SmsPaymentVerificationInvalidCardLastFourDigitsException;
 import com.flacko.payment.verification.sms.service.exception.SmsPaymentVerificationMissingRequiredAttributeException;
 import com.flacko.payment.verification.sms.service.exception.SmsPaymentVerificationUnexpectedAmountException;
 
 import java.math.BigDecimal;
-import java.util.Currency;
 import java.util.Map;
 
 public interface SmsPaymentVerificationBuilder {

@@ -43,9 +43,6 @@ public class UserControllerTests {
     @Autowired
     private ServiceLocator serviceLocator;
 
-    @Autowired
-    private UserController userController;
-
     @Test
     public void testListUsers() throws Exception {
         userService.create()

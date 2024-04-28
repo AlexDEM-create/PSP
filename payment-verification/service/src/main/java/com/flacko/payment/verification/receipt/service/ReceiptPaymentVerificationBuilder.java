@@ -1,12 +1,12 @@
 package com.flacko.payment.verification.receipt.service;
 
+import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.PaymentNotFoundException;
 import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationInvalidCardLastFourDigitsException;
 import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationMissingRequiredAttributeException;
 import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationUnexpectedAmountException;
 
 import java.math.BigDecimal;
-import java.util.Currency;
 import java.util.Map;
 
 public interface ReceiptPaymentVerificationBuilder {

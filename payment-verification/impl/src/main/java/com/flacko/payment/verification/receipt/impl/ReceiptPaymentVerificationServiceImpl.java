@@ -1,5 +1,6 @@
 package com.flacko.payment.verification.receipt.impl;
 
+import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.PaymentNotFoundException;
 import com.flacko.common.exception.ReceiptPaymentVerificationNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
@@ -33,7 +34,6 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Currency;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -160,7 +160,7 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
 
     private Currency parseCurrency(String currency) throws ReceiptPaymentVerificationCurrencyNotSupportedException {
         if ("R".equals(currency)) {
-            return Currency.getInstance("RUB");
+            return Currency.RUB;
         }
         throw new ReceiptPaymentVerificationCurrencyNotSupportedException(currency);
     }

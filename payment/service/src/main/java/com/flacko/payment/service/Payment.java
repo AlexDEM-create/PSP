@@ -1,10 +1,10 @@
 package com.flacko.payment.service;
 
+import com.flacko.common.currency.Currency;
 import com.flacko.common.state.PaymentState;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Currency;
 
 public interface Payment {
 
