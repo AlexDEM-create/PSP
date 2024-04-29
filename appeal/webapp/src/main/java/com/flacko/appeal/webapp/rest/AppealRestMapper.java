@@ -11,6 +11,7 @@ public class AppealRestMapper {
     AppealResponse mapModelToResponse(Appeal appeal) {
         return new AppealResponse(appeal.getId(),
                 appeal.getPaymentId(),
+                appeal.getSource(),
                 appeal.getCurrentState(),
                 appeal.getCreatedDate().atZone(ZoneId.systemDefault()),
                 appeal.getUpdatedDate().atZone(ZoneId.systemDefault()));

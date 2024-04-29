@@ -41,7 +41,8 @@ public class AppealController {
             throws AppealMissingRequiredAttributeException, PaymentNotFoundException,
             AppealIllegalPaymentCurrentStateException {
         AppealBuilder builder = appealService.create();
-        builder.withPaymentId(appealCreateRequest.paymentId());
+        builder.withPaymentId(appealCreateRequest.paymentId())
+                .withSource(appealCreateRequest.source());
         Appeal appeal = builder.build();
         return appealRestMapper.mapModelToResponse(appeal);
     }

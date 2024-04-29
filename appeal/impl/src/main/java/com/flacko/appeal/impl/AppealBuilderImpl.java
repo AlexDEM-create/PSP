@@ -2,6 +2,7 @@ package com.flacko.appeal.impl;
 
 import com.flacko.appeal.service.Appeal;
 import com.flacko.appeal.service.AppealBuilder;
+import com.flacko.appeal.service.AppealSource;
 import com.flacko.appeal.service.AppealState;
 import com.flacko.appeal.service.exception.AppealIllegalPaymentCurrentStateException;
 import com.flacko.appeal.service.exception.AppealIllegalStateTransitionException;
@@ -65,6 +66,12 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
     }
 
     @Override
+    public AppealBuilder withSource(AppealSource source) {
+        pojoBuilder.source(source);
+        return this;
+    }
+
+    @Override
     public AppealBuilder withState(AppealState newState) throws AppealIllegalStateTransitionException {
         if (!currentState.canChangeTo(newState)) {
             throw new AppealIllegalStateTransitionException(id, currentState, newState);
@@ -95,6 +102,9 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
         if (!ALLOWED_PAYMENT_STATES.contains(payment.getCurrentState())) {
             throw new AppealIllegalPaymentCurrentStateException(pojo.getId(), pojo.getPaymentId(),
                     payment.getCurrentState());
+        }
+        if (pojo.getSource() == null) {
+            throw new AppealMissingRequiredAttributeException("source", Optional.of(pojo.getId()));
         }
         if (pojo.getCurrentState() == null) {
             throw new AppealMissingRequiredAttributeException("currentState", Optional.of(pojo.getId()));

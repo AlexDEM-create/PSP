@@ -9,6 +9,8 @@ public interface AppealBuilder {
 
     AppealBuilder withPaymentId(String paymentId);
 
+    AppealBuilder withSource(AppealSource source);
+
     AppealBuilder withState(AppealState newState) throws AppealIllegalStateTransitionException;
 
     Appeal build() throws AppealMissingRequiredAttributeException, PaymentNotFoundException,

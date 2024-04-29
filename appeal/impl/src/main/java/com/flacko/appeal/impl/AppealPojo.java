@@ -1,6 +1,7 @@
 package com.flacko.appeal.impl;
 
 import com.flacko.appeal.service.Appeal;
+import com.flacko.appeal.service.AppealSource;
 import com.flacko.appeal.service.AppealState;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,10 @@ public class AppealPojo implements Appeal {
 
     @Column(name = "payment_id", nullable = false)
     private String paymentId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AppealSource source;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "current_state", nullable = false)

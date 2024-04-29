@@ -10,6 +10,8 @@ public interface Appeal {
 
     String getPaymentId();
 
+    AppealSource getSource();
+
     AppealState getCurrentState();
 
     Instant getCreatedDate();
