@@ -39,8 +39,10 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
 
     @Override
     public AppealBuilder initializeNew() {
+        id = new IdGenerator().generateId();
+        currentState = AppealState.INITIATED;
         pojoBuilder = AppealPojo.builder()
-                .id(new IdGenerator().generateId())
+                .id(id)
                 .currentState(AppealState.INITIATED);
         return this;
     }

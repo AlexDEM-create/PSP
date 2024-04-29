@@ -1,6 +1,7 @@
 package com.flacko.payment.impl;
 
 import com.flacko.card.service.CardService;
+import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.CardNotFoundException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -9,6 +10,7 @@ import com.flacko.common.state.PaymentState;
 import com.flacko.merchant.service.MerchantService;
 import com.flacko.payment.service.Payment;
 import com.flacko.payment.service.PaymentBuilder;
+import com.flacko.payment.service.PaymentDirection;
 import com.flacko.payment.service.exception.PaymentIllegalStateTransitionException;
 import com.flacko.payment.service.exception.PaymentInvalidAmountException;
 import com.flacko.payment.service.exception.PaymentMissingRequiredAttributeException;
@@ -38,9 +40,11 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
 
     @Override
     public PaymentBuilder initializeNew() {
+        id = new IdGenerator().generateId();
+        currentState = PaymentState.INITIATED;
         pojoBuilder = PaymentPojo.builder()
-                .id(new IdGenerator().generateId())
-                .currentState(PaymentState.INITIATED);
+                .id(id)
+                .currentState(currentState);
         return this;
     }
 
@@ -78,6 +82,24 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
     @Override
     public PaymentBuilder withCardId(String cardId) {
         pojoBuilder.cardId(cardId);
+        return this;
+    }
+
+    @Override
+    public PaymentBuilder withAmount(BigDecimal amount) {
+        pojoBuilder.amount(amount);
+        return this;
+    }
+
+    @Override
+    public PaymentBuilder withCurrency(Currency currency) {
+        pojoBuilder.currency(currency);
+        return this;
+    }
+
+    @Override
+    public PaymentBuilder withDirection(PaymentDirection direction) {
+        pojoBuilder.direction(direction);
         return this;
     }
 

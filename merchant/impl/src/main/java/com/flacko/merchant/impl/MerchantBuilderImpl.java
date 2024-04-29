@@ -37,7 +37,8 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
     @Override
     public MerchantBuilder initializeNew() {
         pojoBuilder = MerchantPojo.builder()
-                .id(new IdGenerator().generateId());
+                .id(new IdGenerator().generateId())
+                .outgoingTrafficStopped(false);
         return this;
     }
 
