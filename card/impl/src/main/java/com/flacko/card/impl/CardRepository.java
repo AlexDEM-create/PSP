@@ -17,4 +17,7 @@ public interface CardRepository extends CrudRepository<CardPojo, Long> {
     @Query("SELECT c FROM CardPojo c WHERE c.traderTeamId = :traderTeamId")
     List<Card> listByTraderTeamId(String traderTeamId);
 
+    @Query("SELECT c FROM CardPojo c WHERE c.terminalId = :terminalId")
+    List<Card> listByTerminalId(String terminalId);
+
 }

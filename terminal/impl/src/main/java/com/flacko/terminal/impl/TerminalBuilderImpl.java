@@ -30,7 +30,8 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
     public TerminalBuilder initializeNew() {
         pojoBuilder = TerminalPojo.builder()
                 .id(new IdGenerator().generateId())
-                .verified(false);
+                .verified(false)
+                .active(false);
         return this;
     }
 
@@ -59,6 +60,12 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
     @Override
     public TerminalBuilder withVerified() {
         pojoBuilder.verified(true);
+        return this;
+    }
+
+    @Override
+    public TerminalBuilder withActive(boolean active) {
+        pojoBuilder.active(active);
         return this;
     }
 

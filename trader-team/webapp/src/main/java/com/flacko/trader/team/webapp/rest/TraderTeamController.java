@@ -64,7 +64,7 @@ public class TraderTeamController {
         return traderTeamRestMapper.mapModelToResponse(traderTeam);
     }
 
-    @PostMapping("/{traderTeamId}/kick-out")
+    @PatchMapping("/{traderTeamId}/kick-out")
     public TraderTeamResponse kickOut(@PathVariable String traderTeamId)
             throws TraderTeamNotFoundException, TraderTeamMissingRequiredAttributeException, UserNotFoundException,
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,

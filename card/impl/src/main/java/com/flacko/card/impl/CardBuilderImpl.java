@@ -6,8 +6,10 @@ import com.flacko.card.service.CardBuilder;
 import com.flacko.card.service.exception.CardInvalidNumberException;
 import com.flacko.card.service.exception.CardMissingRequiredAttributeException;
 import com.flacko.common.exception.BankNotFoundException;
+import com.flacko.common.exception.TerminalNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.id.IdGenerator;
+import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -30,6 +32,7 @@ public class CardBuilderImpl implements InitializableCardBuilder {
     private final CardRepository cardRepository;
     private final BankService bankService;
     private final TraderTeamService traderTeamService;
+    private final TerminalService terminalService;
 
     private CardPojo.CardPojoBuilder pojoBuilder;
 
@@ -74,6 +77,12 @@ public class CardBuilderImpl implements InitializableCardBuilder {
     }
 
     @Override
+    public CardBuilder withTerminalId(String terminalId) {
+        pojoBuilder.terminalId(terminalId);
+        return this;
+    }
+
+    @Override
     public CardBuilder withBusy(boolean busy) {
         pojoBuilder.busy(busy);
         return this;
@@ -87,7 +96,7 @@ public class CardBuilderImpl implements InitializableCardBuilder {
 
     @Override
     public Card build() throws CardMissingRequiredAttributeException, TraderTeamNotFoundException,
-            CardInvalidNumberException, BankNotFoundException {
+            CardInvalidNumberException, BankNotFoundException, TerminalNotFoundException {
         CardPojo card = pojoBuilder.build();
         validate(card);
         cardRepository.save(card);
@@ -95,7 +104,7 @@ public class CardBuilderImpl implements InitializableCardBuilder {
     }
 
     private void validate(CardPojo pojo) throws CardMissingRequiredAttributeException, BankNotFoundException,
-            TraderTeamNotFoundException, CardInvalidNumberException {
+            TraderTeamNotFoundException, CardInvalidNumberException, TerminalNotFoundException {
         if (pojo.getId() == null || pojo.getId().isEmpty()) {
             throw new CardMissingRequiredAttributeException("id", Optional.empty());
         }
@@ -113,6 +122,11 @@ public class CardBuilderImpl implements InitializableCardBuilder {
             throw new CardMissingRequiredAttributeException("traderTeamId", Optional.empty());
         } else {
             traderTeamService.get(pojo.getTraderTeamId());
+        }
+        if (pojo.getTerminalId() == null || pojo.getTerminalId().isEmpty()) {
+            throw new CardMissingRequiredAttributeException("terminalId", Optional.empty());
+        } else {
+            terminalService.get(pojo.getTerminalId());
         }
     }
 

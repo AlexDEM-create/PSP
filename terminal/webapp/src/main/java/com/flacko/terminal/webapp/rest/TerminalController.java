@@ -58,11 +58,20 @@ public class TerminalController {
         return terminalRestMapper.mapModelToResponse(terminal);
     }
 
-    @PostMapping("/{terminalId}/verify")
+    @PatchMapping("/{terminalId}/verify")
     public TerminalResponse verify(@PathVariable String terminalId)
             throws TerminalNotFoundException, TerminalMissingRequiredAttributeException, TraderTeamNotFoundException {
         TerminalBuilder builder = terminalService.update(terminalId);
         builder.withVerified();
+        Terminal terminal = builder.build();
+        return terminalRestMapper.mapModelToResponse(terminal);
+    }
+
+    @PatchMapping("/{terminalId}/healthcheck")
+    public TerminalResponse healthCheck(@PathVariable String terminalId) throws TerminalNotFoundException,
+            TraderTeamNotFoundException, TerminalMissingRequiredAttributeException {
+        TerminalBuilder builder = terminalService.update(terminalId);
+        builder.withActive(true);
         Terminal terminal = builder.build();
         return terminalRestMapper.mapModelToResponse(terminal);
     }

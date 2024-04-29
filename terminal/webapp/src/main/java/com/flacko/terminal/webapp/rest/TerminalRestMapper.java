@@ -12,6 +12,8 @@ public class TerminalRestMapper {
         // add timezone from authorization
         return new TerminalResponse(terminal.getId(),
                 terminal.getTraderTeamId(),
+                terminal.isVerified(),
+                terminal.isActive(),
                 terminal.getModel(),
                 terminal.getOperatingSystem(),
                 terminal.getCreatedDate().atZone(ZoneId.systemDefault()),

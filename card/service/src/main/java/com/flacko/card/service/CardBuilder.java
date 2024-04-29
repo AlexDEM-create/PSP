@@ -3,6 +3,7 @@ package com.flacko.card.service;
 import com.flacko.card.service.exception.CardInvalidNumberException;
 import com.flacko.card.service.exception.CardMissingRequiredAttributeException;
 import com.flacko.common.exception.BankNotFoundException;
+import com.flacko.common.exception.TerminalNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 
 public interface CardBuilder {
@@ -13,11 +14,13 @@ public interface CardBuilder {
 
     CardBuilder withTraderTeamId(String traderTeamId);
 
+    CardBuilder withTerminalId(String terminalId);
+
     CardBuilder withBusy(boolean busy);
 
     CardBuilder withArchived();
 
     Card build() throws CardMissingRequiredAttributeException, TraderTeamNotFoundException, CardInvalidNumberException,
-            BankNotFoundException;
+            BankNotFoundException, TerminalNotFoundException;
 
 }

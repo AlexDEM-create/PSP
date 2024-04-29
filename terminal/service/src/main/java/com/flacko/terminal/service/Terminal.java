@@ -13,6 +13,8 @@ public interface Terminal {
 
     boolean isVerified();
 
+    boolean isActive();
+
     Optional<String> getModel();
 
     Optional<String> getOperatingSystem();

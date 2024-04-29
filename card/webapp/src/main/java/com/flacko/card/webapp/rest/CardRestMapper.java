@@ -15,6 +15,7 @@ public class CardRestMapper {
                 maskedNumber,
                 card.getBankId(),
                 card.getTraderTeamId(),
+                card.getTerminalId(),
                 card.isBusy(),
                 card.getCreatedDate().atZone(ZoneId.systemDefault()),
                 card.getUpdatedDate().atZone(ZoneId.systemDefault()));

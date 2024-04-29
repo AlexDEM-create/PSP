@@ -15,6 +15,8 @@ public interface Card {
 
     String getTraderTeamId();
 
+    String getTerminalId();
+
     boolean isBusy();
 
     Instant getCreatedDate();

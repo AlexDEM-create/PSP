@@ -9,6 +9,8 @@ public interface TerminalBuilder {
 
     TerminalBuilder withVerified();
 
+    TerminalBuilder withActive(boolean active);
+
     TerminalBuilder withModel(String model);
 
     TerminalBuilder withOperatingSystem(String operatingSystem);

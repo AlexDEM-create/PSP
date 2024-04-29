@@ -55,7 +55,7 @@ public class UserController {
         return userRestMapper.mapModelToResponse(user);
     }
 
-    @PostMapping("/{userId}/ban")
+    @PatchMapping("/{userId}/ban")
     public UserResponse ban(@PathVariable String userId)
             throws UserNotFoundException, UserMissingRequiredAttributeException, UserLoginAlreadyInUseException,
             UserWeakPasswordException {

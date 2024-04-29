@@ -35,6 +35,9 @@ public class CardPojo implements Card {
     @Column(name = "trader_team_id", nullable = false)
     private String traderTeamId;
 
+    @Column(name = "terminal_id", nullable = false)
+    private String terminalId;
+
     @Column(name = "busy", nullable = false)
     private boolean busy;
 
