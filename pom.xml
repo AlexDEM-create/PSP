@@ -123,9 +123,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
                 <executions>
                     <execution>
                         <id>repackage</id>
@@ -134,29 +131,6 @@
                 </executions>
             </plugin>
 
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-dependency-plugin</artifactId>-->
-<!--                <version>3.6.1</version>-->
-<!--                <executions>-->
-<!--                    &lt;!&ndash; Execution to unpack dependencies (no-op, just to enforce order) &ndash;&gt;-->
-<!--                    <execution>-->
-<!--                        <id>unpack-dependencies</id>-->
-<!--                        <phase>process-resources</phase>-->
-<!--                        <goals>-->
-<!--                            <goal>unpack-dependencies</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <includeGroupIds>com.flacko</includeGroupIds>-->
-<!--                            &lt;!&ndash; Specify the order of unpacking (service, impl, webapp) &ndash;&gt;-->
-<!--                            <includeArtifactIds>common, user-service, merchant-service, trader-team-service, card-service, terminal-service, payment-service, payment-verification-service, appeal-service, currency-service, balance-service, security,-->
-<!--                                user-impl, merchant-impl, trader-team-impl, card-impl, terminal-impl, payment-impl, payment-verification-impl, appeal-impl, currency-impl, balance-impl,-->
-<!--                                user-webapp, merchant-webapp, trader-team-webapp, card-webapp, terminal-webapp, payment-webapp, payment-verification-webapp, appeal-webapp, currency-webapp, balance-webapp</includeArtifactIds>-->
-<!--                            <outputDirectory>${project.build.directory}/dependency-unpacked</outputDirectory>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
         </plugins>
     </build>
 

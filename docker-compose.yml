@@ -35,8 +35,8 @@ services:
   appeal:
     container_name: appeal
     build:
-      context: ./appeal/webapp
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: appeal/webapp/Dockerfile
     ports:
       - "8080:8080"
     environment:
