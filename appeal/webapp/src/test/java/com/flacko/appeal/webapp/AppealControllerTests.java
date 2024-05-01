@@ -184,6 +184,33 @@ public class AppealControllerTests {
                 .andExpect(jsonPath("$[1].created_date").isNotEmpty())
                 .andExpect(jsonPath("$[1].updated_date").isNotEmpty());
     }
+    @Test
+    public void testGetAppeal() throws Exception {
+        Appeal appeal = appealService.create()
+                .withPaymentId(paymentId)
+                .withSource(AppealSource.TRADER_TEAM)
+                .build();
+
+        mockMvc.perform(get("/appeals/" + appeal.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(appeal.getId()))
+                .andExpect(jsonPath("$.payment_id").value(appeal.getPaymentId()))
+                .andExpect(jsonPath("$.source").value(appeal.getSource().toString()))
+                .andExpect(jsonPath("$.current_state").value(appeal.getCurrentState().toString()))
+                .andExpect(jsonPath("$.created_date").isNotEmpty())
+                .andExpect(jsonPath("$.updated_date").isNotEmpty());
+
+    }
+    @Test
+    public void testGetAppealNotFound() throws Exception {
+        String nonExistentAppealId = "nonExistentAppealId";
+
+        mockMvc.perform(get("/appeals/" + nonExistentAppealId))
+                .andExpect(status().isNotFound());
+    }
+
+
 
     @TestConfiguration
     static class TestConfig {
