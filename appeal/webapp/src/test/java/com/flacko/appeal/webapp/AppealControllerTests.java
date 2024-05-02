@@ -1,9 +1,11 @@
 package com.flacko.appeal.webapp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flacko.appeal.service.Appeal;
 import com.flacko.appeal.service.AppealService;
 import com.flacko.appeal.service.AppealSource;
 import com.flacko.appeal.service.AppealState;
+import com.flacko.appeal.webapp.rest.AppealCreateRequest;
 import com.flacko.bank.service.BankService;
 import com.flacko.card.service.CardService;
 import com.flacko.common.currency.Currency;
@@ -18,6 +20,10 @@ import com.flacko.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -32,10 +38,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
+import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -184,6 +192,88 @@ public class AppealControllerTests {
                 .andExpect(jsonPath("$[1].created_date").isNotEmpty())
                 .andExpect(jsonPath("$[1].updated_date").isNotEmpty());
     }
+    @Test
+    public void testGetAppeal() throws Exception {
+        Appeal appeal = appealService.create()
+                .withPaymentId(paymentId)
+                .withSource(AppealSource.TRADER_TEAM)
+                .build();
+
+        mockMvc.perform(get("/appeals/" + appeal.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(appeal.getId()))
+                .andExpect(jsonPath("$.payment_id").value(appeal.getPaymentId()))
+                .andExpect(jsonPath("$.source").value(appeal.getSource().toString()))
+                .andExpect(jsonPath("$.current_state").value(appeal.getCurrentState().toString()))
+                .andExpect(jsonPath("$.created_date").isNotEmpty())
+                .andExpect(jsonPath("$.updated_date").isNotEmpty());
+
+    }
+    @Test
+    public void testGetAppealNotFound() throws Exception {
+        String nonExistentAppealId = "nonExistentAppealId";
+
+        mockMvc.perform(get("/appeals/" + nonExistentAppealId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testCreateAppeal() throws Exception {
+        AppealCreateRequest request = new AppealCreateRequest(paymentId, AppealSource.TRADER_TEAM);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        mockMvc.perform(post("/appeals")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.payment_id").value(request.paymentId()))
+                .andExpect(jsonPath("$.source").value(request.source()))
+                .andExpect(jsonPath("$.current_state").value(AppealState.INITIATED.toString()))
+                .andExpect(jsonPath("$.created_date").isNotEmpty())
+                .andExpect(jsonPath("$.updated_date").isNotEmpty());
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideStringsForTest")
+    public void testCreateAppealThrowsAppealMissingRequiredAttributeException(String input) throws Exception {
+        AppealCreateRequest request = new AppealCreateRequest(input, AppealSource.TRADER_TEAM);
+        ObjectMapper objectMapper = new ObjectMapper();
+        mockMvc.perform(post("/appeals")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+
+        private static Stream<String> provideStringsForTest() {
+            return Stream.of("", " ", null);
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    public void testCreateAppeal_ThrowsAppealMissingRequiredAttributeException_InvalidSource(AppealSource source)
+            throws Exception {
+        AppealCreateRequest request = new AppealCreateRequest("validPaymentId", source);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        mockMvc.perform(post("/appeals")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest());
+    }
+    @Test
+    public void testCreateAppealThrowsPaymentNotFoundException() throws Exception {
+        AppealCreateRequest request = new AppealCreateRequest("nonexistentPaymentId", AppealSource.TRADER_TEAM);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        mockMvc.perform(post("/appeals")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNotFound());
+    }
+
 
     @TestConfiguration
     static class TestConfig {
