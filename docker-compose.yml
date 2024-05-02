@@ -15,7 +15,7 @@ services:
     networks:
       - postgres
     ports:
-      - "6432:5432"
+      - "7432:5432"
 
   pgadmin:
     container_name: pgadmin
@@ -38,7 +38,7 @@ services:
       context: .
       dockerfile: appeal/webapp/Dockerfile
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=staging
     networks:
@@ -47,153 +47,153 @@ services:
     depends_on:
       - postgres
 
-#  balance:
-#    container_name: balance
-#    build:
-#      context: ./balance/webapp
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=staging
-#    networks:
-#      - backend
-#      - postgres
-#    depends_on:
-#      - postgres
-#
-#  card:
-#    container_name: card
-#    build:
-#      context: ./card/webapp
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=staging
-#    networks:
-#      - backend
-#      - postgres
-#    depends_on:
-#      - postgres
-#
-#  currency:
-#    container_name: currency
-#    build:
-#      context: ./currency/webapp
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=staging
-#    networks:
-#      - backend
-#      - postgres
-#    depends_on:
-#      - postgres
-#
-#  merchant:
-#    container_name: merchant
-#    build:
-#      context: ./merchant/webapp
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=staging
-#    networks:
-#      - backend
-#      - postgres
-#    depends_on:
-#      - postgres
-#
-#  payment:
-#    container_name: payment
-#    build:
-#      context: ./payment/webapp
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=staging
-#    networks:
-#      - backend
-#      - postgres
-#    depends_on:
-#      - postgres
-#
-#  payment-verification:
-#    container_name: payment-verification
-#    build:
-#      context: ./payment-verification/webapp
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=staging
-#    networks:
-#      - backend
-#      - postgres
-#    depends_on:
-#      - postgres
-#
-#  terminal:
-#    container_name: terminal
-#    build:
-#      context: ./terminal/webapp
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=staging
-#    networks:
-#      - backend
-#      - postgres
-#    depends_on:
-#      - postgres
-#
-#  trader-team:
-#    container_name: trader-team
-#    build:
-#      context: ./trader-team/webapp
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=staging
-#    networks:
-#      - backend
-#      - postgres
-#    depends_on:
-#      - postgres
-#
-#  user:
-#    container_name: user
-#    build:
-#      context: ./user/webapp
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=staging
-#    networks:
-#      - backend
-#      - postgres
-#    depends_on:
-#      - postgres
-#
-#  receipt-data-extractor:
-#    container_name: user
-#    build:
-#      context: ./receipt-data-extractor
-#      dockerfile: Dockerfile
-#    ports:
-#      - "8080:8080"
-#    networks:
-#      - backend
-#      - postgres
-#    depends_on:
-#      - postgres
+  balance:
+    container_name: balance
+    build:
+      context: .
+      dockerfile: balance/webapp/Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=staging
+    networks:
+      - backend
+      - postgres
+    depends_on:
+      - postgres
+
+  card:
+    container_name: card
+    build:
+      context: .
+      dockerfile: card/webapp/Dockerfile
+    ports:
+      - "8083:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=staging
+    networks:
+      - backend
+      - postgres
+    depends_on:
+      - postgres
+
+  currency:
+    container_name: currency
+    build:
+      context: .
+      dockerfile: currency/webapp/Dockerfile
+    ports:
+      - "8084:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=staging
+    networks:
+      - backend
+      - postgres
+    depends_on:
+      - postgres
+
+  merchant:
+    container_name: merchant
+    build:
+      context: .
+      dockerfile: merchant/webapp/Dockerfile
+    ports:
+      - "8085:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=staging
+    networks:
+      - backend
+      - postgres
+    depends_on:
+      - postgres
+
+  payment:
+    container_name: payment
+    build:
+      context: .
+      dockerfile: payment/webapp/Dockerfile
+    ports:
+      - "8086:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=staging
+    networks:
+      - backend
+      - postgres
+    depends_on:
+      - postgres
+
+  payment-verification:
+    container_name: payment-verification
+    build:
+      context: .
+      dockerfile: payment-verification/webapp/Dockerfile
+    ports:
+      - "8087:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=staging
+    networks:
+      - backend
+      - postgres
+    depends_on:
+      - postgres
+
+  terminal:
+    container_name: terminal
+    build:
+      context: .
+      dockerfile: terminal/webapp/Dockerfile
+    ports:
+      - "8088:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=staging
+    networks:
+      - backend
+      - postgres
+    depends_on:
+      - postgres
+
+  trader-team:
+    container_name: trader-team
+    build:
+      context: .
+      dockerfile: trader-team/webapp/Dockerfile
+    ports:
+      - "8089:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=staging
+    networks:
+      - backend
+      - postgres
+    depends_on:
+      - postgres
+
+  user:
+    container_name: user
+    build:
+      context: .
+      dockerfile: user/webapp/Dockerfile
+    ports:
+      - "8090:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=staging
+    networks:
+      - backend
+      - postgres
+    depends_on:
+      - postgres
+
+  receipt-data-extractor:
+    container_name: receipt-data-extractor
+    build:
+      context: ./receipt-data-extractor
+      dockerfile: Dockerfile
+    ports:
+      - "8091:8080"
+    networks:
+      - backend
+      - postgres
+    depends_on:
+      - postgres
 
 networks:
   postgres:

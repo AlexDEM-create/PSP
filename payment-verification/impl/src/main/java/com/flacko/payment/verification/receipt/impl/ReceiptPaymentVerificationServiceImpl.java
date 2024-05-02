@@ -10,6 +10,7 @@ import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificatio
 import com.flacko.payment.verification.receipt.service.exception.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
@@ -49,6 +50,8 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
     private final ReceiptPaymentVerificationRepository receiptPaymentVerificationRepository;
     private final ServiceLocator serviceLocator;
     private final RestTemplate restTemplate;
+    @Value("${receipt.data.extractor.url}")
+    private String receiptDataExtractorUrl;
 
     @Override
     public List<ReceiptPaymentVerification> list() {
@@ -106,7 +109,7 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
 
             // Make HTTP POST request
             ResponseEntity<ReceiptExtractedData> response = restTemplate.postForEntity(
-                    "http://localhost:5000/payment-verification/receipt/extract-data",
+                    receiptDataExtractorUrl,
                     requestEntity,
                     ReceiptExtractedData.class);
 

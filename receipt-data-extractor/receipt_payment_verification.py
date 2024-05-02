@@ -37,7 +37,7 @@ def verify_data(patterns, text):
     return None
 
 
-@app.route('/payment-verification/receipt/extract-data', methods=['POST'])
+@app.route('/payment-verifications/receipts/extract-data', methods=['POST'])
 def upload_receipt():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 403
@@ -69,4 +69,4 @@ def upload_receipt():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8080)

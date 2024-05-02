@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/payment-verification/receipt")
+@RequestMapping("/payment-verifications/receipts")
 public class ReceiptPaymentVerificationController {
 
     private static final String FILE = "file";
