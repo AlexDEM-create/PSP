@@ -95,10 +95,10 @@ public class UserBuilderImpl implements InitializableUserBuilder {
     }
 
     private void validate(UserPojo pojo) throws UserMissingRequiredAttributeException, UserWeakPasswordException, UserLoginAlreadyInUseException {
-        if (pojo.getId() == null || pojo.getId().isEmpty()) {
+        if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new UserMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (pojo.getLogin() == null || pojo.getLogin().isEmpty()) {
+        if (pojo.getLogin() == null || pojo.getLogin().isBlank()) {
             throw new UserMissingRequiredAttributeException("login", Optional.of(pojo.getId()));
         } else {
             Optional<User> user = userRepository.findByLogin(pojo.getLogin());
@@ -106,7 +106,7 @@ public class UserBuilderImpl implements InitializableUserBuilder {
                 throw new UserLoginAlreadyInUseException(pojo.getLogin());
             }
         }
-        if (pojo.getPassword() == null || pojo.getPassword().isEmpty()) {
+        if (pojo.getPassword() == null || pojo.getPassword().isBlank()) {
             throw new UserMissingRequiredAttributeException("password", Optional.of(pojo.getId()));
         } else if (!PASSWORD_PATTERN.matcher(pojo.getPassword()).matches()) {
             throw new UserWeakPasswordException(pojo.getLogin());

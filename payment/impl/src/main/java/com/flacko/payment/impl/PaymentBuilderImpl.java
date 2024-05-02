@@ -123,20 +123,20 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
 
     private void validate(PaymentPojo pojo) throws PaymentMissingRequiredAttributeException, MerchantNotFoundException,
             TraderTeamNotFoundException, CardNotFoundException, PaymentInvalidAmountException {
-        if (pojo.getId() == null || pojo.getId().isEmpty()) {
+        if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new PaymentMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (pojo.getMerchantId() == null || pojo.getMerchantId().isEmpty()) {
+        if (pojo.getMerchantId() == null || pojo.getMerchantId().isBlank()) {
             throw new PaymentMissingRequiredAttributeException("merchantId", Optional.of(pojo.getId()));
         } else {
             merchantService.get(pojo.getMerchantId());
         }
-        if (pojo.getTraderTeamId() == null || pojo.getTraderTeamId().isEmpty()) {
+        if (pojo.getTraderTeamId() == null || pojo.getTraderTeamId().isBlank()) {
             throw new PaymentMissingRequiredAttributeException("traderTeamId", Optional.of(pojo.getId()));
         } else {
             traderTeamService.get(pojo.getTraderTeamId());
         }
-        if (pojo.getCardId() == null || pojo.getCardId().isEmpty()) {
+        if (pojo.getCardId() == null || pojo.getCardId().isBlank()) {
             throw new PaymentMissingRequiredAttributeException("cardId", Optional.of(pojo.getId()));
         } else {
             cardService.get(pojo.getCardId());

@@ -99,10 +99,10 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
 
     private void validate(BalancePojo pojo) throws BalanceMissingRequiredAttributeException, MerchantNotFoundException,
             TraderTeamNotFoundException {
-        if (pojo.getId() == null || pojo.getId().isEmpty()) {
+        if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new BalanceMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (pojo.getEntityId() == null || pojo.getEntityId().isEmpty()) {
+        if (pojo.getEntityId() == null || pojo.getEntityId().isBlank()) {
             throw new BalanceMissingRequiredAttributeException("entityId", Optional.of(pojo.getId()));
         }
         if (pojo.getEntityType() == null) {

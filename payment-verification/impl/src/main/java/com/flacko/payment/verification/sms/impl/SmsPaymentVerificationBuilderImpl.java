@@ -96,20 +96,20 @@ public class SmsPaymentVerificationBuilderImpl implements InitializableSmsPaymen
             throws SmsPaymentVerificationMissingRequiredAttributeException,
             SmsPaymentVerificationInvalidCardLastFourDigitsException, PaymentNotFoundException,
             SmsPaymentVerificationUnexpectedAmountException {
-        if (pojo.getId() == null || pojo.getId().isEmpty()) {
+        if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (pojo.getPaymentId() == null || pojo.getPaymentId().isEmpty()) {
+        if (pojo.getPaymentId() == null || pojo.getPaymentId().isBlank()) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("paymentId", Optional.of(pojo.getId()));
         }
         Payment payment = paymentService.get(pojo.getPaymentId());
-        if (pojo.getRecipientCardLastFourDigits() == null || pojo.getRecipientCardLastFourDigits().isEmpty()) {
+        if (pojo.getRecipientCardLastFourDigits() == null || pojo.getRecipientCardLastFourDigits().isBlank()) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("recipientCardLastFourDigits", Optional.of(pojo.getId()));
         } else if (!LAST_FOUR_DIGITS_PATTERN.matcher(pojo.getRecipientCardLastFourDigits()).matches()) {
             throw new SmsPaymentVerificationInvalidCardLastFourDigitsException(pojo.getId(), pojo.getPaymentId(),
                     "recipient", pojo.getRecipientCardLastFourDigits());
         }
-        if (pojo.getSenderFullName() == null || pojo.getSenderFullName().isEmpty()) {
+        if (pojo.getSenderFullName() == null || pojo.getSenderFullName().isBlank()) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("senderFullName", Optional.of(pojo.getId()));
         }
         if (pojo.getAmount() == null) {
@@ -123,10 +123,10 @@ public class SmsPaymentVerificationBuilderImpl implements InitializableSmsPaymen
             throw new SmsPaymentVerificationMissingRequiredAttributeException("amountCurrency", Optional.of(pojo.getId()));
         }
         // what to do with not payment related sms?
-        if (pojo.getMessage() == null || pojo.getMessage().isEmpty()) {
+        if (pojo.getMessage() == null || pojo.getMessage().isBlank()) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("message", Optional.of(pojo.getId()));
         }
-        if (pojo.getData() == null || pojo.getData().isEmpty()) {
+        if (pojo.getData() == null || pojo.getData().isBlank()) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("data", Optional.of(pojo.getId()));
         }
     }

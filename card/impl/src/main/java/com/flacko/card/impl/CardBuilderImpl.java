@@ -105,25 +105,25 @@ public class CardBuilderImpl implements InitializableCardBuilder {
 
     private void validate(CardPojo pojo) throws CardMissingRequiredAttributeException, BankNotFoundException,
             TraderTeamNotFoundException, CardInvalidNumberException, TerminalNotFoundException {
-        if (pojo.getId() == null || pojo.getId().isEmpty()) {
+        if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new CardMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (pojo.getNumber() == null || pojo.getNumber().isEmpty()) {
+        if (pojo.getNumber() == null || pojo.getNumber().isBlank()) {
             throw new CardMissingRequiredAttributeException("number", Optional.empty());
         } else if (!CARD_NUMBER_PATTERN.matcher(pojo.getNumber()).matches()) {
             throw new CardInvalidNumberException(pojo.getId(), pojo.getNumber());
         }
-        if (pojo.getBankId() == null || pojo.getBankId().isEmpty()) {
+        if (pojo.getBankId() == null || pojo.getBankId().isBlank()) {
             throw new CardMissingRequiredAttributeException("bankId", Optional.empty());
         } else {
             bankService.get(pojo.getBankId());
         }
-        if (pojo.getTraderTeamId() == null || pojo.getTraderTeamId().isEmpty()) {
+        if (pojo.getTraderTeamId() == null || pojo.getTraderTeamId().isBlank()) {
             throw new CardMissingRequiredAttributeException("traderTeamId", Optional.empty());
         } else {
             traderTeamService.get(pojo.getTraderTeamId());
         }
-        if (pojo.getTerminalId() == null || pojo.getTerminalId().isEmpty()) {
+        if (pojo.getTerminalId() == null || pojo.getTerminalId().isBlank()) {
             throw new CardMissingRequiredAttributeException("terminalId", Optional.empty());
         } else {
             terminalService.get(pojo.getTerminalId());

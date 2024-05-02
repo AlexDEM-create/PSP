@@ -70,7 +70,7 @@ public class BankBuilderImpl implements InitializableBankBuilder {
     }
 
     private void validate(BankPojo pojo) throws BankMissingRequiredAttributeException {
-        if (pojo.getId() == null || pojo.getId().isEmpty()) {
+        if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new BankMissingRequiredAttributeException("id", Optional.empty());
         }
     }

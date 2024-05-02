@@ -94,10 +94,10 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
 
     private void validate(AppealPojo pojo) throws AppealMissingRequiredAttributeException, PaymentNotFoundException,
             AppealIllegalPaymentCurrentStateException {
-        if (pojo.getId() == null || pojo.getId().isEmpty()) {
+        if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new AppealMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (pojo.getPaymentId() == null || pojo.getPaymentId().isEmpty()) {
+        if (pojo.getPaymentId() == null || pojo.getPaymentId().isBlank()) {
             throw new AppealMissingRequiredAttributeException("paymentId", Optional.of(pojo.getId()));
         }
         Payment payment = paymentService.get(pojo.getPaymentId());

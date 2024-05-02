@@ -75,7 +75,7 @@ public class CurrencyExchangeBuilderImpl implements InitializableCurrencyExchang
 
     private void validate(CurrencyExchangePojo pojo) throws CurrencyExchangeMissingRequiredAttributeException,
             CurrencyExchangeInvalidExchangeRateException {
-        if (pojo.getId() == null || pojo.getId().isEmpty()) {
+        if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new CurrencyExchangeMissingRequiredAttributeException("id", Optional.empty());
         }
         if (pojo.getSourceCurrency() == null) {

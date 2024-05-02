@@ -17,13 +17,12 @@ import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeamService;
 import com.flacko.user.service.UserRole;
 import com.flacko.user.service.UserService;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -85,7 +84,7 @@ public class AppealControllerTests {
     @BeforeEach
     public void setup() throws Exception {
         String merchantUserId = userService.create()
-                .withLogin("test_merchant")
+                .withLogin(RandomStringUtils.randomAlphanumeric(10))
                 .withPassword("qwerty123456")
                 .withRole(UserRole.MERCHANT)
                 .build()
@@ -100,14 +99,14 @@ public class AppealControllerTests {
                 .getId();
 
         String traderTeamUserId = userService.create()
-                .withLogin("test_trader_team")
+                .withLogin(RandomStringUtils.randomAlphanumeric(10))
                 .withPassword("qwerty654321")
                 .withRole(UserRole.TRADER_TEAM)
                 .build()
                 .getId();
 
         String traderTeamLeaderId = userService.create()
-                .withLogin("test_trader_team_leader")
+                .withLogin(RandomStringUtils.randomAlphanumeric(10))
                 .withPassword("qwerty0000000")
                 .withRole(UserRole.TRADER_TEAM_LEADER)
                 .build()
@@ -192,6 +191,7 @@ public class AppealControllerTests {
                 .andExpect(jsonPath("$[1].created_date").isNotEmpty())
                 .andExpect(jsonPath("$[1].updated_date").isNotEmpty());
     }
+
     @Test
     public void testGetAppeal() throws Exception {
         Appeal appeal = appealService.create()
@@ -210,6 +210,7 @@ public class AppealControllerTests {
                 .andExpect(jsonPath("$.updated_date").isNotEmpty());
 
     }
+
     @Test
     public void testGetAppealNotFound() throws Exception {
         String nonExistentAppealId = "nonExistentAppealId";
@@ -224,14 +225,14 @@ public class AppealControllerTests {
         ObjectMapper objectMapper = new ObjectMapper();
 
         mockMvc.perform(post("/appeals")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.payment_id").value(request.paymentId()))
-                .andExpect(jsonPath("$.source").value(request.source()))
-                .andExpect(jsonPath("$.current_state").value(AppealState.INITIATED.toString()))
+                .andExpect(jsonPath("$.source").value(request.source().name()))
+                .andExpect(jsonPath("$.current_state").value(AppealState.INITIATED.name()))
                 .andExpect(jsonPath("$.created_date").isNotEmpty())
                 .andExpect(jsonPath("$.updated_date").isNotEmpty());
     }
@@ -242,35 +243,35 @@ public class AppealControllerTests {
         AppealCreateRequest request = new AppealCreateRequest(input, AppealSource.TRADER_TEAM);
         ObjectMapper objectMapper = new ObjectMapper();
         mockMvc.perform(post("/appeals")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
     }
 
-        private static Stream<String> provideStringsForTest() {
-            return Stream.of("", " ", null);
+    private static Stream<String> provideStringsForTest() {
+        return Stream.of("", " ", null);
     }
 
-    @ParameterizedTest
-    @NullAndEmptySource
-    public void testCreateAppeal_ThrowsAppealMissingRequiredAttributeException_InvalidSource(AppealSource source)
+    @Test
+    public void testCreateAppeal_ThrowsAppealMissingRequiredAttributeException_InvalidSource()
             throws Exception {
-        AppealCreateRequest request = new AppealCreateRequest("validPaymentId", source);
+        AppealCreateRequest request = new AppealCreateRequest(paymentId, null);
         ObjectMapper objectMapper = new ObjectMapper();
 
         mockMvc.perform(post("/appeals")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     public void testCreateAppealThrowsPaymentNotFoundException() throws Exception {
         AppealCreateRequest request = new AppealCreateRequest("nonexistentPaymentId", AppealSource.TRADER_TEAM);
         ObjectMapper objectMapper = new ObjectMapper();
 
         mockMvc.perform(post("/appeals")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isNotFound());
     }
 

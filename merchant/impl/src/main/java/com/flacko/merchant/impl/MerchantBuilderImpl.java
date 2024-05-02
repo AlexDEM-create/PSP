@@ -113,13 +113,13 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
 
     private void validate(MerchantPojo pojo) throws MerchantMissingRequiredAttributeException, UserNotFoundException,
             MerchantInvalidFeeRateException {
-        if (pojo.getId() == null || pojo.getId().isEmpty()) {
+        if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new MerchantMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (pojo.getName() == null || pojo.getName().isEmpty()) {
+        if (pojo.getName() == null || pojo.getName().isBlank()) {
             throw new MerchantMissingRequiredAttributeException("name", Optional.of(pojo.getName()));
         }
-        if (pojo.getUserId() == null || pojo.getUserId().isEmpty()) {
+        if (pojo.getUserId() == null || pojo.getUserId().isBlank()) {
             throw new MerchantMissingRequiredAttributeException("userId", Optional.of(pojo.getId()));
         } else {
             userService.get(pojo.getUserId());

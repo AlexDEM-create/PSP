@@ -97,10 +97,10 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
 
     private void validate(TerminalPojo pojo) throws TerminalMissingRequiredAttributeException,
             TraderTeamNotFoundException {
-        if (pojo.getId() == null || pojo.getId().isEmpty()) {
+        if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new TerminalMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (pojo.getTraderTeamId() == null || pojo.getTraderTeamId().isEmpty()) {
+        if (pojo.getTraderTeamId() == null || pojo.getTraderTeamId().isBlank()) {
             throw new TerminalMissingRequiredAttributeException("traderTeamId", Optional.of(pojo.getId()));
         } else {
             traderTeamService.get(pojo.getTraderTeamId());

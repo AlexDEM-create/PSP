@@ -135,18 +135,18 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
 
     private void validate(TraderTeamPojo pojo) throws TraderTeamMissingRequiredAttributeException,
             UserNotFoundException, TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException {
-        if (pojo.getId() == null || pojo.getId().isEmpty()) {
+        if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new TraderTeamMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (pojo.getName() == null || pojo.getName().isEmpty()) {
+        if (pojo.getName() == null || pojo.getName().isBlank()) {
             throw new TraderTeamMissingRequiredAttributeException("name", Optional.of(pojo.getId()));
         }
-        if (pojo.getUserId() == null || pojo.getUserId().isEmpty()) {
+        if (pojo.getUserId() == null || pojo.getUserId().isBlank()) {
             throw new TraderTeamMissingRequiredAttributeException("userId", Optional.of(pojo.getId()));
         } else {
             userService.get(pojo.getUserId());
         }
-        if (pojo.getLeaderId() == null || pojo.getLeaderId().isEmpty()) {
+        if (pojo.getLeaderId() == null || pojo.getLeaderId().isBlank()) {
             throw new TraderTeamMissingRequiredAttributeException("leaderId", Optional.of(pojo.getId()));
         } else {
             User user = userService.get(pojo.getLeaderId());
