@@ -1,6 +1,7 @@
 package com.flacko.payment.verification.webapp.rest;
 
 import com.flacko.common.exception.ReceiptPaymentVerificationNotFoundException;
+import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationListBuilder;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationService;
 import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationFailedException;
 import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationRequestValidationException;
@@ -24,15 +25,19 @@ public class ReceiptPaymentVerificationController {
     private final ReceiptPaymentVerificationRestMapper receiptPaymentVerificationRestMapper;
 
     @GetMapping
-    public List<ReceiptPaymentVerificationResponse> list() {
-        return receiptPaymentVerificationService.list()
+    public List<ReceiptPaymentVerificationResponse> list(
+            ReceiptPaymentVerificationFilterRequest receiptPaymentVerificationFilterRequest) {
+        ReceiptPaymentVerificationListBuilder builder = receiptPaymentVerificationService.list();
+        receiptPaymentVerificationFilterRequest.paymentId().ifPresent(builder::withPaymentId);
+        return builder.build()
                 .stream()
                 .map(receiptPaymentVerificationRestMapper::mapModelToResponse)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{paymentId}")
-    public ReceiptPaymentVerificationResponse get(@PathVariable String paymentId) throws ReceiptPaymentVerificationNotFoundException {
+    public ReceiptPaymentVerificationResponse get(@PathVariable String paymentId)
+            throws ReceiptPaymentVerificationNotFoundException {
         return receiptPaymentVerificationRestMapper.mapModelToResponse(receiptPaymentVerificationService.get(paymentId));
     }
 

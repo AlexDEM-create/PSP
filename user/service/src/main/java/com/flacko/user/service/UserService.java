@@ -10,7 +10,7 @@ public interface UserService {
 
     UserBuilder update(String id) throws UserNotFoundException;
 
-    List<User> list();
+    UserListBuilder list();
 
     User get(String id) throws UserNotFoundException;
 

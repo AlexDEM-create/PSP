@@ -3,6 +3,7 @@ package com.flacko.user.webapp.rest;
 import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.user.service.User;
 import com.flacko.user.service.UserBuilder;
+import com.flacko.user.service.UserListBuilder;
 import com.flacko.user.service.UserService;
 import com.flacko.user.service.exception.UserLoginAlreadyInUseException;
 import com.flacko.user.service.exception.UserMissingRequiredAttributeException;
@@ -22,9 +23,11 @@ public class UserController {
     private final UserRestMapper userRestMapper;
 
     @GetMapping
-    public List<UserResponse> list() {
-        return userService.list()
-                .stream()
+    public List<UserResponse> list(UserFilterRequest userFilterRequest) {
+        UserListBuilder builder = userService.list();
+        userFilterRequest.banned().ifPresent(builder::withBanned);
+        userFilterRequest.role().ifPresent(builder::withRole);
+        return builder.build().stream()
                 .map(userRestMapper::mapModelToResponse)
                 .collect(Collectors.toList());
     }

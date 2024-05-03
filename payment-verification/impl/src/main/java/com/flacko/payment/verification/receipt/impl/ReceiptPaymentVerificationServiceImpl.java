@@ -6,6 +6,7 @@ import com.flacko.common.exception.ReceiptPaymentVerificationNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerification;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationBuilder;
+import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationListBuilder;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationService;
 import com.flacko.payment.verification.receipt.service.exception.*;
 import lombok.RequiredArgsConstructor;
@@ -37,8 +38,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static com.flacko.payment.verification.receipt.service.ReceiptPaymentVerification.MAX_RECEIPT_SIZE;
 
@@ -54,9 +53,8 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
     private String receiptDataExtractorUrl;
 
     @Override
-    public List<ReceiptPaymentVerification> list() {
-        return StreamSupport.stream(receiptPaymentVerificationRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
+    public ReceiptPaymentVerificationListBuilder list() {
+        return serviceLocator.create(ReceiptPaymentVerificationListBuilder.class);
     }
 
     @Override

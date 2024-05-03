@@ -5,11 +5,9 @@ import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentV
 import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationRequestValidationException;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 public interface ReceiptPaymentVerificationService {
 
-    List<ReceiptPaymentVerification> list();
+    ReceiptPaymentVerificationListBuilder list();
 
     ReceiptPaymentVerification get(String id) throws ReceiptPaymentVerificationNotFoundException;
 

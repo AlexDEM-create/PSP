@@ -1,6 +1,7 @@
 package com.flacko.payment.webapp.rest;
 
 import com.flacko.common.exception.PaymentNotFoundException;
+import com.flacko.payment.service.PaymentListBuilder;
 import com.flacko.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +21,14 @@ public class PaymentController {
     private final PaymentRestMapper paymentRestMapper;
 
     @GetMapping
-    public List<PaymentResponse> list() {
-        return paymentService.list()
+    public List<PaymentResponse> list(PaymentFilterRequest paymentFilterRequest) {
+        PaymentListBuilder builder = paymentService.list();
+        paymentFilterRequest.merchantId().ifPresent(builder::withMerchantId);
+        paymentFilterRequest.traderTeamId().ifPresent(builder::withTraderTeamId);
+        paymentFilterRequest.cardId().ifPresent(builder::withCardId);
+        paymentFilterRequest.direction().ifPresent(builder::withDirection);
+        paymentFilterRequest.currentState().ifPresent(builder::withCurrentState);
+        return builder.build()
                 .stream()
                 .map(paymentRestMapper::mapModelToResponse)
                 .collect(Collectors.toList());

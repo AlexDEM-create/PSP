@@ -5,14 +5,11 @@ import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
 import com.flacko.merchant.service.Merchant;
 import com.flacko.merchant.service.MerchantBuilder;
+import com.flacko.merchant.service.MerchantListBuilder;
 import com.flacko.merchant.service.MerchantService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +19,8 @@ public class MerchantServiceImpl implements MerchantService {
     private final ServiceLocator serviceLocator;
 
     @Override
-    public List<Merchant> list() {
-        return StreamSupport.stream(merchantRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
+    public MerchantListBuilder list() {
+        return serviceLocator.create(MerchantListBuilder.class);
     }
 
     @Override

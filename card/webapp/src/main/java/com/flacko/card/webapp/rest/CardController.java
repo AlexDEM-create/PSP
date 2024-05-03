@@ -2,6 +2,7 @@ package com.flacko.card.webapp.rest;
 
 import com.flacko.card.service.Card;
 import com.flacko.card.service.CardBuilder;
+import com.flacko.card.service.CardListBuilder;
 import com.flacko.card.service.CardService;
 import com.flacko.card.service.exception.CardInvalidNumberException;
 import com.flacko.card.service.exception.CardMissingRequiredAttributeException;
@@ -24,8 +25,13 @@ public class CardController {
     private final CardRestMapper cardRestMapper;
 
     @GetMapping
-    public List<CardResponse> list() {
-        return cardService.list()
+    public List<CardResponse> list(CardFilterRequest cardFilterRequest) {
+        CardListBuilder builder = cardService.list();
+        cardFilterRequest.bankId().ifPresent(builder::withBankId);
+        cardFilterRequest.traderTeamId().ifPresent(builder::withTraderTeamId);
+        cardFilterRequest.terminalId().ifPresent(builder::withTerminalId);
+        cardFilterRequest.busy().ifPresent(builder::withBusy);
+        return builder.build()
                 .stream()
                 .map(cardRestMapper::mapModelToResponse)
                 .collect(Collectors.toList());

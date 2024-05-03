@@ -4,14 +4,11 @@ import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
 import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamBuilder;
+import com.flacko.trader.team.service.TraderTeamListBuilder;
 import com.flacko.trader.team.service.TraderTeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +18,8 @@ public class TraderTeamServiceImpl implements TraderTeamService {
     private final ServiceLocator serviceLocator;
 
     @Override
-    public List<TraderTeam> list() {
-        return StreamSupport.stream(traderTeamRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
+    public TraderTeamListBuilder list() {
+        return serviceLocator.create(TraderTeamListBuilder.class);
     }
 
     @Override

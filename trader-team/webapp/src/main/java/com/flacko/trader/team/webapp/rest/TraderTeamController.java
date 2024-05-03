@@ -6,6 +6,7 @@ import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamBuilder;
+import com.flacko.trader.team.service.TraderTeamListBuilder;
 import com.flacko.trader.team.service.TraderTeamService;
 import com.flacko.trader.team.service.exception.TraderTeamIllegalLeaderException;
 import com.flacko.trader.team.service.exception.TraderTeamInvalidFeeRateException;
@@ -24,8 +25,11 @@ public class TraderTeamController {
     private final TraderTeamRestMapper traderTeamRestMapper;
 
     @GetMapping
-    public List<TraderTeamResponse> list() {
-        return traderTeamService.list()
+    public List<TraderTeamResponse> list(TraderTeamFilterRequest traderTeamFilterRequest) {
+        TraderTeamListBuilder builder = traderTeamService.list();
+        traderTeamFilterRequest.kickedOut().ifPresent(builder::withKickedOut);
+        traderTeamFilterRequest.leaderId().ifPresent(builder::withLeaderId);
+        return builder.build()
                 .stream()
                 .map(traderTeamRestMapper::mapModelToResponse)
                 .collect(Collectors.toList());

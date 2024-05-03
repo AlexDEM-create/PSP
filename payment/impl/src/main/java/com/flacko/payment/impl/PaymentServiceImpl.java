@@ -4,14 +4,11 @@ import com.flacko.common.exception.PaymentNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
 import com.flacko.payment.service.Payment;
 import com.flacko.payment.service.PaymentBuilder;
+import com.flacko.payment.service.PaymentListBuilder;
 import com.flacko.payment.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +18,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final ServiceLocator serviceLocator;
 
     @Override
-    public List<Payment> list() {
-        return StreamSupport.stream(paymentRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
+    public PaymentListBuilder list() {
+        return serviceLocator.create(PaymentListBuilder.class);
     }
 
     @Override

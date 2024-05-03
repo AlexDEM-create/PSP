@@ -2,16 +2,13 @@ package com.flacko.appeal.impl;
 
 import com.flacko.appeal.service.Appeal;
 import com.flacko.appeal.service.AppealBuilder;
+import com.flacko.appeal.service.AppealListBuilder;
 import com.flacko.appeal.service.AppealService;
 import com.flacko.common.exception.AppealNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +18,8 @@ public class AppealServiceImpl implements AppealService {
     private final ServiceLocator serviceLocator;
 
     @Override
-    public List<Appeal> list() {
-        return StreamSupport.stream(appealRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
+    public AppealListBuilder list() {
+        return serviceLocator.create(AppealListBuilder.class);
     }
 
     @Override

@@ -4,14 +4,11 @@ import com.flacko.common.exception.TerminalNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
 import com.flacko.terminal.service.Terminal;
 import com.flacko.terminal.service.TerminalBuilder;
+import com.flacko.terminal.service.TerminalListBuilder;
 import com.flacko.terminal.service.TerminalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +18,8 @@ public class TerminalServiceImpl implements TerminalService {
     private final ServiceLocator serviceLocator;
 
     @Override
-    public List<Terminal> list() {
-        return StreamSupport.stream(terminalRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
+    public TerminalListBuilder list() {
+        return serviceLocator.create(TerminalListBuilder.class);
     }
 
     @Override

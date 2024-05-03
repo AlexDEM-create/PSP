@@ -4,6 +4,7 @@ import com.flacko.common.exception.TerminalNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.terminal.service.Terminal;
 import com.flacko.terminal.service.TerminalBuilder;
+import com.flacko.terminal.service.TerminalListBuilder;
 import com.flacko.terminal.service.TerminalService;
 import com.flacko.terminal.service.exception.TerminalMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +23,12 @@ public class TerminalController {
 
 
     @GetMapping
-    public List<TerminalResponse> list() {
-        return terminalService.list()
+    public List<TerminalResponse> list(TerminalFilterRequest terminalFilterRequest) {
+        TerminalListBuilder builder = terminalService.list();
+        terminalFilterRequest.traderTeamId().ifPresent(builder::withTraderTeamId);
+        terminalFilterRequest.verified().ifPresent(builder::withVerified);
+        terminalFilterRequest.active().ifPresent(builder::withActive);
+        return builder.build()
                 .stream()
                 .map(terminalRestMapper::mapModelToResponse)
                 .collect(Collectors.toList());

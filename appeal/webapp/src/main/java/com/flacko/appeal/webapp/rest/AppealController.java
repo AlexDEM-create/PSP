@@ -1,9 +1,6 @@
 package com.flacko.appeal.webapp.rest;
 
-import com.flacko.appeal.service.Appeal;
-import com.flacko.appeal.service.AppealBuilder;
-import com.flacko.appeal.service.AppealService;
-import com.flacko.appeal.service.AppealState;
+import com.flacko.appeal.service.*;
 import com.flacko.appeal.service.exception.AppealIllegalPaymentCurrentStateException;
 import com.flacko.appeal.service.exception.AppealIllegalStateTransitionException;
 import com.flacko.appeal.service.exception.AppealMissingRequiredAttributeException;
@@ -24,8 +21,12 @@ public class AppealController {
     private final AppealRestMapper appealRestMapper;
 
     @GetMapping
-    public List<AppealResponse> list() {
-        return appealService.list()
+    public List<AppealResponse> list(AppealFilterRequest appealFilterRequest) {
+        AppealListBuilder builder = appealService.list();
+        appealFilterRequest.paymentId().ifPresent(builder::withPaymentId);
+        appealFilterRequest.source().ifPresent(builder::withSource);
+        appealFilterRequest.currentState().ifPresent(builder::withCurrentState);
+        return builder.build()
                 .stream()
                 .map(appealRestMapper::mapModelToResponse)
                 .collect(Collectors.toList());

@@ -6,6 +6,7 @@ import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.merchant.service.Merchant;
 import com.flacko.merchant.service.MerchantBuilder;
+import com.flacko.merchant.service.MerchantListBuilder;
 import com.flacko.merchant.service.MerchantService;
 import com.flacko.merchant.service.exception.MerchantInvalidFeeRateException;
 import com.flacko.merchant.service.exception.MerchantMissingRequiredAttributeException;
@@ -24,8 +25,10 @@ public class MerchantController {
     private final MerchantRestMapper merchantRestMapper;
 
     @GetMapping
-    public List<MerchantResponse> list() {
-        return merchantService.list()
+    public List<MerchantResponse> list(MerchantFilterRequest merchantFilterRequest) {
+        MerchantListBuilder builder = merchantService.list();
+        merchantFilterRequest.outgoingTrafficStopped().ifPresent(builder::withOutgoingTrafficStopped);
+        return builder.build()
                 .stream()
                 .map(merchantRestMapper::mapModelToResponse)
                 .collect(Collectors.toList());

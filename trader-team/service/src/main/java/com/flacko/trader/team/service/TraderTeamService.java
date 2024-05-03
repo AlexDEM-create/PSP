@@ -10,7 +10,7 @@ public interface TraderTeamService {
 
     TraderTeamBuilder update(String id) throws TraderTeamNotFoundException;
 
-    List<TraderTeam> list();
+    TraderTeamListBuilder list();
 
     TraderTeam get(String id) throws TraderTeamNotFoundException;
 }

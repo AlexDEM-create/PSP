@@ -10,7 +10,7 @@ public interface TerminalService {
 
     TerminalBuilder update(String id) throws TerminalNotFoundException;
 
-    List<Terminal> list();
+    TerminalListBuilder list();
 
     Terminal get(String id) throws TerminalNotFoundException;
 

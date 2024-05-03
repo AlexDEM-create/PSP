@@ -1,17 +1,14 @@
 package com.flacko.user.impl;
 
-import com.flacko.user.service.User;
-import com.flacko.user.service.UserBuilder;
-import com.flacko.user.service.UserService;
 import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
+import com.flacko.user.service.User;
+import com.flacko.user.service.UserBuilder;
+import com.flacko.user.service.UserListBuilder;
+import com.flacko.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +18,8 @@ public class UserServiceImpl implements UserService {
     private final ServiceLocator serviceLocator;
 
     @Override
-    public List<User> list() {
-        return StreamSupport.stream(userRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
+    public UserListBuilder list() {
+        return serviceLocator.create(UserListBuilder.class);
     }
 
     @Override

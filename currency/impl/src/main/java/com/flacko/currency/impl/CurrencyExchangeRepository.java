@@ -2,6 +2,7 @@ package com.flacko.currency.impl;
 
 import com.flacko.common.currency.Currency;
 import com.flacko.currency.service.CurrencyExchange;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -9,7 +10,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CurrencyExchangeRepository extends CrudRepository<CurrencyExchangePojo, Long> {
+public interface CurrencyExchangeRepository extends CrudRepository<CurrencyExchangePojo, Long>,
+        JpaSpecificationExecutor<CurrencyExchange> {
 
     @Query("SELECT c FROM CurrencyExchangePojo c WHERE c.id = :id")
     Optional<CurrencyExchange> findById(String id);
