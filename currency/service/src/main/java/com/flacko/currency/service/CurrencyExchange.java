@@ -14,6 +14,8 @@ public interface CurrencyExchange {
 
     Currency getTargetCurrency();
 
-    BigDecimal getExchangeRate();
+    BigDecimal getBuyExchangeRate();
+
+    BigDecimal getSellExchangeRate();
 
 }

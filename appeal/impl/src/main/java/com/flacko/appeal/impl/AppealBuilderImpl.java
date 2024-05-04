@@ -53,6 +53,7 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
                 .primaryKey(existingAppeal.getPrimaryKey())
                 .id(existingAppeal.getId())
                 .paymentId(existingAppeal.getPaymentId())
+                .source(existingAppeal.getSource())
                 .currentState(existingAppeal.getCurrentState())
                 .createdDate(existingAppeal.getCreatedDate())
                 .updatedDate(Instant.now());

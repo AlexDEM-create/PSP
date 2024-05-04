@@ -12,7 +12,9 @@ public interface CurrencyExchangeBuilder {
 
     CurrencyExchangeBuilder withTargetCurrency(Currency targetCurrency);
 
-    CurrencyExchangeBuilder withExchangeRate(BigDecimal exchangeRate);
+    CurrencyExchangeBuilder withBuyExchangeRate(BigDecimal buyExchangeRate);
+
+    CurrencyExchangeBuilder withSellExchangeRate(BigDecimal sellExchangeRate);
 
     CurrencyExchange build() throws CurrencyExchangeMissingRequiredAttributeException,
             CurrencyExchangeInvalidExchangeRateException;

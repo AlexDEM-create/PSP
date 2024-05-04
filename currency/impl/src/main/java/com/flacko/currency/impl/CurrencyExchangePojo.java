@@ -36,8 +36,11 @@ public class CurrencyExchangePojo implements CurrencyExchange {
     @Column(name = "target_currency", nullable = false)
     private Currency targetCurrency;
 
-    @Column(name = "exchange_rate", nullable = false)
-    private BigDecimal exchangeRate;
+    @Column(name = "buy_exchange_rate", nullable = false)
+    private BigDecimal buyExchangeRate;
+
+    @Column(name = "sell_exchange_rate", nullable = false)
+    private BigDecimal sellExchangeRate;
 
     @Column(name = "updated_date", nullable = false)
     private Instant updatedDate;

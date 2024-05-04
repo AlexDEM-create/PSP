@@ -40,7 +40,8 @@ public class CurrencyExchangeBuilderImpl implements InitializableCurrencyExchang
                 .id(existingCurrencyExchange.getId())
                 .sourceCurrency(existingCurrencyExchange.getSourceCurrency())
                 .targetCurrency(existingCurrencyExchange.getTargetCurrency())
-                .exchangeRate(existingCurrencyExchange.getExchangeRate())
+                .buyExchangeRate(existingCurrencyExchange.getBuyExchangeRate())
+                .sellExchangeRate(existingCurrencyExchange.getSellExchangeRate())
                 .updatedDate(now);
         return this;
     }
@@ -58,8 +59,14 @@ public class CurrencyExchangeBuilderImpl implements InitializableCurrencyExchang
     }
 
     @Override
-    public CurrencyExchangeBuilder withExchangeRate(BigDecimal exchangeRate) {
-        pojoBuilder.exchangeRate(exchangeRate);
+    public CurrencyExchangeBuilder withBuyExchangeRate(BigDecimal buyExchangeRate) {
+        pojoBuilder.buyExchangeRate(buyExchangeRate);
+        return this;
+    }
+
+    @Override
+    public CurrencyExchangeBuilder withSellExchangeRate(BigDecimal sellExchangeRate) {
+        pojoBuilder.sellExchangeRate(sellExchangeRate);
         return this;
     }
 
@@ -84,11 +91,17 @@ public class CurrencyExchangeBuilderImpl implements InitializableCurrencyExchang
         if (pojo.getTargetCurrency() == null) {
             throw new CurrencyExchangeMissingRequiredAttributeException("targetCurrency", Optional.of(pojo.getId()));
         }
-        if (pojo.getExchangeRate() == null) {
-            throw new CurrencyExchangeMissingRequiredAttributeException("exchangeRate", Optional.of(pojo.getId()));
-        } else if (pojo.getExchangeRate().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new CurrencyExchangeInvalidExchangeRateException(pojo.getExchangeRate(), pojo.getSourceCurrency(),
-                    pojo.getTargetCurrency());
+        if (pojo.getBuyExchangeRate() == null) {
+            throw new CurrencyExchangeMissingRequiredAttributeException("buyExchangeRate", Optional.of(pojo.getId()));
+        } else if (pojo.getBuyExchangeRate().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new CurrencyExchangeInvalidExchangeRateException("Buy", pojo.getBuyExchangeRate(),
+                    pojo.getSourceCurrency(), pojo.getTargetCurrency());
+        }
+        if (pojo.getSellExchangeRate() == null) {
+            throw new CurrencyExchangeMissingRequiredAttributeException("sellExchangeRate", Optional.of(pojo.getId()));
+        } else if (pojo.getSellExchangeRate().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new CurrencyExchangeInvalidExchangeRateException("Sell", pojo.getSellExchangeRate(),
+                    pojo.getSourceCurrency(), pojo.getTargetCurrency());
         }
     }
 
