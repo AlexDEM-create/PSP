@@ -38,21 +38,28 @@ public class CurrencyExchangeScheduler {
             JSONObject gon = new JSONObject(jsonData);
             JSONObject exchangers = gon.getJSONObject("exchangers");
             JSONObject usdtrub = exchangers.getJSONObject("usdtrub");
+
             JSONArray bid = usdtrub.getJSONArray("bid");
             JSONObject firstBidObject = bid.getJSONObject(0);
             BigDecimal firstBidPrice = firstBidObject.getBigDecimal("price");
+
+            JSONArray ask = usdtrub.getJSONArray("ask");
+            JSONObject firstAskObject = ask.getJSONObject(0);
+            BigDecimal firstAskPrice = firstAskObject.getBigDecimal("price");
 
             try {
                 CurrencyExchange existingCurrencyExchange = currencyExchangeService.get(Currency.USDT, Currency.RUB);
                 CurrencyExchangeBuilder currencyExchangeBuilder = currencyExchangeService.update(
                         existingCurrencyExchange.getSourceCurrency(), existingCurrencyExchange.getTargetCurrency());
-                currencyExchangeBuilder.withExchangeRate(firstBidPrice)
+                currencyExchangeBuilder.withBuyExchangeRate(firstBidPrice)
+                        .withSellExchangeRate(firstAskPrice)
                         .build();
             } catch (CurrencyExchangeNotFoundException e) {
                 currencyExchangeService.create()
                         .withSourceCurrency(Currency.USDT)
                         .withTargetCurrency(Currency.RUB)
-                        .withExchangeRate(firstBidPrice)
+                        .withBuyExchangeRate(firstBidPrice)
+                        .withSellExchangeRate(firstAskPrice)
                         .build();
             }
         } catch (CurrencyExchangeMissingRequiredAttributeException | CurrencyExchangeInvalidExchangeRateException |
