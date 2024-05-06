@@ -1,26 +1,46 @@
 package com.flacko.merchant.webapp;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.flacko.appeal.service.AppealService;
+import com.flacko.bank.service.BankService;
+import com.flacko.card.service.CardService;
+import com.flacko.common.currency.Currency;
+import com.flacko.common.state.PaymentState;
+import com.flacko.merchant.service.Merchant;
 import com.flacko.merchant.service.MerchantService;
-import com.flacko.merchant.webapp.rest.MerchantCreateRequest;
+import com.flacko.payment.service.PaymentDirection;
+import com.flacko.payment.service.PaymentService;
+import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeamService;
 import com.flacko.user.service.UserRole;
 import com.flacko.user.service.UserService;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import java.math.BigDecimal;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -154,9 +174,9 @@ public class MerchantControllerTests {
 
         mockMvc.perform(get("/merchants"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect((ResultMatcher) content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$",hasSize(2)))
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].id").value(merchant1.getId()))
                 .andExpect(jsonPath("$[0].name").value(merchant1.getName()))
                 .andExpect(jsonPath("$[0].userId").value(merchant1.getUserId()))
