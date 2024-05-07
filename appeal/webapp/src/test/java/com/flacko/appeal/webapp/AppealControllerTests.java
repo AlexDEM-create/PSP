@@ -256,7 +256,7 @@ public class AppealControllerTests {
     }
 
     @Test
-    public void testCreateAppeal_ThrowsAppealMissingRequiredAttributeException_InvalidSource()
+    public void testCreateAppealThrowsAppealMissingRequiredAttributeExceptionInvalidSource()
             throws Exception {
         AppealCreateRequest request = new AppealCreateRequest(paymentId, null);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -319,7 +319,7 @@ public class AppealControllerTests {
     }
 
     @Test
-    public void testResolveAppeal_ThrowsAppealIllegalStateTransitionException() throws Exception {
+    public void testResolveAppealThrowsAppealIllegalStateTransitionException() throws Exception {
         Appeal appeal = appealService.create()
                 .withPaymentId(paymentId)
                 .withSource(AppealSource.TRADER_TEAM)
@@ -336,7 +336,7 @@ public class AppealControllerTests {
     }
 
     @Test
-    public void testResolveAppeal_Exception() throws Exception {
+    public void testResolveAppealException() throws Exception {
         Appeal appeal = appealService.create()
                 .withPaymentId(paymentId)
                 .withSource(AppealSource.TRADER_TEAM)
@@ -398,7 +398,7 @@ public class AppealControllerTests {
     }
 
     @Test
-    public void testRejectAppeal_ThrowsAppealIllegalStateTransitionException() throws Exception {
+    public void testRejectAppealThrowsAppealIllegalStateTransitionException() throws Exception {
         Appeal appeal = appealService.create()
                 .withPaymentId(paymentId)
                 .withSource(AppealSource.TRADER_TEAM)
@@ -411,7 +411,7 @@ public class AppealControllerTests {
     }
 
     @Test
-    public void testRejectAppeal_Exception() throws Exception {
+    public void testRejectAppealMissingRequiredAttributeException() throws Exception {
         Appeal appeal = appealService.create()
                 .withPaymentId(paymentId)
                 .withSource(AppealSource.TRADER_TEAM)
