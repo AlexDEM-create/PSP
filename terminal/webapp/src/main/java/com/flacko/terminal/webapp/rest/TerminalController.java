@@ -31,6 +31,8 @@ public class TerminalController {
         return builder.build()
                 .stream()
                 .map(terminalRestMapper::mapModelToResponse)
+                .skip(terminalFilterRequest.offset())
+                .limit(terminalFilterRequest.limit())
                 .collect(Collectors.toList());
     }
 

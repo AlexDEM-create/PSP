@@ -32,6 +32,8 @@ public class TraderTeamController {
         return builder.build()
                 .stream()
                 .map(traderTeamRestMapper::mapModelToResponse)
+                .skip(traderTeamFilterRequest.offset())
+                .limit(traderTeamFilterRequest.limit())
                 .collect(Collectors.toList());
     }
 

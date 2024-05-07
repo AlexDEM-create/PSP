@@ -31,6 +31,8 @@ public class MerchantController {
         return builder.build()
                 .stream()
                 .map(merchantRestMapper::mapModelToResponse)
+                .skip(merchantFilterRequest.offset())
+                .limit(merchantFilterRequest.limit())
                 .collect(Collectors.toList());
     }
 

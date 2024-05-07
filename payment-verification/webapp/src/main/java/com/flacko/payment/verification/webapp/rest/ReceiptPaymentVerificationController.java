@@ -32,6 +32,8 @@ public class ReceiptPaymentVerificationController {
         return builder.build()
                 .stream()
                 .map(receiptPaymentVerificationRestMapper::mapModelToResponse)
+                .skip(receiptPaymentVerificationFilterRequest.offset())
+                .limit(receiptPaymentVerificationFilterRequest.limit())
                 .collect(Collectors.toList());
     }
 

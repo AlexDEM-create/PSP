@@ -34,6 +34,8 @@ public class CardController {
         return builder.build()
                 .stream()
                 .map(cardRestMapper::mapModelToResponse)
+                .skip(cardFilterRequest.offset())
+                .limit(cardFilterRequest.limit())
                 .collect(Collectors.toList());
     }
 

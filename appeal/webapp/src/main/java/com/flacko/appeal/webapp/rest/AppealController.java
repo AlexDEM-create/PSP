@@ -41,7 +41,11 @@ public class AppealController {
                 .filter(appeal -> appeal.currentState() != AppealState.INITIATED)
                 .sorted(Comparator.comparing(AppealResponse::createdDate).reversed())
                 .collect(Collectors.toList()));
-        return appeals;
+
+        return appeals.stream()
+                .skip(appealFilterRequest.offset())
+                .limit(appealFilterRequest.limit())
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{appealId}")

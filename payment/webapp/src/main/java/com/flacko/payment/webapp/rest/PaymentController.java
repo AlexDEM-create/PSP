@@ -28,6 +28,8 @@ public class PaymentController {
         return builder.build()
                 .stream()
                 .map(paymentRestMapper::mapModelToResponse)
+                .skip(paymentFilterRequest.offset())
+                .limit(paymentFilterRequest.limit())
                 .collect(Collectors.toList());
     }
 
