@@ -48,6 +48,9 @@ public class TraderTeamPojo implements TraderTeam {
     @Column(name = "leader_outgoing_fee_rate", nullable = false)
     private BigDecimal leaderOutgoingFeeRate;
 
+    @Column(name = "online", nullable = false)
+    private boolean online;
+
     @Column(name = "kicked_out", nullable = false)
     private boolean kickedOut;
 

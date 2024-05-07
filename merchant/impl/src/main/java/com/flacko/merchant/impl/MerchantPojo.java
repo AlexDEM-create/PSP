@@ -1,5 +1,6 @@
 package com.flacko.merchant.impl;
 
+import com.flacko.common.country.Country;
 import com.flacko.merchant.service.Merchant;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,10 @@ public class MerchantPojo implements Merchant {
 
     @Column(name = "user_id", nullable = false)
     private String userId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Country country;
 
     @Column(name = "incoming_fee_rate", nullable = false)
     private BigDecimal incomingFeeRate;

@@ -13,6 +13,7 @@ public record TraderTeamResponse(@JsonProperty(ID) String id,
                                  @JsonProperty(TRADER_OUTGOING_FEE_RATE) BigDecimal traderOutgoingFeeRate,
                                  @JsonProperty(LEADER_INCOMING_FEE_RATE) BigDecimal leaderIncomingFeeRate,
                                  @JsonProperty(LEADER_OUTGOING_FEE_RATE) BigDecimal leaderOutgoingFeeRate,
+                                 @JsonProperty(ONLINE) boolean online,
                                  @JsonProperty(KICKED_OUT) boolean kickedOut,
                                  @JsonProperty(CREATED_DATE) ZonedDateTime createdDate,
                                  @JsonProperty(UPDATED_DATE) ZonedDateTime updatedDate) {
@@ -25,6 +26,7 @@ public record TraderTeamResponse(@JsonProperty(ID) String id,
     private static final String TRADER_OUTGOING_FEE_RATE = "trader_outgoing_fee_rate";
     private static final String LEADER_INCOMING_FEE_RATE = "leader_incoming_fee_rate";
     private static final String LEADER_OUTGOING_FEE_RATE = "leader_outgoing_fee_rate";
+    private static final String ONLINE = "online";
     private static final String KICKED_OUT = "kicked_out";
     private static final String CREATED_DATE = "created_date";
     private static final String UPDATED_DATE = "updated_date";

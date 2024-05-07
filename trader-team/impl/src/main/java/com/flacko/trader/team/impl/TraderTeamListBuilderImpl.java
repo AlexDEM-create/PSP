@@ -18,8 +18,15 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
 
     private final TraderTeamRepository traderTeamRepository;
 
+    private Optional<Boolean> online = Optional.empty();
     private Optional<Boolean> kickedOut = Optional.empty();
     private Optional<String> leaderId = Optional.empty();
+
+    @Override
+    public TraderTeamListBuilder withOnline(Boolean online) {
+        this.online = Optional.of(online);
+        return this;
+    }
 
     @Override
     public TraderTeamListBuilder withKickedOut(Boolean kickedOut) {
@@ -40,6 +47,10 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
 
     private Specification<TraderTeam> createSpecification() {
         Specification<TraderTeam> spec = Specification.where(null);
+        if (online.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("online"), online.get()));
+        }
         if (kickedOut.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("kicked_out"), kickedOut.get()));

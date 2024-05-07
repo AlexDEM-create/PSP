@@ -9,7 +9,7 @@ public interface TerminalBuilder {
 
     TerminalBuilder withVerified();
 
-    TerminalBuilder withActive(boolean active);
+    TerminalBuilder withOnline(boolean online);
 
     TerminalBuilder withModel(String model);
 

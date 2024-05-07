@@ -13,7 +13,7 @@ public class TerminalRestMapper {
         return new TerminalResponse(terminal.getId(),
                 terminal.getTraderTeamId(),
                 terminal.isVerified(),
-                terminal.isActive(),
+                terminal.isOnline(),
                 terminal.getModel(),
                 terminal.getOperatingSystem(),
                 terminal.getCreatedDate().atZone(ZoneId.systemDefault()),

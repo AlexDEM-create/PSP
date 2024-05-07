@@ -13,7 +13,7 @@ public interface Terminal {
 
     boolean isVerified();
 
-    boolean isActive();
+    boolean isOnline();
 
     Optional<String> getModel();
 

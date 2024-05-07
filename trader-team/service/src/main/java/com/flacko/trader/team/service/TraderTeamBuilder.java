@@ -26,6 +26,8 @@ public interface TraderTeamBuilder {
 
     TraderTeamBuilder withLeaderOutgoingFeeRate(BigDecimal leaderOutgoingFeeRate);
 
+    TraderTeamBuilder withOnline(boolean online);
+
     TraderTeamBuilder withKickedOut(boolean kickedOut);
 
     TraderTeamBuilder withArchived();

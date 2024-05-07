@@ -3,6 +3,7 @@ package com.flacko.bank.impl;
 import com.flacko.bank.service.Bank;
 import com.flacko.bank.service.BankBuilder;
 import com.flacko.bank.service.exception.BankMissingRequiredAttributeException;
+import com.flacko.common.country.Country;
 import com.flacko.common.id.IdGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -50,7 +51,7 @@ public class BankBuilderImpl implements InitializableBankBuilder {
     }
 
     @Override
-    public BankBuilder withCountry(String country) {
+    public BankBuilder withCountry(Country country) {
         pojoBuilder.country(country);
         return this;
     }
@@ -72,6 +73,12 @@ public class BankBuilderImpl implements InitializableBankBuilder {
     private void validate(BankPojo pojo) throws BankMissingRequiredAttributeException {
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new BankMissingRequiredAttributeException("id", Optional.empty());
+        }
+        if (pojo.getName() == null || pojo.getName().isBlank()) {
+            throw new BankMissingRequiredAttributeException("name", Optional.of(pojo.getId()));
+        }
+        if (pojo.getCountry() == null) {
+            throw new BankMissingRequiredAttributeException("country", Optional.of(pojo.getId()));
         }
     }
 

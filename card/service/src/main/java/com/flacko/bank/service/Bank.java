@@ -1,5 +1,7 @@
 package com.flacko.bank.service;
 
+import com.flacko.common.country.Country;
+
 import java.time.Instant;
 import java.util.Optional;
 
@@ -11,7 +13,7 @@ public interface Bank {
 
     String getName();
 
-    String getCountry();
+    Country getCountry();
 
     Instant getCreatedDate();
 

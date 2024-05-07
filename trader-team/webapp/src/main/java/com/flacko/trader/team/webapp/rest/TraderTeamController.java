@@ -68,6 +68,17 @@ public class TraderTeamController {
         return traderTeamRestMapper.mapModelToResponse(traderTeam);
     }
 
+    @PatchMapping("/{traderTeamId}/online")
+    public TraderTeamResponse online(@PathVariable String traderTeamId)
+            throws TraderTeamNotFoundException, TraderTeamMissingRequiredAttributeException, UserNotFoundException,
+            TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
+            BalanceMissingRequiredAttributeException {
+        TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
+        builder.withOnline(true);
+        TraderTeam traderTeam = builder.build();
+        return traderTeamRestMapper.mapModelToResponse(traderTeam);
+    }
+
     @PatchMapping("/{traderTeamId}/kick-out")
     public TraderTeamResponse kickOut(@PathVariable String traderTeamId)
             throws TraderTeamNotFoundException, TraderTeamMissingRequiredAttributeException, UserNotFoundException,

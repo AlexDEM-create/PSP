@@ -4,6 +4,8 @@ import java.util.List;
 
 public interface TraderTeamListBuilder {
 
+    TraderTeamListBuilder withOnline(Boolean online);
+
     TraderTeamListBuilder withKickedOut(Boolean kickedOut);
 
     TraderTeamListBuilder withLeaderId(String leaderId);

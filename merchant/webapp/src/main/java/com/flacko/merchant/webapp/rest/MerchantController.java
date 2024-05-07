@@ -47,6 +47,7 @@ public class MerchantController {
         MerchantBuilder builder = merchantService.create();
         builder.withName(merchantCreateRequest.name())
                 .withUserId(merchantCreateRequest.userId())
+                .withCountry(merchantCreateRequest.country())
                 .withIncomingFeeRate(merchantCreateRequest.incomingFeeRate())
                 .withOutgoingFeeRate(merchantCreateRequest.outgoingFeeRate());
         Merchant merchant = builder.build();

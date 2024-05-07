@@ -2,6 +2,7 @@ package com.flacko.merchant.impl;
 
 import com.flacko.balance.service.BalanceService;
 import com.flacko.balance.service.EntityType;
+import com.flacko.common.country.Country;
 import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -50,6 +51,7 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
                 .id(existingMerchant.getId())
                 .name(existingMerchant.getName())
                 .userId(existingMerchant.getUserId())
+                .country(existingMerchant.getCountry())
                 .incomingFeeRate(existingMerchant.getIncomingFeeRate())
                 .outgoingFeeRate(existingMerchant.getOutgoingFeeRate())
                 .outgoingTrafficStopped(existingMerchant.isOutgoingTrafficStopped())
@@ -68,6 +70,12 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
     @Override
     public MerchantBuilder withUserId(String userId) {
         pojoBuilder.userId(userId);
+        return this;
+    }
+
+    @Override
+    public MerchantBuilder withCountry(Country country) {
+        pojoBuilder.country(country);
         return this;
     }
 
@@ -123,6 +131,9 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
             throw new MerchantMissingRequiredAttributeException("userId", Optional.of(pojo.getId()));
         } else {
             userService.get(pojo.getUserId());
+        }
+        if (pojo.getCountry() == null) {
+            throw new MerchantMissingRequiredAttributeException("country", Optional.of(pojo.getId()));
         }
         if (pojo.getIncomingFeeRate() == null) {
             throw new MerchantMissingRequiredAttributeException("incomingFeeRate", Optional.of(pojo.getId()));

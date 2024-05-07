@@ -29,6 +29,8 @@ public class BalanceController {
         return balanceRestMapper.mapModelToResponse(balanceService.get(merchantId, EntityType.MERCHANT));
     }
 
+    public BalanceResponse
+
     @PutMapping("/trader-teams/{traderTeamId}")
     public BalanceResponse updateTraderTeamBalance(@PathVariable String traderTeamId,
                                                    @RequestBody BalanceUpdateRequest balanceUpdateRequest)

@@ -19,6 +19,7 @@ public class TraderTeamRestMapper {
                 traderTeam.getTraderOutgoingFeeRate(),
                 traderTeam.getLeaderIncomingFeeRate(),
                 traderTeam.getLeaderOutgoingFeeRate(),
+                traderTeam.isOnline(),
                 traderTeam.isKickedOut(),
                 traderTeam.getCreatedDate().atZone(ZoneId.systemDefault()),
                 traderTeam.getUpdatedDate().atZone(ZoneId.systemDefault()));

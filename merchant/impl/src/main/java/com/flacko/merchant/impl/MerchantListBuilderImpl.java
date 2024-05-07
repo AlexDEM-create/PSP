@@ -1,5 +1,6 @@
 package com.flacko.merchant.impl;
 
+import com.flacko.common.country.Country;
 import com.flacko.merchant.service.Merchant;
 import com.flacko.merchant.service.MerchantListBuilder;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,14 @@ public class MerchantListBuilderImpl implements MerchantListBuilder {
 
     private final MerchantRepository merchantRepository;
 
+    private Optional<Country> country = Optional.empty();
     private Optional<Boolean> outgoingTrafficStopped = Optional.empty();
+
+    @Override
+    public MerchantListBuilder withCountry(Country country) {
+        this.country = Optional.of(country);
+        return this;
+    }
 
     @Override
     public MerchantListBuilder withOutgoingTrafficStopped(boolean outgoingTrafficStopped) {
@@ -33,6 +41,10 @@ public class MerchantListBuilderImpl implements MerchantListBuilder {
 
     private Specification<Merchant> createSpecification() {
         Specification<Merchant> spec = Specification.where(null);
+        if (country.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("country"), country.get()));
+        }
         if (outgoingTrafficStopped.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("outgoing_traffic_stopped"), outgoingTrafficStopped.get()));

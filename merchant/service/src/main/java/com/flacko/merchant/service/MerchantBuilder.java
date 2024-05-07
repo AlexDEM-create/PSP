@@ -1,5 +1,6 @@
 package com.flacko.merchant.service;
 
+import com.flacko.common.country.Country;
 import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -14,6 +15,8 @@ public interface MerchantBuilder {
     MerchantBuilder withName(String name);
 
     MerchantBuilder withUserId(String name);
+
+    MerchantBuilder withCountry(Country country);
 
     MerchantBuilder withIncomingFeeRate(BigDecimal incomingFeeRate);
 

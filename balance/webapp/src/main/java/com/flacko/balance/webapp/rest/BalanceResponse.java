@@ -17,6 +17,7 @@ public record BalanceResponse(@JsonProperty(ID) String id,
     private static final String ENTITY_ID = "entity_id";
     private static final String ENTITY_TYPE = "entity_type";
     private static final String CURRENT_BALANCE = "current_balance";
+    private static final String CURRENCY = "currency";
     private static final String CREATED_DATE = "created_date";
     private static final String UPDATED_DATE = "updated_date";
 

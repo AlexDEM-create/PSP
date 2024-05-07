@@ -1,6 +1,7 @@
 package com.flacko.bank.impl;
 
 import com.flacko.bank.service.Bank;
+import com.flacko.common.country.Country;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,8 +30,9 @@ public class BankPojo implements Bank {
     @Column(nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String country;
+    private Country country;
 
     @Column(name = "created_date", nullable = false)
     private Instant createdDate;

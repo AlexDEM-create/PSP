@@ -34,7 +34,7 @@ public class TerminalPojo implements Terminal {
     private boolean verified;
 
     @Column(nullable = false)
-    private boolean active;
+    private boolean online;
 
     @Column
     private String model;
