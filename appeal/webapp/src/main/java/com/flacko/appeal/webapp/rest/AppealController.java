@@ -9,6 +9,7 @@ import com.flacko.common.exception.PaymentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,10 +27,21 @@ public class AppealController {
         appealFilterRequest.paymentId().ifPresent(builder::withPaymentId);
         appealFilterRequest.source().ifPresent(builder::withSource);
         appealFilterRequest.currentState().ifPresent(builder::withCurrentState);
-        return builder.build()
+
+        List<AppealResponse> appeals = builder.build()
                 .stream()
                 .map(appealRestMapper::mapModelToResponse)
+                .filter(appeal -> appeal.currentState() == AppealState.INITIATED)
+                .sorted(Comparator.comparing(AppealResponse::createdDate).reversed())
                 .collect(Collectors.toList());
+
+        appeals.addAll(builder.build()
+                .stream()
+                .map(appealRestMapper::mapModelToResponse)
+                .filter(appeal -> appeal.currentState() != AppealState.INITIATED)
+                .sorted(Comparator.comparing(AppealResponse::createdDate).reversed())
+                .collect(Collectors.toList()));
+        return appeals;
     }
 
     @GetMapping("/{appealId}")
