@@ -48,7 +48,7 @@ public class AppealController {
         return appealRestMapper.mapModelToResponse(appeal);
     }
 
-    @PostMapping("/{appealId}/resolve")
+    @PatchMapping("/{appealId}/resolve")
     public AppealResponse resolve(@PathVariable String appealId)
             throws AppealNotFoundException, AppealMissingRequiredAttributeException,
             AppealIllegalStateTransitionException, PaymentNotFoundException, AppealIllegalPaymentCurrentStateException {
@@ -58,12 +58,22 @@ public class AppealController {
         return appealRestMapper.mapModelToResponse(appeal);
     }
 
-    @PostMapping("/{appealId}/reject")
+    @PatchMapping("/{appealId}/reject")
     public AppealResponse reject(@PathVariable String appealId)
             throws AppealNotFoundException, AppealMissingRequiredAttributeException,
             AppealIllegalStateTransitionException, PaymentNotFoundException, AppealIllegalPaymentCurrentStateException {
         AppealBuilder builder = appealService.update(appealId);
         builder.withState(AppealState.REJECTED);
+        Appeal appeal = builder.build();
+        return appealRestMapper.mapModelToResponse(appeal);
+    }
+
+    @PatchMapping("/{appealId}/review")
+    public AppealResponse review(@PathVariable String appealId)
+            throws AppealNotFoundException, AppealMissingRequiredAttributeException,
+            AppealIllegalStateTransitionException, PaymentNotFoundException, AppealIllegalPaymentCurrentStateException {
+        AppealBuilder builder = appealService.update(appealId);
+        builder.withState(AppealState.UNDER_REVIEW);
         Appeal appeal = builder.build();
         return appealRestMapper.mapModelToResponse(appeal);
     }
