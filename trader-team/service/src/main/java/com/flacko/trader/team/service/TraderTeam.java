@@ -24,6 +24,8 @@ public interface TraderTeam {
 
     BigDecimal getLeaderOutgoingFeeRate();
 
+    boolean isOnline();
+
     boolean isKickedOut();
 
     Instant getCreatedDate();

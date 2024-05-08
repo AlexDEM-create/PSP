@@ -27,11 +27,11 @@ public class TerminalHealthCheckScheduler {
             if (terminal.getUpdatedDate().plusSeconds(30).isBefore(Instant.now())) {
                 try {
                     terminalService.update(terminal.getId())
-                            .withActive(false)
+                            .withOnline(false)
                             .build();
                 } catch (TerminalMissingRequiredAttributeException | TraderTeamNotFoundException |
                         TerminalNotFoundException e) {
-                    log.error(String.format("Could not mark terminal %s as inactive", terminal.getId()), e);
+                    log.error(String.format("Could not mark terminal %s as offline", terminal.getId()), e);
                 }
             }
         }

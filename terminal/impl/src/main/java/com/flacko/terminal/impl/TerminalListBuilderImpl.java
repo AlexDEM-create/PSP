@@ -20,7 +20,7 @@ public class TerminalListBuilderImpl implements TerminalListBuilder {
 
     private Optional<String> traderTeamId = Optional.empty();
     private Optional<Boolean> verified = Optional.empty();
-    private Optional<Boolean> active = Optional.empty();
+    private Optional<Boolean> online = Optional.empty();
 
     @Override
     public TerminalListBuilder withTraderTeamId(String traderTeamId) {
@@ -35,8 +35,8 @@ public class TerminalListBuilderImpl implements TerminalListBuilder {
     }
 
     @Override
-    public TerminalListBuilder withActive(Boolean active) {
-        this.active = Optional.of(active);
+    public TerminalListBuilder withOnline(Boolean online) {
+        this.online = Optional.of(online);
         return this;
     }
 
@@ -55,9 +55,9 @@ public class TerminalListBuilderImpl implements TerminalListBuilder {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("verified"), verified.get()));
         }
-        if (active.isPresent()) {
+        if (online.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("active"), active.get()));
+                    criteriaBuilder.equal(root.get("online"), online.get()));
         }
         return spec;
     }

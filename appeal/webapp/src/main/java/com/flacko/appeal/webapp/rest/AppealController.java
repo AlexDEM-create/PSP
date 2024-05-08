@@ -9,6 +9,7 @@ import com.flacko.common.exception.PaymentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,9 +27,24 @@ public class AppealController {
         appealFilterRequest.paymentId().ifPresent(builder::withPaymentId);
         appealFilterRequest.source().ifPresent(builder::withSource);
         appealFilterRequest.currentState().ifPresent(builder::withCurrentState);
-        return builder.build()
+
+        List<AppealResponse> appeals = builder.build()
                 .stream()
                 .map(appealRestMapper::mapModelToResponse)
+                .filter(appeal -> appeal.currentState() == AppealState.INITIATED)
+                .sorted(Comparator.comparing(AppealResponse::createdDate).reversed())
+                .collect(Collectors.toList());
+
+        appeals.addAll(builder.build()
+                .stream()
+                .map(appealRestMapper::mapModelToResponse)
+                .filter(appeal -> appeal.currentState() != AppealState.INITIATED)
+                .sorted(Comparator.comparing(AppealResponse::createdDate).reversed())
+                .collect(Collectors.toList()));
+
+        return appeals.stream()
+                .skip(appealFilterRequest.offset())
+                .limit(appealFilterRequest.limit())
                 .collect(Collectors.toList());
     }
 
@@ -48,7 +64,7 @@ public class AppealController {
         return appealRestMapper.mapModelToResponse(appeal);
     }
 
-    @PostMapping("/{appealId}/resolve")
+    @PatchMapping("/{appealId}/resolve")
     public AppealResponse resolve(@PathVariable String appealId)
             throws AppealNotFoundException, AppealMissingRequiredAttributeException,
             AppealIllegalStateTransitionException, PaymentNotFoundException, AppealIllegalPaymentCurrentStateException {
@@ -58,12 +74,22 @@ public class AppealController {
         return appealRestMapper.mapModelToResponse(appeal);
     }
 
-    @PostMapping("/{appealId}/reject")
+    @PatchMapping("/{appealId}/reject")
     public AppealResponse reject(@PathVariable String appealId)
             throws AppealNotFoundException, AppealMissingRequiredAttributeException,
             AppealIllegalStateTransitionException, PaymentNotFoundException, AppealIllegalPaymentCurrentStateException {
         AppealBuilder builder = appealService.update(appealId);
         builder.withState(AppealState.REJECTED);
+        Appeal appeal = builder.build();
+        return appealRestMapper.mapModelToResponse(appeal);
+    }
+
+    @PatchMapping("/{appealId}/review")
+    public AppealResponse review(@PathVariable String appealId)
+            throws AppealNotFoundException, AppealMissingRequiredAttributeException,
+            AppealIllegalStateTransitionException, PaymentNotFoundException, AppealIllegalPaymentCurrentStateException {
+        AppealBuilder builder = appealService.update(appealId);
+        builder.withState(AppealState.UNDER_REVIEW);
         Appeal appeal = builder.build();
         return appealRestMapper.mapModelToResponse(appeal);
     }

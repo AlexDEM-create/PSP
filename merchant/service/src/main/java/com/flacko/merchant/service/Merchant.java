@@ -1,5 +1,7 @@
 package com.flacko.merchant.service;
 
+import com.flacko.common.country.Country;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
@@ -13,6 +15,8 @@ public interface Merchant {
     String getName();
 
     String getUserId();
+
+    Country getCountry();
 
     BigDecimal getIncomingFeeRate();
 

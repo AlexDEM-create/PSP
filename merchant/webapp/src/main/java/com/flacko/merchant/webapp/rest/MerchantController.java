@@ -31,6 +31,8 @@ public class MerchantController {
         return builder.build()
                 .stream()
                 .map(merchantRestMapper::mapModelToResponse)
+                .skip(merchantFilterRequest.offset())
+                .limit(merchantFilterRequest.limit())
                 .collect(Collectors.toList());
     }
 
@@ -47,6 +49,7 @@ public class MerchantController {
         MerchantBuilder builder = merchantService.create();
         builder.withName(merchantCreateRequest.name())
                 .withUserId(merchantCreateRequest.userId())
+                .withCountry(merchantCreateRequest.country())
                 .withIncomingFeeRate(merchantCreateRequest.incomingFeeRate())
                 .withOutgoingFeeRate(merchantCreateRequest.outgoingFeeRate());
         Merchant merchant = builder.build();

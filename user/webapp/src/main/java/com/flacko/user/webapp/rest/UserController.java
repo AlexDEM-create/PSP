@@ -29,6 +29,8 @@ public class UserController {
         userFilterRequest.role().ifPresent(builder::withRole);
         return builder.build().stream()
                 .map(userRestMapper::mapModelToResponse)
+                .skip(userFilterRequest.offset())
+                .limit(userFilterRequest.limit())
                 .collect(Collectors.toList());
     }
 

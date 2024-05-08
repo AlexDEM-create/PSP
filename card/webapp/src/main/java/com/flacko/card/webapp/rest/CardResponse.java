@@ -9,7 +9,7 @@ public record CardResponse(@JsonProperty(ID) String id,
                            @JsonProperty(BANK_ID) String bankId,
                            @JsonProperty(TRADER_TEAM_ID) String traderTeamId,
                            @JsonProperty(TERMINAL_ID) String terminalId,
-                           @JsonProperty(ACTIVE) boolean active,
+                           @JsonProperty(ONLINE) boolean online,
                            @JsonProperty(CREATED_DATE) ZonedDateTime createdDate,
                            @JsonProperty(UPDATED_DATE) ZonedDateTime updatedDate) {
 
@@ -18,7 +18,7 @@ public record CardResponse(@JsonProperty(ID) String id,
     private static final String BANK_ID = "bank_id";
     private static final String TRADER_TEAM_ID = "trader_team_id";
     private static final String TERMINAL_ID = "terminal_id";
-    private static final String ACTIVE = "active";
+    private static final String ONLINE = "online";
     private static final String CREATED_DATE = "created_date";
     private static final String UPDATED_DATE = "updated_date";
 

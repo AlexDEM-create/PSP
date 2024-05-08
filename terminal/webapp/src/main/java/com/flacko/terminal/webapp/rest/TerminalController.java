@@ -27,10 +27,12 @@ public class TerminalController {
         TerminalListBuilder builder = terminalService.list();
         terminalFilterRequest.traderTeamId().ifPresent(builder::withTraderTeamId);
         terminalFilterRequest.verified().ifPresent(builder::withVerified);
-        terminalFilterRequest.active().ifPresent(builder::withActive);
+        terminalFilterRequest.online().ifPresent(builder::withOnline);
         return builder.build()
                 .stream()
                 .map(terminalRestMapper::mapModelToResponse)
+                .skip(terminalFilterRequest.offset())
+                .limit(terminalFilterRequest.limit())
                 .collect(Collectors.toList());
     }
 
@@ -76,7 +78,7 @@ public class TerminalController {
     public TerminalResponse healthCheck(@PathVariable String terminalId) throws TerminalNotFoundException,
             TraderTeamNotFoundException, TerminalMissingRequiredAttributeException {
         TerminalBuilder builder = terminalService.update(terminalId);
-        builder.withActive(true);
+        builder.withOnline(true);
         Terminal terminal = builder.build();
         return terminalRestMapper.mapModelToResponse(terminal);
     }

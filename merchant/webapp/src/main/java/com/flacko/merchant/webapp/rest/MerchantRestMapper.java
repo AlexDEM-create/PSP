@@ -13,6 +13,7 @@ public class MerchantRestMapper {
         return new MerchantResponse(merchant.getId(),
                 merchant.getName(),
                 merchant.getUserId(),
+                merchant.getCountry(),
                 merchant.getIncomingFeeRate(),
                 merchant.getOutgoingFeeRate(),
                 merchant.isOutgoingTrafficStopped(),

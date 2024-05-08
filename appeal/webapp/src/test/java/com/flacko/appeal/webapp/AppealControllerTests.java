@@ -5,11 +5,11 @@ import com.flacko.appeal.service.Appeal;
 import com.flacko.appeal.service.AppealService;
 import com.flacko.appeal.service.AppealSource;
 import com.flacko.appeal.service.AppealState;
-import com.flacko.appeal.service.exception.AppealIllegalPaymentCurrentStateException;
 import com.flacko.appeal.service.exception.AppealMissingRequiredAttributeException;
 import com.flacko.appeal.webapp.rest.AppealCreateRequest;
 import com.flacko.bank.service.BankService;
 import com.flacko.card.service.CardService;
+import com.flacko.common.country.Country;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.state.PaymentState;
 import com.flacko.merchant.service.MerchantService;
@@ -43,7 +43,6 @@ import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -129,7 +128,7 @@ public class AppealControllerTests {
 
         String bankId = bankService.create()
                 .withName("test_bank")
-                .withCountry("Russia")
+                .withCountry(Country.RUSSIA)
                 .build()
                 .getId();
 

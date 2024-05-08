@@ -40,7 +40,9 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
     @Override
     public TraderTeamBuilder initializeNew() {
         pojoBuilder = TraderTeamPojo.builder()
-                .id(new IdGenerator().generateId());
+                .id(new IdGenerator().generateId())
+                .online(false)
+                .kickedOut(false);
         return this;
     }
 
@@ -56,6 +58,7 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
                 .traderOutgoingFeeRate(existingTraderTeam.getTraderOutgoingFeeRate())
                 .leaderIncomingFeeRate(existingTraderTeam.getLeaderIncomingFeeRate())
                 .leaderOutgoingFeeRate(existingTraderTeam.getLeaderOutgoingFeeRate())
+                .online(existingTraderTeam.isOnline())
                 .kickedOut(existingTraderTeam.isKickedOut())
                 .createdDate(existingTraderTeam.getCreatedDate())
                 .updatedDate(now)
@@ -102,6 +105,12 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
     @Override
     public TraderTeamBuilder withLeaderOutgoingFeeRate(BigDecimal leaderOutgoingFeeRate) {
         pojoBuilder.leaderOutgoingFeeRate(leaderOutgoingFeeRate);
+        return this;
+    }
+
+    @Override
+    public TraderTeamBuilder withOnline(boolean online) {
+        pojoBuilder.online(online);
         return this;
     }
 

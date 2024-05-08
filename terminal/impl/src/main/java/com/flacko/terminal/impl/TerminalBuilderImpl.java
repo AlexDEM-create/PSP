@@ -31,7 +31,7 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
         pojoBuilder = TerminalPojo.builder()
                 .id(new IdGenerator().generateId())
                 .verified(false)
-                .active(false);
+                .online(false);
         return this;
     }
 
@@ -64,8 +64,8 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
     }
 
     @Override
-    public TerminalBuilder withActive(boolean active) {
-        pojoBuilder.active(active);
+    public TerminalBuilder withOnline(boolean online) {
+        pojoBuilder.online(online);
         return this;
     }
 
