@@ -115,7 +115,7 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
             if (response.getStatusCode() == HttpStatus.OK) {
                 return createReceiptPaymentVerification(Objects.requireNonNull(response.getBody()), file, paymentId);
             } else {
-                log.warn(String.format("Payment %s verification failed. verificationResponse=%s", paymentId, response));
+                log.warn(String.format("OutgoingPayment %s verification failed. verificationResponse=%s", paymentId, response));
                 throw new ReceiptPaymentVerificationFailedException(paymentId);
             }
         } catch (Exception e) {
