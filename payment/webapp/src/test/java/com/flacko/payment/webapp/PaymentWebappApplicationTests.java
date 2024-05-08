@@ -2,7 +2,8 @@ package com.flacko.payment.webapp;
 
 import com.flacko.appeal.service.AppealService;
 import com.flacko.bank.service.BankService;
-import com.flacko.card.service.CardService;
+import com.flacko.common.country.Country;
+import com.flacko.payment.method.service.PaymentMethodService;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.state.PaymentState;
 import com.flacko.merchant.service.Merchant;
@@ -63,7 +64,7 @@ public class PaymentWebappApplicationTests {
     private TraderTeamService traderTeamService;
 
     @Autowired
-    private CardService cardService;
+    private PaymentMethodService paymentMethodService;
 
     @Autowired
     private UserService userService;
@@ -120,7 +121,7 @@ public class PaymentWebappApplicationTests {
 
         String bankId = bankService.create()
                 .withName("test_bank")
-                .withCountry("Russia")
+                .withCountry(Country.RUSSIA)
                 .build()
                 .getId();
 
@@ -132,7 +133,7 @@ public class PaymentWebappApplicationTests {
                 .build()
                 .getId();
 
-        String cardId = cardService.create()
+        String cardId = paymentMethodService.create()
                 .withNumber("1234567812345678")
                 .withBankId(bankId)
                 .withTraderTeamId(traderTeamId)

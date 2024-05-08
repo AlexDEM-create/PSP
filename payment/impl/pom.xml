@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>com.flacko</groupId>
-            <artifactId>card-service</artifactId>
+            <artifactId>payment-method-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>

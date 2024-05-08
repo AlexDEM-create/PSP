@@ -1,7 +1,7 @@
 package com.flacko.payment.service;
 
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.CardNotFoundException;
+import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.state.PaymentState;
@@ -28,6 +28,6 @@ public interface PaymentBuilder {
     PaymentBuilder withState(PaymentState newState) throws PaymentIllegalStateTransitionException;
 
     Payment build() throws PaymentMissingRequiredAttributeException, TraderTeamNotFoundException,
-            MerchantNotFoundException, CardNotFoundException, PaymentInvalidAmountException;
+            MerchantNotFoundException, PaymentMethodNotFoundException, PaymentInvalidAmountException;
 
 }

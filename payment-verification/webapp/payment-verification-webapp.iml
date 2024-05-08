@@ -14,7 +14,9 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="payment-verification-webapp" />
+        </datasource-mapping>
         <naming-strategy-map />
       </configuration>
     </facet>
@@ -52,7 +54,7 @@
     <orderEntry type="module" module-name="payment-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="merchant-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="trader-team-service" scope="RUNTIME" />
-    <orderEntry type="module" module-name="card-service" scope="RUNTIME" />
+    <orderEntry type="module" module-name="payment-method-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="user-impl" scope="RUNTIME" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.10.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.3.0" level="project" />

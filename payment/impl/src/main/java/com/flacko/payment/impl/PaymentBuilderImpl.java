@@ -1,8 +1,8 @@
 package com.flacko.payment.impl;
 
-import com.flacko.card.service.CardService;
+import com.flacko.payment.method.service.PaymentMethodService;
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.CardNotFoundException;
+import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.id.IdGenerator;
@@ -32,7 +32,7 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
     private final PaymentRepository paymentRepository;
     private final MerchantService merchantService;
     private final TraderTeamService traderTeamService;
-    private final CardService cardService;
+    private final PaymentMethodService paymentMethodService;
 
     private PaymentPojo.PaymentPojoBuilder pojoBuilder;
     private String id;
@@ -114,7 +114,7 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
 
     @Override
     public Payment build() throws PaymentMissingRequiredAttributeException, TraderTeamNotFoundException,
-            MerchantNotFoundException, CardNotFoundException, PaymentInvalidAmountException {
+            MerchantNotFoundException, PaymentMethodNotFoundException, PaymentInvalidAmountException {
         PaymentPojo payment = pojoBuilder.build();
         validate(payment);
         paymentRepository.save(payment);
@@ -122,7 +122,7 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
     }
 
     private void validate(PaymentPojo pojo) throws PaymentMissingRequiredAttributeException, MerchantNotFoundException,
-            TraderTeamNotFoundException, CardNotFoundException, PaymentInvalidAmountException {
+            TraderTeamNotFoundException, PaymentMethodNotFoundException, PaymentInvalidAmountException {
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new PaymentMissingRequiredAttributeException("id", Optional.empty());
         }
@@ -139,7 +139,7 @@ public class PaymentBuilderImpl implements InitializablePaymentBuilder {
         if (pojo.getCardId() == null || pojo.getCardId().isBlank()) {
             throw new PaymentMissingRequiredAttributeException("cardId", Optional.of(pojo.getId()));
         } else {
-            cardService.get(pojo.getCardId());
+            paymentMethodService.get(pojo.getCardId());
         }
         if (pojo.getAmount() == null) {
             throw new PaymentMissingRequiredAttributeException("amount", Optional.of(pojo.getId()));

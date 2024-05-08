@@ -51,7 +51,7 @@ public class AppealListBuilderImpl implements AppealListBuilder {
         Specification<Appeal> spec = Specification.where(null);
         if (paymentId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("payment_id"), paymentId.get()));
+                    criteriaBuilder.equal(root.get("paymentId"), paymentId.get()));
         }
         if (source.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
@@ -59,7 +59,7 @@ public class AppealListBuilderImpl implements AppealListBuilder {
         }
         if (currentState.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("current_state"), currentState.get()));
+                    criteriaBuilder.equal(root.get("currentState"), currentState.get()));
         }
         return spec;
     }

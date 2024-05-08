@@ -15,25 +15,38 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/trader-teams")
 public class TraderTeamController {
+
+    private static final String ONLINE = "online";
+    private static final String KICKED_OUT = "kicked_out";
+    private static final String LEADER_ID = "leader_id";
+    private static final String LIMIT = "limit";
+    private static final String OFFSET = "offset";
+
     private final TraderTeamService traderTeamService;
     private final TraderTeamRestMapper traderTeamRestMapper;
 
     @GetMapping
-    public List<TraderTeamResponse> list(TraderTeamFilterRequest traderTeamFilterRequest) {
+    public List<TraderTeamResponse> list(@RequestParam(ONLINE) Optional<Boolean> online,
+                                         @RequestParam(KICKED_OUT) Optional<Boolean> kickedOut,
+                                         @RequestParam(LEADER_ID) Optional<String> leaderId,
+                                         @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
+                                         @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
         TraderTeamListBuilder builder = traderTeamService.list();
-        traderTeamFilterRequest.kickedOut().ifPresent(builder::withKickedOut);
-        traderTeamFilterRequest.leaderId().ifPresent(builder::withLeaderId);
+        online.ifPresent(builder::withOnline);
+        kickedOut.ifPresent(builder::withKickedOut);
+        leaderId.ifPresent(builder::withLeaderId);
         return builder.build()
                 .stream()
                 .map(traderTeamRestMapper::mapModelToResponse)
-                .skip(traderTeamFilterRequest.offset())
-                .limit(traderTeamFilterRequest.limit())
+                .skip(offset)
+                .limit(limit)
                 .collect(Collectors.toList());
     }
 

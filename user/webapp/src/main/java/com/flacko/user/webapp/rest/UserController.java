@@ -1,10 +1,7 @@
 package com.flacko.user.webapp.rest;
 
 import com.flacko.common.exception.UserNotFoundException;
-import com.flacko.user.service.User;
-import com.flacko.user.service.UserBuilder;
-import com.flacko.user.service.UserListBuilder;
-import com.flacko.user.service.UserService;
+import com.flacko.user.service.*;
 import com.flacko.user.service.exception.UserLoginAlreadyInUseException;
 import com.flacko.user.service.exception.UserMissingRequiredAttributeException;
 import com.flacko.user.service.exception.UserWeakPasswordException;
@@ -12,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -19,18 +17,26 @@ import java.util.stream.Collectors;
 @RequestMapping("/users")
 public class UserController {
 
+    private static final String BANNED = "banned";
+    private static final String ROLE = "role";
+    private static final String LIMIT = "limit";
+    private static final String OFFSET = "offset";
+
     private final UserService userService;
     private final UserRestMapper userRestMapper;
 
     @GetMapping
-    public List<UserResponse> list(UserFilterRequest userFilterRequest) {
+    public List<UserResponse> list(@RequestParam(BANNED) Optional<Boolean> banned,
+                                   @RequestParam(ROLE) Optional<UserRole> role,
+                                   @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
+                                   @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
         UserListBuilder builder = userService.list();
-        userFilterRequest.banned().ifPresent(builder::withBanned);
-        userFilterRequest.role().ifPresent(builder::withRole);
+        banned.ifPresent(builder::withBanned);
+        role.ifPresent(builder::withRole);
         return builder.build().stream()
                 .map(userRestMapper::mapModelToResponse)
-                .skip(userFilterRequest.offset())
-                .limit(userFilterRequest.limit())
+                .skip(offset)
+                .limit(limit)
                 .collect(Collectors.toList());
     }
 

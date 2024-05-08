@@ -14,7 +14,9 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="merchant-webapp" />
+        </datasource-mapping>
         <naming-strategy-map />
       </configuration>
     </facet>
@@ -58,6 +60,15 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-commons:1.10.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apiguardian:apiguardian-api:1.1.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.h2database:h2:2.2.224" level="project" />
+    <orderEntry type="module" module-name="payment-service" scope="TEST" />
+    <orderEntry type="module" module-name="payment-impl" scope="TEST" />
+    <orderEntry type="module" module-name="appeal-service" scope="TEST" />
+    <orderEntry type="module" module-name="appeal-impl" scope="TEST" />
+    <orderEntry type="module" module-name="payment-method-impl" scope="TEST" />
+    <orderEntry type="module" module-name="payment-method-service" scope="TEST" />
+    <orderEntry type="module" module-name="terminal-service" scope="TEST" />
+    <orderEntry type="module" module-name="terminal-impl" scope="TEST" />
+    <orderEntry type="library" scope="TEST" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-data-jpa:3.2.4" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-aop:3.2.4" level="project" />
     <orderEntry type="library" name="Maven: org.aspectj:aspectjweaver:1.9.21" level="project" />

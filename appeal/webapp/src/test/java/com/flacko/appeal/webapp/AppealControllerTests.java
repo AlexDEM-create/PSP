@@ -8,11 +8,12 @@ import com.flacko.appeal.service.AppealState;
 import com.flacko.appeal.service.exception.AppealMissingRequiredAttributeException;
 import com.flacko.appeal.webapp.rest.AppealCreateRequest;
 import com.flacko.bank.service.BankService;
-import com.flacko.card.service.CardService;
 import com.flacko.common.country.Country;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.state.PaymentState;
 import com.flacko.merchant.service.MerchantService;
+import com.flacko.payment.method.service.PaymentMethodService;
+import com.flacko.payment.method.service.PaymentMethodType;
 import com.flacko.payment.service.PaymentDirection;
 import com.flacko.payment.service.PaymentService;
 import com.flacko.terminal.service.TerminalService;
@@ -44,8 +45,7 @@ import java.util.stream.Stream;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -71,7 +71,7 @@ public class AppealControllerTests {
     private TraderTeamService traderTeamService;
 
     @Autowired
-    private CardService cardService;
+    private PaymentMethodService paymentMethodService;
 
     @Autowired
     private UserService userService;
@@ -83,6 +83,9 @@ public class AppealControllerTests {
     private TerminalService terminalService;
 
     private String paymentId;
+    private String merchantId;
+    private String traderTeamId;
+    private String cardId;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -93,9 +96,10 @@ public class AppealControllerTests {
                 .build()
                 .getId();
 
-        String merchantId = merchantService.create()
+        merchantId = merchantService.create()
                 .withName("test_merchant")
                 .withUserId(merchantUserId)
+                .withCountry(Country.RUSSIA)
                 .withIncomingFeeRate(BigDecimal.valueOf(0.02))
                 .withOutgoingFeeRate(BigDecimal.valueOf(0.02))
                 .build()
@@ -115,7 +119,7 @@ public class AppealControllerTests {
                 .build()
                 .getId();
 
-        String traderTeamId = traderTeamService.create()
+        traderTeamId = traderTeamService.create()
                 .withName("test_merchant")
                 .withUserId(traderTeamUserId)
                 .withLeaderId(traderTeamLeaderId)
@@ -140,8 +144,11 @@ public class AppealControllerTests {
                 .build()
                 .getId();
 
-        String cardId = cardService.create()
+        cardId = paymentMethodService.create()
+                .withType(PaymentMethodType.BANK_CARD)
                 .withNumber("1234567812345678")
+                .withHolderName("John Grey")
+                .withCurrency(Currency.RUB)
                 .withBankId(bankId)
                 .withTraderTeamId(traderTeamId)
                 .withTerminalId(terminalId)
@@ -166,6 +173,19 @@ public class AppealControllerTests {
 
     @Test
     public void testListAppeals() throws Exception {
+        String paymentId = paymentService.create()
+                .withMerchantId(merchantId)
+                .withTraderTeamId(traderTeamId)
+                .withCardId(cardId)
+                .withAmount(BigDecimal.valueOf(10000))
+                .withCurrency(Currency.RUB)
+                .withDirection(PaymentDirection.INCOMING)
+                .withState(PaymentState.VERIFYING)
+                .build()
+                .getId();
+        paymentService.update(paymentId)
+                .withState(PaymentState.FAILED_TO_VERIFY)
+                .build();
         Appeal appeal1 = appealService.create()
                 .withPaymentId(paymentId)
                 .withSource(AppealSource.TRADER_TEAM)
@@ -176,7 +196,7 @@ public class AppealControllerTests {
                 .withState(AppealState.UNDER_REVIEW)
                 .build();
 
-        mockMvc.perform(get("/appeals"))
+        mockMvc.perform(get("/appeals?payment_id=" + paymentId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isArray())
@@ -242,7 +262,8 @@ public class AppealControllerTests {
 
     @ParameterizedTest
     @MethodSource("provideStringsForTest")
-    public void testCreateAppealThrowsAppealMissingRequiredAttributeException(String input) throws Exception {
+    public void testCreateAppealThrowsAppealMissingRequiredAttributeExceptionInvalidPaymentId(String input)
+            throws Exception {
         AppealCreateRequest request = new AppealCreateRequest(input, AppealSource.TRADER_TEAM);
         ObjectMapper objectMapper = new ObjectMapper();
         mockMvc.perform(post("/appeals")
@@ -289,11 +310,11 @@ public class AppealControllerTests {
                 .withState(AppealState.UNDER_REVIEW)
                 .build();
 
-        this.mockMvc.perform(post("/appeals/{appealId}/resolve", appeal.getId())
+        this.mockMvc.perform(patch("/appeals/{appealId}/resolve", appeal.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.currentState").value(AppealState.RESOLVED.toString()));
+                .andExpect(jsonPath("$.current_state").value(AppealState.RESOLVED.toString()));
 
     }
 
@@ -304,7 +325,7 @@ public class AppealControllerTests {
                 .withSource(AppealSource.TRADER_TEAM)
                 .build();
 
-        this.mockMvc.perform(post("/appeals/{appealId}/resolve", appeal.getId())
+        this.mockMvc.perform(patch("/appeals/{appealId}/resolve", appeal.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
@@ -312,7 +333,7 @@ public class AppealControllerTests {
 
     @Test
     public void testResolveAppealThrowsPaymentNotFoundException() throws Exception {
-        this.mockMvc.perform(post("/appeals/{appealId}/resolve", "invalidAppealId")
+        this.mockMvc.perform(patch("/appeals/{appealId}/resolve", "invalidAppealId")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -336,21 +357,6 @@ public class AppealControllerTests {
     }
 
     @Test
-    public void testResolveAppealException() throws Exception {
-        Appeal appeal = appealService.create()
-                .withPaymentId(paymentId)
-                .withSource(AppealSource.TRADER_TEAM)
-                .build();
-
-        this.mockMvc.perform(post("/appeals/{appealId}/resolve", appeal.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result ->
-                        assertTrue(result.getResolvedException() instanceof AppealMissingRequiredAttributeException));
-    }
-
-    @Test
     public void testAppealNotFoundException() throws Exception {
         this.mockMvc.perform(get("/appeals/{appealId}", "invalidAppealId")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -369,11 +375,11 @@ public class AppealControllerTests {
                 .withState(AppealState.UNDER_REVIEW)
                 .build();
 
-        this.mockMvc.perform(post("/appeals/{appealId}/reject", appeal.getId())
+        this.mockMvc.perform(patch("/appeals/{appealId}/reject", appeal.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.currentState").value(AppealState.REJECTED.toString()));
+                .andExpect(jsonPath("$.current_state").value(AppealState.REJECTED.toString()));
     }
 
     @Test
@@ -383,7 +389,7 @@ public class AppealControllerTests {
                 .withSource(AppealSource.TRADER_TEAM)
                 .build();
 
-        this.mockMvc.perform(post("/appeals/{appealId}/reject", appeal.getId())
+        this.mockMvc.perform(patch("/appeals/{appealId}/reject", appeal.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
@@ -391,7 +397,7 @@ public class AppealControllerTests {
 
     @Test
     public void testRejectAppealThrowsPaymentNotFoundException() throws Exception {
-        this.mockMvc.perform(post("/appeals/{appealId}/reject", "invalidAppealId")
+        this.mockMvc.perform(patch("/appeals/{appealId}/reject", "invalidAppealId")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
@@ -404,25 +410,10 @@ public class AppealControllerTests {
                 .withSource(AppealSource.TRADER_TEAM)
                 .build();
 
-        this.mockMvc.perform(post("/appeals/{appealId}/reject", appeal.getId())
+        this.mockMvc.perform(patch("/appeals/{appealId}/reject", appeal.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
-    }
-
-    @Test
-    public void testRejectAppealMissingRequiredAttributeException() throws Exception {
-        Appeal appeal = appealService.create()
-                .withPaymentId(paymentId)
-                .withSource(AppealSource.TRADER_TEAM)
-                .build();
-
-        this.mockMvc.perform(post("/appeals/{appealId}/reject", appeal.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest())
-                .andExpect(result ->
-                        assertTrue(result.getResolvedException() instanceof AppealMissingRequiredAttributeException));
     }
 
 

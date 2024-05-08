@@ -63,10 +63,10 @@ services:
       - postgres
 
   card:
-    container_name: card
+    container_name: payment-method
     build:
       context: .
-      dockerfile: card/webapp/Dockerfile
+      dockerfile: payment-method/webapp/Dockerfile
     ports:
       - "8083:8080"
     environment:

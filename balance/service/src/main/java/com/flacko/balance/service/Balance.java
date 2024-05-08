@@ -18,7 +18,7 @@ public interface Balance {
 
     BigDecimal getCurrentBalance();
 
-    Currency getCurrency();
+//    Currency getCurrency();
 
     Instant getCreatedDate();
 

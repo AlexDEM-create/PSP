@@ -1,5 +1,6 @@
 package com.flacko.merchant.webapp.rest;
 
+import com.flacko.common.country.Country;
 import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -21,18 +23,27 @@ import java.util.stream.Collectors;
 @RequestMapping("/merchants")
 public class MerchantController {
 
+    private static final String COUNTRY = "country";
+    private static final String OUTGOING_TRAFFIC_STOPPED = "outgoing_traffic_stopped";
+    private static final String LIMIT = "limit";
+    private static final String OFFSET = "offset";
+
     private final MerchantService merchantService;
     private final MerchantRestMapper merchantRestMapper;
 
     @GetMapping
-    public List<MerchantResponse> list(MerchantFilterRequest merchantFilterRequest) {
+    public List<MerchantResponse> list(@RequestParam(COUNTRY) Optional<Country> country,
+                                       @RequestParam(OUTGOING_TRAFFIC_STOPPED) Optional<Boolean> outgoingTrafficStopped,
+                                       @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
+                                       @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
         MerchantListBuilder builder = merchantService.list();
-        merchantFilterRequest.outgoingTrafficStopped().ifPresent(builder::withOutgoingTrafficStopped);
+        country.ifPresent(builder::withCountry);
+        outgoingTrafficStopped.ifPresent(builder::withOutgoingTrafficStopped);
         return builder.build()
                 .stream()
                 .map(merchantRestMapper::mapModelToResponse)
-                .skip(merchantFilterRequest.offset())
-                .limit(merchantFilterRequest.limit())
+                .skip(offset)
+                .limit(limit)
                 .collect(Collectors.toList());
     }
 

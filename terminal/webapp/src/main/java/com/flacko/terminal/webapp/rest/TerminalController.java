@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -18,21 +19,30 @@ import java.util.stream.Collectors;
 @RequestMapping("/terminals")
 public class TerminalController {
 
+    private static final String TRADER_TEAM_ID = "trader_team_id";
+    private static final String VERIFIED = "verified";
+    private static final String ONLINE = "online";
+    private static final String LIMIT = "limit";
+    private static final String OFFSET = "offset";
+
     private final TerminalService terminalService;
     private final TerminalRestMapper terminalRestMapper;
 
-
     @GetMapping
-    public List<TerminalResponse> list(TerminalFilterRequest terminalFilterRequest) {
+    public List<TerminalResponse> list(@RequestParam(TRADER_TEAM_ID) Optional<String> traderTeamId,
+                                       @RequestParam(VERIFIED) Optional<Boolean> verified,
+                                       @RequestParam(ONLINE) Optional<Boolean> online,
+                                       @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
+                                       @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
         TerminalListBuilder builder = terminalService.list();
-        terminalFilterRequest.traderTeamId().ifPresent(builder::withTraderTeamId);
-        terminalFilterRequest.verified().ifPresent(builder::withVerified);
-        terminalFilterRequest.online().ifPresent(builder::withOnline);
+        traderTeamId.ifPresent(builder::withTraderTeamId);
+        verified.ifPresent(builder::withVerified);
+        online.ifPresent(builder::withOnline);
         return builder.build()
                 .stream()
                 .map(terminalRestMapper::mapModelToResponse)
-                .skip(terminalFilterRequest.offset())
-                .limit(terminalFilterRequest.limit())
+                .skip(offset)
+                .limit(limit)
                 .collect(Collectors.toList());
     }
 

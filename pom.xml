@@ -16,9 +16,9 @@
         <module>trader-team/impl</module>
         <module>trader-team/webapp</module>
 
-        <module>card/service</module>
-        <module>card/impl</module>
-        <module>card/webapp</module>
+        <module>payment-method/service</module>
+        <module>payment-method/impl</module>
+        <module>payment-method/webapp</module>
 
         <module>terminal/service</module>
         <module>terminal/impl</module>

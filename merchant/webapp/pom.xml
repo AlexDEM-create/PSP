@@ -90,13 +90,13 @@
 
         <dependency>
             <groupId>com.flacko</groupId>
-            <artifactId>card-impl</artifactId>
+            <artifactId>payment-method-impl</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.flacko</groupId>
-            <artifactId>card-service</artifactId>
+            <artifactId>payment-method-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>

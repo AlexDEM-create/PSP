@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -26,14 +27,16 @@ public class ReceiptPaymentVerificationController {
 
     @GetMapping
     public List<ReceiptPaymentVerificationResponse> list(
-            ReceiptPaymentVerificationFilterRequest receiptPaymentVerificationFilterRequest) {
+            @RequestParam(PAYMENT_ID) Optional<String> paymentId,
+            @RequestParam(value = "limit", defaultValue = "10") Integer limit,
+            @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
         ReceiptPaymentVerificationListBuilder builder = receiptPaymentVerificationService.list();
-        receiptPaymentVerificationFilterRequest.paymentId().ifPresent(builder::withPaymentId);
+        paymentId.ifPresent(builder::withPaymentId);
         return builder.build()
                 .stream()
                 .map(receiptPaymentVerificationRestMapper::mapModelToResponse)
-                .skip(receiptPaymentVerificationFilterRequest.offset())
-                .limit(receiptPaymentVerificationFilterRequest.limit())
+                .skip(offset)
+                .limit(limit)
                 .collect(Collectors.toList());
     }
 

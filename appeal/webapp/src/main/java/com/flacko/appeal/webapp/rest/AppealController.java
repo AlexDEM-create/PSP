@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -18,15 +19,25 @@ import java.util.stream.Collectors;
 @RequestMapping("/appeals")
 public class AppealController {
 
+    private static final String PAYMENT_ID = "payment_id";
+    private static final String SOURCE = "source";
+    private static final String CURRENT_STATE = "current_state";
+    private static final String LIMIT = "limit";
+    private static final String OFFSET = "offset";
+
     private final AppealService appealService;
     private final AppealRestMapper appealRestMapper;
 
     @GetMapping
-    public List<AppealResponse> list(AppealFilterRequest appealFilterRequest) {
+    public List<AppealResponse> list(@RequestParam(PAYMENT_ID) Optional<String> paymentId,
+                                     @RequestParam(SOURCE) Optional<AppealSource> source,
+                                     @RequestParam(CURRENT_STATE) Optional<AppealState> currentState,
+                                     @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
+                                     @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
         AppealListBuilder builder = appealService.list();
-        appealFilterRequest.paymentId().ifPresent(builder::withPaymentId);
-        appealFilterRequest.source().ifPresent(builder::withSource);
-        appealFilterRequest.currentState().ifPresent(builder::withCurrentState);
+        paymentId.ifPresent(builder::withPaymentId);
+        source.ifPresent(builder::withSource);
+        currentState.ifPresent(builder::withCurrentState);
 
         List<AppealResponse> appeals = builder.build()
                 .stream()
@@ -43,8 +54,8 @@ public class AppealController {
                 .collect(Collectors.toList()));
 
         return appeals.stream()
-                .skip(appealFilterRequest.offset())
-                .limit(appealFilterRequest.limit())
+                .skip(offset)
+                .limit(limit)
                 .collect(Collectors.toList());
     }
 
