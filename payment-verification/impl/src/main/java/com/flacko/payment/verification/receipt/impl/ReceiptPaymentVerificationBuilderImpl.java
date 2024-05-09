@@ -42,8 +42,8 @@ public class ReceiptPaymentVerificationBuilderImpl implements InitializableRecei
     }
 
     @Override
-    public ReceiptPaymentVerificationBuilder withPaymentId(String paymentId) {
-        pojoBuilder.paymentId(paymentId);
+    public ReceiptPaymentVerificationBuilder withOutgoingPaymentId(String outgoingPaymentId) {
+        pojoBuilder.outgoingPaymentId(outgoingPaymentId);
         return this;
     }
 
@@ -125,48 +125,57 @@ public class ReceiptPaymentVerificationBuilderImpl implements InitializableRecei
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new ReceiptPaymentVerificationMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (pojo.getPaymentId() == null || pojo.getPaymentId().isBlank()) {
-            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("paymentId", Optional.of(pojo.getId()));
+        if (pojo.getOutgoingPaymentId() == null || pojo.getOutgoingPaymentId().isBlank()) {
+            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("outgoingPaymentId",
+                    Optional.of(pojo.getId()));
         }
-        OutgoingPayment outgoingPayment = outgoingPaymentService.get(pojo.getPaymentId());
+        OutgoingPayment outgoingPayment = outgoingPaymentService.get(pojo.getOutgoingPaymentId());
         if (pojo.getRecipientFullName() == null || pojo.getRecipientFullName().isBlank()) {
-            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("recipientFullName", Optional.of(pojo.getId()));
+            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("recipientFullName",
+                    Optional.of(pojo.getId()));
         }
         if (pojo.getRecipientCardLastFourDigits() == null || pojo.getRecipientCardLastFourDigits().isBlank()) {
-            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("recipientCardLastFourDigits", Optional.of(pojo.getId()));
+            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("recipientCardLastFourDigits",
+                    Optional.of(pojo.getId()));
         } else if (!LAST_FOUR_DIGITS_PATTERN.matcher(pojo.getRecipientCardLastFourDigits()).matches()) {
-            throw new ReceiptPaymentVerificationInvalidCardLastFourDigitsException(pojo.getId(), pojo.getPaymentId(),
-                    "recipient", pojo.getRecipientCardLastFourDigits());
+            throw new ReceiptPaymentVerificationInvalidCardLastFourDigitsException(pojo.getId(),
+                    pojo.getOutgoingPaymentId(), "recipient", pojo.getRecipientCardLastFourDigits());
         }
         if (pojo.getSenderFullName() == null || pojo.getSenderFullName().isBlank()) {
-            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("senderFullName", Optional.of(pojo.getId()));
+            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("senderFullName",
+                    Optional.of(pojo.getId()));
         }
         if (pojo.getSenderCardLastFourDigits() == null || pojo.getSenderCardLastFourDigits().isBlank()) {
-            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("senderCardLastFourDigits", Optional.of(pojo.getId()));
+            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("senderCardLastFourDigits",
+                    Optional.of(pojo.getId()));
         } else if (!LAST_FOUR_DIGITS_PATTERN.matcher(pojo.getSenderCardLastFourDigits()).matches()) {
-            throw new ReceiptPaymentVerificationInvalidCardLastFourDigitsException(pojo.getId(), pojo.getPaymentId(),
-                    "sender", pojo.getSenderCardLastFourDigits());
+            throw new ReceiptPaymentVerificationInvalidCardLastFourDigitsException(pojo.getId(),
+                    pojo.getOutgoingPaymentId(), "sender", pojo.getSenderCardLastFourDigits());
         }
         if (pojo.getAmount() == null) {
             throw new ReceiptPaymentVerificationMissingRequiredAttributeException("amount", Optional.of(pojo.getId()));
         } else if (outgoingPayment.getAmount().compareTo(pojo.getAmount()) != 0) {
-            throw new ReceiptPaymentVerificationUnexpectedAmountException(pojo.getId(), pojo.getPaymentId(),
+            throw new ReceiptPaymentVerificationUnexpectedAmountException(pojo.getId(), pojo.getOutgoingPaymentId(),
                     outgoingPayment.getAmount(), pojo.getAmount());
         }
         if (pojo.getAmountCurrency() == null) {
-            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("amountCurrency", Optional.of(pojo.getId()));
+            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("amountCurrency",
+                    Optional.of(pojo.getId()));
         }
         if (pojo.getCommission() == null) {
-            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("commission", Optional.of(pojo.getId()));
+            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("commission",
+                    Optional.of(pojo.getId()));
         }
         if (pojo.getCommissionCurrency() == null) {
-            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("commissionCurrency", Optional.of(pojo.getId()));
+            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("commissionCurrency",
+                    Optional.of(pojo.getId()));
         }
         if (pojo.getData() == null) {
             throw new ReceiptPaymentVerificationMissingRequiredAttributeException("data", Optional.of(pojo.getId()));
         }
         if (pojo.getUploadedFile() == null) {
-            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("uploadedFile", Optional.of(pojo.getId()));
+            throw new ReceiptPaymentVerificationMissingRequiredAttributeException("uploadedFile",
+                    Optional.of(pojo.getId()));
         }
     }
 

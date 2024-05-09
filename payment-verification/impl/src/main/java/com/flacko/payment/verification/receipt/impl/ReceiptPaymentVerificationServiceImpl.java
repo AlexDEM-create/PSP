@@ -66,7 +66,7 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
 
     @Transactional
     @Override
-    public ReceiptPaymentVerification verify(MultipartFile file, String paymentId)
+    public ReceiptPaymentVerification verify(MultipartFile file, String outgoingPaymentId)
             throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException,
             ReceiptPaymentVerificationCurrencyNotSupportedException, IncomingPaymentNotFoundException,
             ReceiptPaymentVerificationInvalidCardLastFourDigitsException,
@@ -94,24 +94,17 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
 
             List<String> patterns = readPatterns();
 
-            System.out.println(patterns);
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            // Prepare form data
             MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
             formData.add("file", new FileSystemResource(fileAbsolutePath));
             for (String pattern : patterns) {
                 formData.add("patterns", pattern);
             }
 
-            // Prepare request entity
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(formData, headers);
 
-            System.out.println("Request Body: " + requestEntity.getBody());
-
-            // Make HTTP POST request
             ResponseEntity<ReceiptExtractedData> response = restTemplate.postForEntity(
                     receiptDataExtractorUrl,
                     requestEntity,
@@ -119,25 +112,32 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
 
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                return createReceiptPaymentVerification(Objects.requireNonNull(response.getBody()), file, paymentId);
+                ReceiptPaymentVerification receiptPaymentVerification =
+                        createReceiptPaymentVerification(Objects.requireNonNull(response.getBody()), file,
+                        outgoingPaymentId);
+
+                // update balances
+
+                return receiptPaymentVerification;
             } else {
-                log.warn(String.format("Outgoing payment %s verification failed. verificationResponse=%s", paymentId, response));
-                throw new ReceiptPaymentVerificationFailedException(paymentId);
+                log.warn(String.format("Outgoing payment %s verification failed. verificationResponse=%s",
+                        outgoingPaymentId, response));
+                throw new ReceiptPaymentVerificationFailedException(outgoingPaymentId);
             }
         } catch (IOException e) {
-            throw new ReceiptPaymentVerificationFailedException(paymentId, e);
+            throw new ReceiptPaymentVerificationFailedException(outgoingPaymentId, e);
         }
     }
 
     private ReceiptPaymentVerification createReceiptPaymentVerification(
-            ReceiptExtractedData extractedData, MultipartFile file, String paymentId)
+            ReceiptExtractedData extractedData, MultipartFile file, String outgoingPaymentId)
             throws IOException, ReceiptPaymentVerificationMissingRequiredAttributeException,
             ReceiptPaymentVerificationCurrencyNotSupportedException, ReceiptPaymentVerificationInvalidAmountException,
             IncomingPaymentNotFoundException, ReceiptPaymentVerificationUnexpectedAmountException,
             ReceiptPaymentVerificationInvalidCardLastFourDigitsException, OutgoingPaymentNotFoundException {
         ReceiptPaymentVerificationBuilder builder = serviceLocator.create(ReceiptPaymentVerificationBuilderImpl.class)
                 .initializeNew();
-        builder.withPaymentId(paymentId)
+        builder.withOutgoingPaymentId(outgoingPaymentId)
                 .withRecipientFullName(extractedData.getRecipientFullName())
                 .withRecipientCardLastFourDigits(extractedData.getRecipientCardLastFourDigits())
                 .withSenderFullName(extractedData.getSenderFullName())

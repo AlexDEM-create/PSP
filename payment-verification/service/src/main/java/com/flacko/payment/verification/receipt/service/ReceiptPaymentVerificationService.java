@@ -12,7 +12,7 @@ public interface ReceiptPaymentVerificationService {
 
     ReceiptPaymentVerification get(String id) throws ReceiptPaymentVerificationNotFoundException;
 
-    ReceiptPaymentVerification verify(MultipartFile file, String paymentId)
+    ReceiptPaymentVerification verify(MultipartFile file, String outgoingPaymentId)
             throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException, ReceiptPaymentVerificationCurrencyNotSupportedException, IncomingPaymentNotFoundException, ReceiptPaymentVerificationInvalidCardLastFourDigitsException, ReceiptPaymentVerificationMissingRequiredAttributeException, ReceiptPaymentVerificationInvalidAmountException, ReceiptPaymentVerificationUnexpectedAmountException, OutgoingPaymentNotFoundException;
 
 }

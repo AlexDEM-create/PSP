@@ -21,18 +21,18 @@ import java.util.stream.Collectors;
 public class ReceiptPaymentVerificationController {
 
     private static final String FILE = "file";
-    private static final String PAYMENT_ID = "payment_id";
+    private static final String OUTGOING_PAYMENT_ID = "outgoing_payment_id";
 
     private final ReceiptPaymentVerificationService receiptPaymentVerificationService;
     private final ReceiptPaymentVerificationRestMapper receiptPaymentVerificationRestMapper;
 
     @GetMapping
     public List<ReceiptPaymentVerificationResponse> list(
-            @RequestParam(PAYMENT_ID) Optional<String> paymentId,
+            @RequestParam(OUTGOING_PAYMENT_ID) Optional<String> outgoingPaymentId,
             @RequestParam(value = "limit", defaultValue = "10") Integer limit,
             @RequestParam(value = "offset", defaultValue = "0") Integer offset) {
         ReceiptPaymentVerificationListBuilder builder = receiptPaymentVerificationService.list();
-        paymentId.ifPresent(builder::withPaymentId);
+        outgoingPaymentId.ifPresent(builder::withOutgoingPaymentId);
         return builder.build()
                 .stream()
                 .map(receiptPaymentVerificationRestMapper::mapModelToResponse)
@@ -41,15 +41,16 @@ public class ReceiptPaymentVerificationController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/{paymentId}")
-    public ReceiptPaymentVerificationResponse get(@PathVariable String paymentId)
+    @GetMapping("/{outgoingPaymentId}")
+    public ReceiptPaymentVerificationResponse get(@PathVariable String outgoingPaymentId)
             throws ReceiptPaymentVerificationNotFoundException {
-        return receiptPaymentVerificationRestMapper.mapModelToResponse(receiptPaymentVerificationService.get(paymentId));
+        return receiptPaymentVerificationRestMapper.mapModelToResponse(
+                receiptPaymentVerificationService.get(outgoingPaymentId));
     }
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ReceiptPaymentVerificationResponse verify(@RequestParam(FILE) MultipartFile file,
-                                                     @RequestParam(PAYMENT_ID) String paymentId)
+                                                     @RequestParam(OUTGOING_PAYMENT_ID) String outgoingPaymentId)
             throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException,
             ReceiptPaymentVerificationCurrencyNotSupportedException, IncomingPaymentNotFoundException,
             ReceiptPaymentVerificationInvalidCardLastFourDigitsException,
@@ -57,7 +58,7 @@ public class ReceiptPaymentVerificationController {
             ReceiptPaymentVerificationInvalidAmountException, ReceiptPaymentVerificationUnexpectedAmountException,
             OutgoingPaymentNotFoundException {
         return receiptPaymentVerificationRestMapper.mapModelToResponse(
-                receiptPaymentVerificationService.verify(file, paymentId));
+                receiptPaymentVerificationService.verify(file, outgoingPaymentId));
     }
 
 }

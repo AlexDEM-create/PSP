@@ -12,7 +12,7 @@ import java.util.Map;
 
 public interface ReceiptPaymentVerificationBuilder {
 
-    ReceiptPaymentVerificationBuilder withPaymentId(String paymentId);
+    ReceiptPaymentVerificationBuilder withOutgoingPaymentId(String outgoingPaymentId);
 
     ReceiptPaymentVerificationBuilder withRecipientFullName(String recipientFullName);
 
