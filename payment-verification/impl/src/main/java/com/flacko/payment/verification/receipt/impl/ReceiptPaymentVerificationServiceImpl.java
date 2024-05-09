@@ -1,7 +1,8 @@
 package com.flacko.payment.verification.receipt.impl;
 
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.PaymentNotFoundException;
+import com.flacko.common.exception.IncomingPaymentNotFoundException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.exception.ReceiptPaymentVerificationNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerification;
@@ -66,7 +67,12 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
     @Transactional
     @Override
     public ReceiptPaymentVerification verify(MultipartFile file, String paymentId)
-            throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException {
+            throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException,
+            ReceiptPaymentVerificationCurrencyNotSupportedException, IncomingPaymentNotFoundException,
+            ReceiptPaymentVerificationInvalidCardLastFourDigitsException,
+            ReceiptPaymentVerificationMissingRequiredAttributeException,
+            ReceiptPaymentVerificationInvalidAmountException, ReceiptPaymentVerificationUnexpectedAmountException,
+            OutgoingPaymentNotFoundException {
         if (file.isEmpty()) {
             throw new ReceiptPaymentVerificationRequestValidationException("Please upload a file.");
         }
@@ -115,10 +121,10 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
             if (response.getStatusCode() == HttpStatus.OK) {
                 return createReceiptPaymentVerification(Objects.requireNonNull(response.getBody()), file, paymentId);
             } else {
-                log.warn(String.format("Payment %s verification failed. verificationResponse=%s", paymentId, response));
+                log.warn(String.format("Outgoing payment %s verification failed. verificationResponse=%s", paymentId, response));
                 throw new ReceiptPaymentVerificationFailedException(paymentId);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new ReceiptPaymentVerificationFailedException(paymentId, e);
         }
     }
@@ -127,8 +133,8 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
             ReceiptExtractedData extractedData, MultipartFile file, String paymentId)
             throws IOException, ReceiptPaymentVerificationMissingRequiredAttributeException,
             ReceiptPaymentVerificationCurrencyNotSupportedException, ReceiptPaymentVerificationInvalidAmountException,
-            PaymentNotFoundException, ReceiptPaymentVerificationUnexpectedAmountException,
-            ReceiptPaymentVerificationInvalidCardLastFourDigitsException {
+            IncomingPaymentNotFoundException, ReceiptPaymentVerificationUnexpectedAmountException,
+            ReceiptPaymentVerificationInvalidCardLastFourDigitsException, OutgoingPaymentNotFoundException {
         ReceiptPaymentVerificationBuilder builder = serviceLocator.create(ReceiptPaymentVerificationBuilderImpl.class)
                 .initializeNew();
         builder.withPaymentId(paymentId)

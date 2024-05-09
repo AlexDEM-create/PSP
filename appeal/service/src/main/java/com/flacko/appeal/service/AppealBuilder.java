@@ -3,7 +3,8 @@ package com.flacko.appeal.service;
 import com.flacko.appeal.service.exception.AppealIllegalPaymentCurrentStateException;
 import com.flacko.appeal.service.exception.AppealIllegalStateTransitionException;
 import com.flacko.appeal.service.exception.AppealMissingRequiredAttributeException;
-import com.flacko.common.exception.PaymentNotFoundException;
+import com.flacko.common.exception.IncomingPaymentNotFoundException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 
 public interface AppealBuilder {
 
@@ -13,7 +14,7 @@ public interface AppealBuilder {
 
     AppealBuilder withState(AppealState newState) throws AppealIllegalStateTransitionException;
 
-    Appeal build() throws AppealMissingRequiredAttributeException, PaymentNotFoundException,
-            AppealIllegalPaymentCurrentStateException;
+    Appeal build() throws AppealMissingRequiredAttributeException, IncomingPaymentNotFoundException,
+            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException;
 
 }

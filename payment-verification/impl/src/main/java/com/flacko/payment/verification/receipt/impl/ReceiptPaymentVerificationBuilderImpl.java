@@ -1,10 +1,10 @@
 package com.flacko.payment.verification.receipt.impl;
 
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.PaymentNotFoundException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.id.IdGenerator;
-import com.flacko.payment.service.Payment;
-import com.flacko.payment.service.PaymentService;
+import com.flacko.payment.service.outgoing.OutgoingPayment;
+import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerification;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationBuilder;
 import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationInvalidCardLastFourDigitsException;
@@ -30,7 +30,7 @@ public class ReceiptPaymentVerificationBuilderImpl implements InitializableRecei
     private static final Pattern LAST_FOUR_DIGITS_PATTERN = Pattern.compile("^\\d{4}$");
 
     private final ReceiptPaymentVerificationRepository receiptPaymentVerificationRepository;
-    private final PaymentService paymentService;
+    private final OutgoingPaymentService outgoingPaymentService;
 
     private ReceiptPaymentVerificationPojo.ReceiptPaymentVerificationPojoBuilder pojoBuilder;
 
@@ -110,8 +110,8 @@ public class ReceiptPaymentVerificationBuilderImpl implements InitializableRecei
     @Transactional
     @Override
     public ReceiptPaymentVerification build() throws ReceiptPaymentVerificationMissingRequiredAttributeException,
-            PaymentNotFoundException, ReceiptPaymentVerificationUnexpectedAmountException,
-            ReceiptPaymentVerificationInvalidCardLastFourDigitsException {
+            ReceiptPaymentVerificationUnexpectedAmountException,
+            ReceiptPaymentVerificationInvalidCardLastFourDigitsException, OutgoingPaymentNotFoundException {
         ReceiptPaymentVerificationPojo payment = pojoBuilder.build();
         validate(payment);
         receiptPaymentVerificationRepository.save(payment);
@@ -119,16 +119,16 @@ public class ReceiptPaymentVerificationBuilderImpl implements InitializableRecei
     }
 
     private void validate(ReceiptPaymentVerificationPojo pojo)
-            throws ReceiptPaymentVerificationMissingRequiredAttributeException, PaymentNotFoundException,
+            throws ReceiptPaymentVerificationMissingRequiredAttributeException,
             ReceiptPaymentVerificationUnexpectedAmountException,
-            ReceiptPaymentVerificationInvalidCardLastFourDigitsException {
+            ReceiptPaymentVerificationInvalidCardLastFourDigitsException, OutgoingPaymentNotFoundException {
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new ReceiptPaymentVerificationMissingRequiredAttributeException("id", Optional.empty());
         }
         if (pojo.getPaymentId() == null || pojo.getPaymentId().isBlank()) {
             throw new ReceiptPaymentVerificationMissingRequiredAttributeException("paymentId", Optional.of(pojo.getId()));
         }
-        Payment payment = paymentService.get(pojo.getPaymentId());
+        OutgoingPayment outgoingPayment = outgoingPaymentService.get(pojo.getPaymentId());
         if (pojo.getRecipientFullName() == null || pojo.getRecipientFullName().isBlank()) {
             throw new ReceiptPaymentVerificationMissingRequiredAttributeException("recipientFullName", Optional.of(pojo.getId()));
         }
@@ -149,9 +149,9 @@ public class ReceiptPaymentVerificationBuilderImpl implements InitializableRecei
         }
         if (pojo.getAmount() == null) {
             throw new ReceiptPaymentVerificationMissingRequiredAttributeException("amount", Optional.of(pojo.getId()));
-        } else if (payment.getAmount().compareTo(pojo.getAmount()) != 0) {
+        } else if (outgoingPayment.getAmount().compareTo(pojo.getAmount()) != 0) {
             throw new ReceiptPaymentVerificationUnexpectedAmountException(pojo.getId(), pojo.getPaymentId(),
-                    payment.getAmount(), pojo.getAmount());
+                    outgoingPayment.getAmount(), pojo.getAmount());
         }
         if (pojo.getAmountCurrency() == null) {
             throw new ReceiptPaymentVerificationMissingRequiredAttributeException("amountCurrency", Optional.of(pojo.getId()));
@@ -162,7 +162,7 @@ public class ReceiptPaymentVerificationBuilderImpl implements InitializableRecei
         if (pojo.getCommissionCurrency() == null) {
             throw new ReceiptPaymentVerificationMissingRequiredAttributeException("commissionCurrency", Optional.of(pojo.getId()));
         }
-        if (pojo.getData() == null || pojo.getData().isBlank()) {
+        if (pojo.getData() == null) {
             throw new ReceiptPaymentVerificationMissingRequiredAttributeException("data", Optional.of(pojo.getId()));
         }
         if (pojo.getUploadedFile() == null) {
@@ -170,6 +170,4 @@ public class ReceiptPaymentVerificationBuilderImpl implements InitializableRecei
         }
     }
 
-
 }
-

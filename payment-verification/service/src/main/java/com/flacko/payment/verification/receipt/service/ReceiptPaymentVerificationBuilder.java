@@ -1,7 +1,8 @@
 package com.flacko.payment.verification.receipt.service;
 
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.PaymentNotFoundException;
+import com.flacko.common.exception.IncomingPaymentNotFoundException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationInvalidCardLastFourDigitsException;
 import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationMissingRequiredAttributeException;
 import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationUnexpectedAmountException;
@@ -34,7 +35,7 @@ public interface ReceiptPaymentVerificationBuilder {
     ReceiptPaymentVerificationBuilder withUploadedFile(byte[] uploadedFile);
 
     ReceiptPaymentVerification build() throws ReceiptPaymentVerificationMissingRequiredAttributeException,
-            PaymentNotFoundException, ReceiptPaymentVerificationUnexpectedAmountException,
-            ReceiptPaymentVerificationInvalidCardLastFourDigitsException;
+            IncomingPaymentNotFoundException, ReceiptPaymentVerificationUnexpectedAmountException,
+            ReceiptPaymentVerificationInvalidCardLastFourDigitsException, OutgoingPaymentNotFoundException;
 
 }

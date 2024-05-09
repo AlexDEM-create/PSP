@@ -7,11 +7,14 @@ import com.flacko.appeal.service.AppealState;
 import com.flacko.appeal.service.exception.AppealIllegalPaymentCurrentStateException;
 import com.flacko.appeal.service.exception.AppealIllegalStateTransitionException;
 import com.flacko.appeal.service.exception.AppealMissingRequiredAttributeException;
-import com.flacko.common.exception.PaymentNotFoundException;
+import com.flacko.common.exception.IncomingPaymentNotFoundException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.common.state.PaymentState;
-import com.flacko.payment.service.Payment;
-import com.flacko.payment.service.PaymentService;
+import com.flacko.payment.service.incoming.IncomingPayment;
+import com.flacko.payment.service.incoming.IncomingPaymentService;
+import com.flacko.payment.service.outgoing.OutgoingPayment;
+import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -31,7 +34,8 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             PaymentState.FAILED_TO_VERIFY, PaymentState.VERIFICATION_EXPIRED);
 
     private final AppealRepository appealRepository;
-    private final PaymentService paymentService;
+    private final IncomingPaymentService incomingPaymentService;
+    private final OutgoingPaymentService outgoingPaymentService;
 
     private AppealPojo.AppealPojoBuilder pojoBuilder;
     private String id;
@@ -85,29 +89,39 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
 
     @Transactional
     @Override
-    public Appeal build() throws AppealMissingRequiredAttributeException, PaymentNotFoundException,
-            AppealIllegalPaymentCurrentStateException {
+    public Appeal build() throws AppealMissingRequiredAttributeException, IncomingPaymentNotFoundException,
+            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException {
         AppealPojo appeal = pojoBuilder.build();
         validate(appeal);
         appealRepository.save(appeal);
         return appeal;
     }
 
-    private void validate(AppealPojo pojo) throws AppealMissingRequiredAttributeException, PaymentNotFoundException,
-            AppealIllegalPaymentCurrentStateException {
+    private void validate(AppealPojo pojo) throws AppealMissingRequiredAttributeException,
+            IncomingPaymentNotFoundException, AppealIllegalPaymentCurrentStateException,
+            OutgoingPaymentNotFoundException {
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new AppealMissingRequiredAttributeException("id", Optional.empty());
         }
         if (pojo.getPaymentId() == null || pojo.getPaymentId().isBlank()) {
             throw new AppealMissingRequiredAttributeException("paymentId", Optional.of(pojo.getId()));
         }
-        Payment payment = paymentService.get(pojo.getPaymentId());
-        if (!ALLOWED_PAYMENT_STATES.contains(payment.getCurrentState())) {
-            throw new AppealIllegalPaymentCurrentStateException(pojo.getId(), pojo.getPaymentId(),
-                    payment.getCurrentState());
-        }
         if (pojo.getSource() == null) {
             throw new AppealMissingRequiredAttributeException("source", Optional.of(pojo.getId()));
+        }
+        if (pojo.getSource() == AppealSource.MERCHANT) {
+            IncomingPayment incomingPayment = incomingPaymentService.get(pojo.getPaymentId());
+            if (!ALLOWED_PAYMENT_STATES.contains(incomingPayment.getCurrentState())) {
+                throw new AppealIllegalPaymentCurrentStateException(pojo.getId(), pojo.getPaymentId(),
+                        incomingPayment.getCurrentState());
+            }
+        }
+        if (pojo.getSource() == AppealSource.TRADER_TEAM) {
+            OutgoingPayment outgoingPayment = outgoingPaymentService.get(pojo.getPaymentId());
+            if (!ALLOWED_PAYMENT_STATES.contains(outgoingPayment.getCurrentState())) {
+                throw new AppealIllegalPaymentCurrentStateException(pojo.getId(), pojo.getPaymentId(),
+                        outgoingPayment.getCurrentState());
+            }
         }
         if (pojo.getCurrentState() == null) {
             throw new AppealMissingRequiredAttributeException("currentState", Optional.of(pojo.getId()));

@@ -1,14 +1,8 @@
 package com.flacko.merchant.webapp;
 
-import com.flacko.appeal.service.AppealService;
-import com.flacko.bank.service.BankService;
 import com.flacko.common.country.Country;
 import com.flacko.merchant.service.Merchant;
 import com.flacko.merchant.service.MerchantService;
-import com.flacko.payment.method.service.PaymentMethodService;
-import com.flacko.payment.service.PaymentService;
-import com.flacko.terminal.service.TerminalService;
-import com.flacko.trader.team.service.TraderTeamService;
 import com.flacko.user.service.UserRole;
 import com.flacko.user.service.UserService;
 import org.apache.commons.lang.RandomStringUtils;
@@ -25,7 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -47,28 +40,10 @@ public class MerchantControllerTests {
     private MockMvc mockMvc;
 
     @Autowired
-    private AppealService appealService;
-
-    @Autowired
-    private PaymentService paymentService;
-
-    @Autowired
     private MerchantService merchantService;
 
     @Autowired
-    private TraderTeamService traderTeamService;
-
-    @Autowired
-    private PaymentMethodService paymentMethodService;
-
-    @Autowired
     private UserService userService;
-
-    @Autowired
-    private BankService bankService;
-
-    @Autowired
-    private TerminalService terminalService;
 
     private String merchantUserId1;
     private String merchantUserId2;
@@ -115,13 +90,21 @@ public class MerchantControllerTests {
                 .andExpect(jsonPath("$[0].id").value(merchant1.getId()))
                 .andExpect(jsonPath("$[0].name").value(merchant1.getName()))
                 .andExpect(jsonPath("$[0].user_id").value(merchant1.getUserId()))
+                .andExpect(jsonPath("$[0].country").value(merchant1.getCountry().name()))
                 .andExpect(jsonPath("$[0].incoming_fee_rate").value(merchant1.getIncomingFeeRate()))
                 .andExpect(jsonPath("$[0].outgoing_fee_rate").value(merchant1.getOutgoingFeeRate()))
+                .andExpect(jsonPath("$[0].outgoing_traffic_stopped").value(false))
+                .andExpect(jsonPath("$[0].created_date").isNotEmpty())
+                .andExpect(jsonPath("$[0].updated_date").isNotEmpty())
                 .andExpect(jsonPath("$[1].id").value(merchant2.getId()))
                 .andExpect(jsonPath("$[1].name").value(merchant2.getName()))
                 .andExpect(jsonPath("$[1].user_id").value(merchant2.getUserId()))
+                .andExpect(jsonPath("$[1].country").value(merchant2.getCountry().name()))
                 .andExpect(jsonPath("$[1].incoming_fee_rate").value(merchant2.getIncomingFeeRate()))
-                .andExpect(jsonPath("$[1].outgoing_fee_rate").value(merchant2.getOutgoingFeeRate()));
+                .andExpect(jsonPath("$[1].outgoing_fee_rate").value(merchant2.getOutgoingFeeRate()))
+                .andExpect(jsonPath("$[1].outgoing_traffic_stopped").value(false))
+                .andExpect(jsonPath("$[1].created_date").isNotEmpty())
+                .andExpect(jsonPath("$[1].updated_date").isNotEmpty());
     }
 
     @TestConfiguration

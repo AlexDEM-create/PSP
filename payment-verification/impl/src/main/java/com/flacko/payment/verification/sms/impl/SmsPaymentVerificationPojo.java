@@ -29,9 +29,9 @@ public class SmsPaymentVerificationPojo implements SmsPaymentVerification {
     @Column(nullable = false)
     private String id;
 
-    // make foreign key to payments table
-    @Column(name = "payment_id", nullable = false)
-    private String paymentId;
+    // make foreign key to incoming_payments table
+    @Column(name = "incoming_payment_id", nullable = false)
+    private String incomingPaymentId;
 
     @Column(name = "recipient_card_last_four_digits", nullable = false)
     private String recipientCardLastFourDigits;

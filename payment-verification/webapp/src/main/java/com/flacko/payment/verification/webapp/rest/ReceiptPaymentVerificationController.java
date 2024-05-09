@@ -1,10 +1,11 @@
 package com.flacko.payment.verification.webapp.rest;
 
+import com.flacko.common.exception.IncomingPaymentNotFoundException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.exception.ReceiptPaymentVerificationNotFoundException;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationListBuilder;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationService;
-import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationFailedException;
-import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationRequestValidationException;
+import com.flacko.payment.verification.receipt.service.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +50,12 @@ public class ReceiptPaymentVerificationController {
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ReceiptPaymentVerificationResponse verify(@RequestParam(FILE) MultipartFile file,
                                                      @RequestParam(PAYMENT_ID) String paymentId)
-            throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException {
+            throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException,
+            ReceiptPaymentVerificationCurrencyNotSupportedException, IncomingPaymentNotFoundException,
+            ReceiptPaymentVerificationInvalidCardLastFourDigitsException,
+            ReceiptPaymentVerificationMissingRequiredAttributeException,
+            ReceiptPaymentVerificationInvalidAmountException, ReceiptPaymentVerificationUnexpectedAmountException,
+            OutgoingPaymentNotFoundException {
         return receiptPaymentVerificationRestMapper.mapModelToResponse(
                 receiptPaymentVerificationService.verify(file, paymentId));
     }

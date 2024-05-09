@@ -5,7 +5,6 @@ import com.flacko.appeal.service.Appeal;
 import com.flacko.appeal.service.AppealService;
 import com.flacko.appeal.service.AppealSource;
 import com.flacko.appeal.service.AppealState;
-import com.flacko.appeal.service.exception.AppealMissingRequiredAttributeException;
 import com.flacko.appeal.webapp.rest.AppealCreateRequest;
 import com.flacko.bank.service.BankService;
 import com.flacko.common.country.Country;
@@ -14,8 +13,8 @@ import com.flacko.common.state.PaymentState;
 import com.flacko.merchant.service.MerchantService;
 import com.flacko.payment.method.service.PaymentMethodService;
 import com.flacko.payment.method.service.PaymentMethodType;
-import com.flacko.payment.service.PaymentDirection;
-import com.flacko.payment.service.PaymentService;
+import com.flacko.payment.service.incoming.IncomingPaymentService;
+import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeamService;
 import com.flacko.user.service.UserRole;
@@ -43,7 +42,6 @@ import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -62,7 +60,10 @@ public class AppealControllerTests {
     private AppealService appealService;
 
     @Autowired
-    private PaymentService paymentService;
+    private IncomingPaymentService incomingPaymentService;
+
+    @Autowired
+    private OutgoingPaymentService outgoingPaymentService;
 
     @Autowired
     private MerchantService merchantService;
@@ -82,10 +83,11 @@ public class AppealControllerTests {
     @Autowired
     private TerminalService terminalService;
 
-    private String paymentId;
+    private String incomingPaymentId;
+    private String outgoingPaymentId;
     private String merchantId;
     private String traderTeamId;
-    private String cardId;
+    private String paymentMethodId;
 
     @BeforeEach
     public void setup() throws Exception {
@@ -144,7 +146,7 @@ public class AppealControllerTests {
                 .build()
                 .getId();
 
-        cardId = paymentMethodService.create()
+        paymentMethodId = paymentMethodService.create()
                 .withType(PaymentMethodType.BANK_CARD)
                 .withNumber("1234567812345678")
                 .withHolderName("John Grey")
@@ -155,71 +157,101 @@ public class AppealControllerTests {
                 .build()
                 .getId();
 
-        paymentId = paymentService.create()
+        incomingPaymentId = incomingPaymentService.create()
                 .withMerchantId(merchantId)
                 .withTraderTeamId(traderTeamId)
-                .withCardId(cardId)
+                .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(5000))
                 .withCurrency(Currency.RUB)
-                .withDirection(PaymentDirection.INCOMING)
                 .withState(PaymentState.VERIFYING)
                 .build()
                 .getId();
 
-        paymentService.update(paymentId)
+        incomingPaymentService.update(incomingPaymentId)
+                .withState(PaymentState.FAILED_TO_VERIFY)
+                .build();
+
+        outgoingPaymentId = outgoingPaymentService.create()
+                .withMerchantId(merchantId)
+                .withTraderTeamId(traderTeamId)
+                .withPaymentMethodId(paymentMethodId)
+                .withAmount(BigDecimal.valueOf(10000))
+                .withCurrency(Currency.RUB)
+                .withState(PaymentState.VERIFYING)
+                .build()
+                .getId();
+
+        outgoingPaymentService.update(outgoingPaymentId)
                 .withState(PaymentState.FAILED_TO_VERIFY)
                 .build();
     }
 
     @Test
     public void testListAppeals() throws Exception {
-        String paymentId = paymentService.create()
+        String outgoingPaymentId = outgoingPaymentService.create()
                 .withMerchantId(merchantId)
                 .withTraderTeamId(traderTeamId)
-                .withCardId(cardId)
+                .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(10000))
                 .withCurrency(Currency.RUB)
-                .withDirection(PaymentDirection.INCOMING)
                 .withState(PaymentState.VERIFYING)
                 .build()
                 .getId();
-        paymentService.update(paymentId)
+        outgoingPaymentService.update(outgoingPaymentId)
+                .withState(PaymentState.FAILED_TO_VERIFY)
+                .build();
+        String incomingPaymentId = incomingPaymentService.create()
+                .withMerchantId(merchantId)
+                .withTraderTeamId(traderTeamId)
+                .withPaymentMethodId(paymentMethodId)
+                .withAmount(BigDecimal.valueOf(10000))
+                .withCurrency(Currency.RUB)
+                .withState(PaymentState.VERIFYING)
+                .build()
+                .getId();
+        incomingPaymentService.update(incomingPaymentId)
                 .withState(PaymentState.FAILED_TO_VERIFY)
                 .build();
         Appeal appeal1 = appealService.create()
-                .withPaymentId(paymentId)
+                .withPaymentId(outgoingPaymentId)
                 .withSource(AppealSource.TRADER_TEAM)
                 .build();
         Appeal appeal2 = appealService.create()
-                .withPaymentId(paymentId)
+                .withPaymentId(incomingPaymentId)
                 .withSource(AppealSource.MERCHANT)
                 .withState(AppealState.UNDER_REVIEW)
                 .build();
 
-        mockMvc.perform(get("/appeals?payment_id=" + paymentId))
+        mockMvc.perform(get("/appeals?payment_id=" + outgoingPaymentId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id").value(appeal1.getId()))
                 .andExpect(jsonPath("$[0].payment_id").value(appeal1.getPaymentId()))
                 .andExpect(jsonPath("$[0].source").value(appeal1.getSource().toString()))
                 .andExpect(jsonPath("$[0].current_state").value(appeal1.getCurrentState().toString()))
                 .andExpect(jsonPath("$[0].created_date").isNotEmpty())
-                .andExpect(jsonPath("$[0].updated_date").isNotEmpty())
-                .andExpect(jsonPath("$[1].id").value(appeal2.getId()))
-                .andExpect(jsonPath("$[1].payment_id").value(appeal2.getPaymentId()))
-                .andExpect(jsonPath("$[1].source").value(appeal2.getSource().toString()))
-                .andExpect(jsonPath("$[1].current_state").value(appeal2.getCurrentState().toString()))
-                .andExpect(jsonPath("$[1].created_date").isNotEmpty())
-                .andExpect(jsonPath("$[1].updated_date").isNotEmpty());
+                .andExpect(jsonPath("$[0].updated_date").isNotEmpty());
+
+        mockMvc.perform(get("/appeals?payment_id=" + incomingPaymentId))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id").value(appeal2.getId()))
+                .andExpect(jsonPath("$[0].payment_id").value(appeal2.getPaymentId()))
+                .andExpect(jsonPath("$[0].source").value(appeal2.getSource().toString()))
+                .andExpect(jsonPath("$[0].current_state").value(appeal2.getCurrentState().toString()))
+                .andExpect(jsonPath("$[0].created_date").isNotEmpty())
+                .andExpect(jsonPath("$[0].updated_date").isNotEmpty());
     }
 
     @Test
     public void testGetAppeal() throws Exception {
         Appeal appeal = appealService.create()
-                .withPaymentId(paymentId)
-                .withSource(AppealSource.TRADER_TEAM)
+                .withPaymentId(incomingPaymentId)
+                .withSource(AppealSource.MERCHANT)
                 .build();
 
         mockMvc.perform(get("/appeals/" + appeal.getId()))
@@ -244,7 +276,7 @@ public class AppealControllerTests {
 
     @Test
     public void testCreateAppeal() throws Exception {
-        AppealCreateRequest request = new AppealCreateRequest(paymentId, AppealSource.TRADER_TEAM);
+        AppealCreateRequest request = new AppealCreateRequest(outgoingPaymentId, AppealSource.TRADER_TEAM);
         ObjectMapper objectMapper = new ObjectMapper();
 
         mockMvc.perform(post("/appeals")
@@ -279,7 +311,7 @@ public class AppealControllerTests {
     @Test
     public void testCreateAppealThrowsAppealMissingRequiredAttributeExceptionInvalidSource()
             throws Exception {
-        AppealCreateRequest request = new AppealCreateRequest(paymentId, null);
+        AppealCreateRequest request = new AppealCreateRequest(incomingPaymentId, null);
         ObjectMapper objectMapper = new ObjectMapper();
 
         mockMvc.perform(post("/appeals")
@@ -302,7 +334,7 @@ public class AppealControllerTests {
     @Test
     public void testResolveAppeal() throws Exception {
         Appeal appeal = appealService.create()
-                .withPaymentId(paymentId)
+                .withPaymentId(outgoingPaymentId)
                 .withSource(AppealSource.TRADER_TEAM)
                 .build();
 
@@ -321,8 +353,8 @@ public class AppealControllerTests {
     @Test
     public void testResolveAppealThrowsAppealIllegalPaymentCurrentStateException() throws Exception {
         Appeal appeal = appealService.create()
-                .withPaymentId(paymentId)
-                .withSource(AppealSource.TRADER_TEAM)
+                .withPaymentId(incomingPaymentId)
+                .withSource(AppealSource.MERCHANT)
                 .build();
 
         this.mockMvc.perform(patch("/appeals/{appealId}/resolve", appeal.getId())
@@ -342,7 +374,7 @@ public class AppealControllerTests {
     @Test
     public void testResolveAppealThrowsAppealIllegalStateTransitionException() throws Exception {
         Appeal appeal = appealService.create()
-                .withPaymentId(paymentId)
+                .withPaymentId(outgoingPaymentId)
                 .withSource(AppealSource.TRADER_TEAM)
                 .build();
 
@@ -367,8 +399,8 @@ public class AppealControllerTests {
     @Test
     public void testRejectAppeal() throws Exception {
         Appeal appeal = appealService.create()
-                .withPaymentId(paymentId)
-                .withSource(AppealSource.TRADER_TEAM)
+                .withPaymentId(incomingPaymentId)
+                .withSource(AppealSource.MERCHANT)
                 .build();
 
         appealService.update(appeal.getId())
@@ -385,7 +417,7 @@ public class AppealControllerTests {
     @Test
     public void testRejectAppealThrowsAppealIllegalPaymentCurrentStateException() throws Exception {
         Appeal appeal = appealService.create()
-                .withPaymentId(paymentId)
+                .withPaymentId(outgoingPaymentId)
                 .withSource(AppealSource.TRADER_TEAM)
                 .build();
 
@@ -406,8 +438,8 @@ public class AppealControllerTests {
     @Test
     public void testRejectAppealThrowsAppealIllegalStateTransitionException() throws Exception {
         Appeal appeal = appealService.create()
-                .withPaymentId(paymentId)
-                .withSource(AppealSource.TRADER_TEAM)
+                .withPaymentId(incomingPaymentId)
+                .withSource(AppealSource.MERCHANT)
                 .build();
 
         this.mockMvc.perform(patch("/appeals/{appealId}/reject", appeal.getId())

@@ -1,10 +1,10 @@
 package com.flacko.payment.verification.sms.impl;
 
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.PaymentNotFoundException;
+import com.flacko.common.exception.IncomingPaymentNotFoundException;
 import com.flacko.common.id.IdGenerator;
-import com.flacko.payment.service.Payment;
-import com.flacko.payment.service.PaymentService;
+import com.flacko.payment.service.incoming.IncomingPayment;
+import com.flacko.payment.service.incoming.IncomingPaymentService;
 import com.flacko.payment.verification.sms.service.SmsPaymentVerification;
 import com.flacko.payment.verification.sms.service.SmsPaymentVerificationBuilder;
 import com.flacko.payment.verification.sms.service.exception.SmsPaymentVerificationInvalidCardLastFourDigitsException;
@@ -29,7 +29,7 @@ public class SmsPaymentVerificationBuilderImpl implements InitializableSmsPaymen
     private static final Pattern LAST_FOUR_DIGITS_PATTERN = Pattern.compile("^\\d{4}$");
 
     private final SmsPaymentVerificationRepository smsPaymentVerificationRepository;
-    private final PaymentService paymentService;
+    private final IncomingPaymentService incomingPaymentService;
 
     private SmsPaymentVerificationPojo.SmsPaymentVerificationPojoBuilder pojoBuilder;
 
@@ -41,8 +41,8 @@ public class SmsPaymentVerificationBuilderImpl implements InitializableSmsPaymen
     }
 
     @Override
-    public SmsPaymentVerificationBuilder withPaymentId(String paymentId) {
-        pojoBuilder.paymentId(paymentId);
+    public SmsPaymentVerificationBuilder withIncomingPaymentId(String incomingPaymentId) {
+        pojoBuilder.incomingPaymentId(incomingPaymentId);
         return this;
     }
 
@@ -84,7 +84,7 @@ public class SmsPaymentVerificationBuilderImpl implements InitializableSmsPaymen
 
     @Override
     public SmsPaymentVerification build() throws SmsPaymentVerificationMissingRequiredAttributeException,
-            SmsPaymentVerificationInvalidCardLastFourDigitsException, PaymentNotFoundException,
+            SmsPaymentVerificationInvalidCardLastFourDigitsException, IncomingPaymentNotFoundException,
             SmsPaymentVerificationUnexpectedAmountException {
         SmsPaymentVerificationPojo payment = pojoBuilder.build();
         validate(payment);
@@ -94,19 +94,19 @@ public class SmsPaymentVerificationBuilderImpl implements InitializableSmsPaymen
 
     private void validate(SmsPaymentVerificationPojo pojo)
             throws SmsPaymentVerificationMissingRequiredAttributeException,
-            SmsPaymentVerificationInvalidCardLastFourDigitsException, PaymentNotFoundException,
+            SmsPaymentVerificationInvalidCardLastFourDigitsException, IncomingPaymentNotFoundException,
             SmsPaymentVerificationUnexpectedAmountException {
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("id", Optional.empty());
         }
-        if (pojo.getPaymentId() == null || pojo.getPaymentId().isBlank()) {
+        if (pojo.getIncomingPaymentId() == null || pojo.getIncomingPaymentId().isBlank()) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("paymentId", Optional.of(pojo.getId()));
         }
-        Payment payment = paymentService.get(pojo.getPaymentId());
+        IncomingPayment incomingPayment = incomingPaymentService.get(pojo.getIncomingPaymentId());
         if (pojo.getRecipientCardLastFourDigits() == null || pojo.getRecipientCardLastFourDigits().isBlank()) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("recipientCardLastFourDigits", Optional.of(pojo.getId()));
         } else if (!LAST_FOUR_DIGITS_PATTERN.matcher(pojo.getRecipientCardLastFourDigits()).matches()) {
-            throw new SmsPaymentVerificationInvalidCardLastFourDigitsException(pojo.getId(), pojo.getPaymentId(),
+            throw new SmsPaymentVerificationInvalidCardLastFourDigitsException(pojo.getId(), pojo.getIncomingPaymentId(),
                     "recipient", pojo.getRecipientCardLastFourDigits());
         }
         if (pojo.getSenderFullName() == null || pojo.getSenderFullName().isBlank()) {
@@ -114,9 +114,9 @@ public class SmsPaymentVerificationBuilderImpl implements InitializableSmsPaymen
         }
         if (pojo.getAmount() == null) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("amount", Optional.of(pojo.getId()));
-        } else if (payment.getAmount().compareTo(pojo.getAmount()) != 0) {
-            throw new SmsPaymentVerificationUnexpectedAmountException(pojo.getId(), pojo.getPaymentId(),
-                    payment.getAmount(), pojo.getAmount());
+        } else if (incomingPayment.getAmount().compareTo(pojo.getAmount()) != 0) {
+            throw new SmsPaymentVerificationUnexpectedAmountException(pojo.getId(), pojo.getIncomingPaymentId(),
+                    incomingPayment.getAmount(), pojo.getAmount());
         }
         // validate currency is supported
         if (pojo.getAmountCurrency() == null) {
@@ -126,11 +126,9 @@ public class SmsPaymentVerificationBuilderImpl implements InitializableSmsPaymen
         if (pojo.getMessage() == null || pojo.getMessage().isBlank()) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("message", Optional.of(pojo.getId()));
         }
-        if (pojo.getData() == null || pojo.getData().isBlank()) {
+        if (pojo.getData() == null) {
             throw new SmsPaymentVerificationMissingRequiredAttributeException("data", Optional.of(pojo.getId()));
         }
     }
 
-
 }
-

@@ -12,7 +12,7 @@ public interface SmsPaymentVerification {
 
     String getId();
 
-    String getPaymentId();
+    String getIncomingPaymentId();
 
     String getRecipientCardLastFourDigits();
 

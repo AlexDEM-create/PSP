@@ -5,7 +5,8 @@ import com.flacko.appeal.service.exception.AppealIllegalPaymentCurrentStateExcep
 import com.flacko.appeal.service.exception.AppealIllegalStateTransitionException;
 import com.flacko.appeal.service.exception.AppealMissingRequiredAttributeException;
 import com.flacko.common.exception.AppealNotFoundException;
-import com.flacko.common.exception.PaymentNotFoundException;
+import com.flacko.common.exception.IncomingPaymentNotFoundException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,8 +67,8 @@ public class AppealController {
 
     @PostMapping
     public AppealResponse create(@RequestBody AppealCreateRequest appealCreateRequest)
-            throws AppealMissingRequiredAttributeException, PaymentNotFoundException,
-            AppealIllegalPaymentCurrentStateException {
+            throws AppealMissingRequiredAttributeException, IncomingPaymentNotFoundException,
+            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException {
         AppealBuilder builder = appealService.create();
         builder.withPaymentId(appealCreateRequest.paymentId())
                 .withSource(appealCreateRequest.source());
@@ -78,7 +79,8 @@ public class AppealController {
     @PatchMapping("/{appealId}/resolve")
     public AppealResponse resolve(@PathVariable String appealId)
             throws AppealNotFoundException, AppealMissingRequiredAttributeException,
-            AppealIllegalStateTransitionException, PaymentNotFoundException, AppealIllegalPaymentCurrentStateException {
+            AppealIllegalStateTransitionException, IncomingPaymentNotFoundException,
+            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException {
         AppealBuilder builder = appealService.update(appealId);
         builder.withState(AppealState.RESOLVED);
         Appeal appeal = builder.build();
@@ -88,7 +90,8 @@ public class AppealController {
     @PatchMapping("/{appealId}/reject")
     public AppealResponse reject(@PathVariable String appealId)
             throws AppealNotFoundException, AppealMissingRequiredAttributeException,
-            AppealIllegalStateTransitionException, PaymentNotFoundException, AppealIllegalPaymentCurrentStateException {
+            AppealIllegalStateTransitionException, IncomingPaymentNotFoundException,
+            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException {
         AppealBuilder builder = appealService.update(appealId);
         builder.withState(AppealState.REJECTED);
         Appeal appeal = builder.build();
@@ -98,7 +101,8 @@ public class AppealController {
     @PatchMapping("/{appealId}/review")
     public AppealResponse review(@PathVariable String appealId)
             throws AppealNotFoundException, AppealMissingRequiredAttributeException,
-            AppealIllegalStateTransitionException, PaymentNotFoundException, AppealIllegalPaymentCurrentStateException {
+            AppealIllegalStateTransitionException, IncomingPaymentNotFoundException,
+            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException {
         AppealBuilder builder = appealService.update(appealId);
         builder.withState(AppealState.UNDER_REVIEW);
         Appeal appeal = builder.build();
