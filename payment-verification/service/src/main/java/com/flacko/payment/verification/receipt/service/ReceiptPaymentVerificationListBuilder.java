@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface ReceiptPaymentVerificationListBuilder {
 
-    ReceiptPaymentVerificationListBuilder withPaymentId(String paymentId);
+    ReceiptPaymentVerificationListBuilder withOutgoingPaymentId(String outgoingPaymentId);
 
     List<ReceiptPaymentVerification> build();
 

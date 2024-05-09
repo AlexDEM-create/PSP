@@ -17,8 +17,10 @@ public class OutgoingPaymentRestMapper {
                 outgoingPayment.getAmount(),
                 outgoingPayment.getCurrency(),
                 outgoingPayment.getCurrentState(),
+                outgoingPayment.isBooked(),
                 outgoingPayment.getCreatedDate().atZone(ZoneId.systemDefault()),
-                outgoingPayment.getUpdatedDate().atZone(ZoneId.systemDefault()));
+                outgoingPayment.getUpdatedDate().atZone(ZoneId.systemDefault()),
+                outgoingPayment.getBookedDate().map(bookedDate -> bookedDate.atZone(ZoneId.systemDefault())));
     }
 
 }

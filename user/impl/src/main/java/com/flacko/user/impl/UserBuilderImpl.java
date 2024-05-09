@@ -1,12 +1,12 @@
 package com.flacko.user.impl;
 
+import com.flacko.common.id.IdGenerator;
 import com.flacko.user.service.User;
 import com.flacko.user.service.UserBuilder;
 import com.flacko.user.service.UserRole;
 import com.flacko.user.service.exception.UserLoginAlreadyInUseException;
 import com.flacko.user.service.exception.UserMissingRequiredAttributeException;
 import com.flacko.user.service.exception.UserWeakPasswordException;
-import com.flacko.common.id.IdGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -35,7 +35,8 @@ public class UserBuilderImpl implements InitializableUserBuilder {
     @Override
     public UserBuilder initializeNew() {
         pojoBuilder = UserPojo.builder()
-                .id(new IdGenerator().generateId());
+                .id(new IdGenerator().generateId())
+                .banned(false);
         return this;
     }
 

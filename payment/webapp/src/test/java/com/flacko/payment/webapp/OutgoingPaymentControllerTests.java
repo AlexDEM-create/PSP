@@ -1,14 +1,13 @@
 package com.flacko.payment.webapp;
 
-import com.flacko.appeal.service.AppealService;
 import com.flacko.bank.service.BankService;
 import com.flacko.common.country.Country;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.state.PaymentState;
-import com.flacko.merchant.service.Merchant;
 import com.flacko.merchant.service.MerchantService;
 import com.flacko.payment.method.service.PaymentMethodService;
-import com.flacko.payment.service.incoming.IncomingPaymentService;
+import com.flacko.payment.method.service.PaymentMethodType;
+import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeamService;
 import com.flacko.user.service.UserRole;
@@ -23,38 +22,28 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 
-import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class IncomingPaymentWebappApplicationTests {
+public class OutgoingPaymentControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private AppealService appealService;
-
-    @Autowired
-    private IncomingPaymentService incomingPaymentService;
+    private OutgoingPaymentService outgoingPaymentService;
 
     @Autowired
     private MerchantService merchantService;
@@ -132,59 +121,31 @@ public class IncomingPaymentWebappApplicationTests {
                 .build()
                 .getId();
 
-        String cardId = paymentMethodService.create()
+        String paymentMethodId = paymentMethodService.create()
+                .withType(PaymentMethodType.BANK_CARD)
                 .withNumber("1234567812345678")
+                .withHolderName("John Grey")
+                .withCurrency(Currency.RUB)
                 .withBankId(bankId)
                 .withTraderTeamId(traderTeamId)
                 .withTerminalId(terminalId)
                 .build()
                 .getId();
 
-        paymentId = incomingPaymentService.create()
+        paymentId = outgoingPaymentService.create()
                 .withMerchantId(merchantId)
                 .withTraderTeamId(traderTeamId)
-                .withCardId(cardId)
+                .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(5000))
                 .withCurrency(Currency.RUB)
                 .withState(PaymentState.VERIFYING)
                 .build()
                 .getId();
-
-        incomingPaymentService.update(paymentId)
-                .withState(PaymentState.FAILED_TO_VERIFY)
-                .build();
     }
 
     @Test
-    public void testListMerchants() throws Exception {
-        Merchant merchant1 = merchantService.create()
-                .withName("test_merchant1")
-                .withUserId("user1")
-                .withIncomingFeeRate(BigDecimal.valueOf(0.02))
-                .withOutgoingFeeRate(BigDecimal.valueOf(0.02))
-                .build();
-        Merchant merchant2 = merchantService.create()
-                .withName("test_merchant2")
-                .withUserId("user2")
-                .withIncomingFeeRate(BigDecimal.valueOf(0.03))
-                .withOutgoingFeeRate(BigDecimal.valueOf(0.03))
-                .build();
+    public void testListOutgoingPayments() {
 
-        mockMvc.perform(get("/payment"))
-                .andExpect(status().isOk())
-                .andExpect((ResultMatcher) content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id").value(merchant1.getId()))
-                .andExpect(jsonPath("$[0].name").value(merchant1.getName()))
-                .andExpect(jsonPath("$[0].userId").value(merchant1.getUserId()))
-                .andExpect(jsonPath("$[0].incomingFeeRate").value(merchant1.getIncomingFeeRate()))
-                .andExpect(jsonPath("$[0].outgoingFeeRate").value(merchant1.getOutgoingFeeRate()))
-                .andExpect(jsonPath("$[1].id").value(merchant2.getId()))
-                .andExpect(jsonPath("$[1].name").value(merchant2.getName()))
-                .andExpect(jsonPath("$[1].userId").value(merchant2.getUserId()))
-                .andExpect(jsonPath("$[1].incomingFeeRate").value(merchant2.getIncomingFeeRate()))
-                .andExpect(jsonPath("$[1].outgoingFeeRate").value(merchant2.getOutgoingFeeRate()));
     }
 
     @TestConfiguration

@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 
 @Entity
 @Table(name = "outgoing_payments")
@@ -50,11 +51,21 @@ public class OutgoingPaymentPojo implements OutgoingPayment {
     @Column(name = "current_state", nullable = false)
     private PaymentState currentState;
 
+    @Column(nullable = false)
+    private boolean booked;
+
     @Column(name = "created_date", nullable = false)
     private Instant createdDate;
 
     @Column(name = "updated_date", nullable = false)
     private Instant updatedDate;
+
+    @Column(name = "booked_date")
+    private Instant bookedDate;
+
+    public Optional<Instant> getBookedDate() {
+        return Optional.ofNullable(bookedDate);
+    }
 
     @PrePersist
     protected void onCreate() {

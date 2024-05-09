@@ -18,11 +18,11 @@ public class ReceiptPaymentVerificationListBuilderImpl implements ReceiptPayment
 
     private final ReceiptPaymentVerificationRepository receiptPaymentVerificationRepository;
 
-    private Optional<String> paymentId = Optional.empty();
+    private Optional<String> outgoingPaymentId = Optional.empty();
 
     @Override
-    public ReceiptPaymentVerificationListBuilder withPaymentId(String paymentId) {
-        this.paymentId = Optional.ofNullable(paymentId);
+    public ReceiptPaymentVerificationListBuilder withOutgoingPaymentId(String outgoingPaymentId) {
+        this.outgoingPaymentId = Optional.ofNullable(outgoingPaymentId);
         return this;
     }
 
@@ -33,9 +33,9 @@ public class ReceiptPaymentVerificationListBuilderImpl implements ReceiptPayment
 
     private Specification<ReceiptPaymentVerification> createSpecification() {
         Specification<ReceiptPaymentVerification> spec = Specification.where(null);
-        if (paymentId.isPresent()) {
+        if (outgoingPaymentId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("payment_d"), paymentId.get()));
+                    criteriaBuilder.equal(root.get("outgoingPaymentId"), outgoingPaymentId.get()));
         }
         return spec;
     }

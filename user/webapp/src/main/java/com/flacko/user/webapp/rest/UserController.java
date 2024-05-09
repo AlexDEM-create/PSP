@@ -1,6 +1,8 @@
 package com.flacko.user.webapp.rest;
 
+import com.auth0.jwt.JWT;
 import com.flacko.common.exception.UserNotFoundException;
+import com.flacko.security.SecurityConfig;
 import com.flacko.user.service.*;
 import com.flacko.user.service.exception.UserLoginAlreadyInUseException;
 import com.flacko.user.service.exception.UserMissingRequiredAttributeException;
@@ -43,6 +45,13 @@ public class UserController {
     @GetMapping("/{userId}")
     public UserResponse get(@PathVariable String userId) throws UserNotFoundException {
         return userRestMapper.mapModelToResponse(userService.get(userId));
+    }
+
+    @GetMapping("/me")
+    public UserResponse getMe(@RequestHeader("Authorization") String tokenWithPrefix) throws UserNotFoundException {
+        String token = tokenWithPrefix.substring(SecurityConfig.TOKEN_PREFIX.length());
+        String login = JWT.decode(token).getSubject();
+        return userRestMapper.mapModelToResponse(userService.getByLogin(login));
     }
 
     @PostMapping

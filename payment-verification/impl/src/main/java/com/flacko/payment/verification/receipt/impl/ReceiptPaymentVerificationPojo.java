@@ -30,8 +30,8 @@ public class ReceiptPaymentVerificationPojo implements ReceiptPaymentVerificatio
     private String id;
 
     // make foreign key to payments table
-    @Column(name = "payment_id", nullable = false)
-    private String paymentId;
+    @Column(name = "outgoing_payment_id", nullable = false)
+    private String outgoingPaymentId;
 
     @Column(name = "recipient_full_name", nullable = false)
     private String recipientFullName;

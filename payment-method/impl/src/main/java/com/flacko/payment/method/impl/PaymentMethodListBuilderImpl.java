@@ -80,15 +80,15 @@ public class PaymentMethodListBuilderImpl implements PaymentMethodListBuilder {
         }
         if (bankId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("bank_id"), bankId.get()));
+                    criteriaBuilder.equal(root.get("bankId"), bankId.get()));
         }
         if (traderTeamId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("trade_team_id"), traderTeamId.get()));
+                    criteriaBuilder.equal(root.get("tradeTeamId"), traderTeamId.get()));
         }
         if (terminalId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("terminal_id"), terminalId.get()));
+                    criteriaBuilder.equal(root.get("terminalId"), terminalId.get()));
         }
         if (busy.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->

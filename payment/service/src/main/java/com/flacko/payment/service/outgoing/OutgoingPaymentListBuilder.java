@@ -14,6 +14,8 @@ public interface OutgoingPaymentListBuilder {
 
     OutgoingPaymentListBuilder withCurrentState(PaymentState currentState);
 
+    OutgoingPaymentListBuilder withBooked(Boolean booked);
+
     List<OutgoingPayment> build();
 
 }

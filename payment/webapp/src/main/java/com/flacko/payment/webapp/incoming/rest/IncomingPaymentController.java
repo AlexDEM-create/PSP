@@ -46,9 +46,9 @@ public class IncomingPaymentController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/{paymentId}")
-    public IncomingPaymentResponse get(@PathVariable String paymentId) throws IncomingPaymentNotFoundException {
-        return incomingPaymentRestMapper.mapModelToResponse(incomingPaymentService.get(paymentId));
+    @GetMapping("/{incomingPaymentId}")
+    public IncomingPaymentResponse get(@PathVariable String incomingPaymentId) throws IncomingPaymentNotFoundException {
+        return incomingPaymentRestMapper.mapModelToResponse(incomingPaymentService.get(incomingPaymentId));
     }
 
 //    @PostMapping("/initiate/incoming")

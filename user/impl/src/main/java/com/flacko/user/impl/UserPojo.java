@@ -55,7 +55,6 @@ public class UserPojo implements User {
 
     @PrePersist
     protected void onCreate() {
-        banned = false;
         createdDate = Instant.now();
         updatedDate = createdDate;
     }

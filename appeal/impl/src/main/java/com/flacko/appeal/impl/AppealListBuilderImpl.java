@@ -26,19 +26,19 @@ public class AppealListBuilderImpl implements AppealListBuilder {
 
     @Override
     public AppealListBuilder withPaymentId(String paymentId) {
-        this.paymentId = Optional.ofNullable(paymentId);
+        this.paymentId = Optional.of(paymentId);
         return this;
     }
 
     @Override
     public AppealListBuilder withSource(AppealSource source) {
-        this.source = Optional.ofNullable(source);
+        this.source = Optional.of(source);
         return this;
     }
 
     @Override
     public AppealListBuilder withCurrentState(AppealState currentState) {
-        this.currentState = Optional.ofNullable(currentState);
+        this.currentState = Optional.of(currentState);
         return this;
     }
 

@@ -15,7 +15,4 @@ public interface SmsPaymentVerificationRepository extends CrudRepository<SmsPaym
     @Query("SELECT s FROM SmsPaymentVerificationPojo s WHERE s.id = :id")
     Optional<SmsPaymentVerification> findById(String id);
 
-    @Query("SELECT s FROM SmsPaymentVerificationPojo s WHERE s.paymentId = :paymentId")
-    Optional<SmsPaymentVerification> findByPaymentId(String paymentId);
-
 }

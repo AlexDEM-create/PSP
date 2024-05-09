@@ -36,7 +36,7 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
 
     @Override
     public TraderTeamListBuilder withLeaderId(String leaderId) {
-        this.leaderId = Optional.ofNullable(leaderId);
+        this.leaderId = Optional.of(leaderId);
         return this;
     }
 
@@ -53,11 +53,11 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
         }
         if (kickedOut.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("kicked_out"), kickedOut.get()));
+                    criteriaBuilder.equal(root.get("kickedOut"), kickedOut.get()));
         }
         if (leaderId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("leader_id"), leaderId.get()));
+                    criteriaBuilder.equal(root.get("leaderId"), leaderId.get()));
         }
         return spec;
     }

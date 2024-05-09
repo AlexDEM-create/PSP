@@ -49,7 +49,7 @@ public class TerminalListBuilderImpl implements TerminalListBuilder {
         Specification<Terminal> spec = Specification.where(null);
         if (traderTeamId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("trader_team_id"), traderTeamId.get()));
+                    criteriaBuilder.equal(root.get("traderTeamId"), traderTeamId.get()));
         }
         if (verified.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->

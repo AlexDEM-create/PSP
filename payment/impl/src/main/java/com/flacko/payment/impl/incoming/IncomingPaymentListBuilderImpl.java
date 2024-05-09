@@ -26,24 +26,24 @@ public class IncomingPaymentListBuilderImpl implements IncomingPaymentListBuilde
 
     @Override
     public IncomingPaymentListBuilder withMerchantId(String merchantId) {
-        this.merchantId = Optional.ofNullable(merchantId);
+        this.merchantId = Optional.of(merchantId);
         return this;
     }
 
     @Override
     public IncomingPaymentListBuilder withTraderTeamId(String traderTeamId) {
-        this.traderTeamId = Optional.ofNullable(traderTeamId);
+        this.traderTeamId = Optional.of(traderTeamId);
         return this;
     }
 
     public IncomingPaymentListBuilder withPaymentMethodId(String paymentMethodId) {
-        this.paymentMethodId = Optional.ofNullable(paymentMethodId);
+        this.paymentMethodId = Optional.of(paymentMethodId);
         return this;
     }
 
     @Override
     public IncomingPaymentListBuilder withCurrentState(PaymentState currentState) {
-        this.currentState = Optional.ofNullable(currentState);
+        this.currentState = Optional.of(currentState);
         return this;
     }
 

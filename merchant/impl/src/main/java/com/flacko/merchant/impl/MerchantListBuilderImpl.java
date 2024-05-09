@@ -47,7 +47,7 @@ public class MerchantListBuilderImpl implements MerchantListBuilder {
         }
         if (outgoingTrafficStopped.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("outgoing_traffic_stopped"), outgoingTrafficStopped.get()));
+                    criteriaBuilder.equal(root.get("outgoingTrafficStopped"), outgoingTrafficStopped.get()));
         }
         return spec;
     }

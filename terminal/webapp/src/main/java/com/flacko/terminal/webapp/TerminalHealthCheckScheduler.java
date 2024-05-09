@@ -22,7 +22,9 @@ public class TerminalHealthCheckScheduler {
 
     @Scheduled(fixedRate = 30000)
     public void performHealthCheck() {
-        List<Terminal> terminals = terminalService.list();
+        List<Terminal> terminals = terminalService.list()
+                .withVerified(true)
+                .build();
         for (Terminal terminal : terminals) {
             if (terminal.getUpdatedDate().plusSeconds(30).isBefore(Instant.now())) {
                 try {

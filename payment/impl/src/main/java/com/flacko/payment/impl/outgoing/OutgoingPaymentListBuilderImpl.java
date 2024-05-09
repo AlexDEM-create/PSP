@@ -23,6 +23,7 @@ public class OutgoingPaymentListBuilderImpl implements OutgoingPaymentListBuilde
     private Optional<String> traderTeamId = Optional.empty();
     private Optional<String> paymentMethodId = Optional.empty();
     private Optional<PaymentState> currentState = Optional.empty();
+    private Optional<Boolean> booked = Optional.empty();
 
     @Override
     public OutgoingPaymentListBuilder withMerchantId(String merchantId) {
@@ -49,6 +50,12 @@ public class OutgoingPaymentListBuilderImpl implements OutgoingPaymentListBuilde
     }
 
     @Override
+    public OutgoingPaymentListBuilder withBooked(Boolean booked) {
+        this.booked = Optional.ofNullable(booked);
+        return this;
+    }
+
+    @Override
     public List<OutgoingPayment> build() {
         return outgoingPaymentRepository.findAll(createSpecification());
     }
@@ -70,6 +77,10 @@ public class OutgoingPaymentListBuilderImpl implements OutgoingPaymentListBuilde
         if (currentState.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("currentState"), currentState.get()));
+        }
+        if (booked.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("booked"), booked.get()));
         }
         return spec;
     }

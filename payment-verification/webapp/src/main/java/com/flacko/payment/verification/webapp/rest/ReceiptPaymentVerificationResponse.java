@@ -8,7 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.Map;
 
 public record ReceiptPaymentVerificationResponse(@JsonProperty(ID) String id,
-                                                 @JsonProperty(PAYMENT_ID) String paymentId,
+                                                 @JsonProperty(OUTGOING_PAYMENT_ID) String outgoingPaymentId,
                                                  @JsonProperty(RECIPIENT_FULL_NAME) String recipientFullName,
                                                  @JsonProperty(RECIPIENT_CARD_LAST_FOUR_DIGITS) String recipientCardLastFourDigits,
                                                  @JsonProperty(SENDER_FULL_NAME) String senderFullName,
@@ -21,7 +21,7 @@ public record ReceiptPaymentVerificationResponse(@JsonProperty(ID) String id,
                                                  @JsonProperty(CREATED_DATE) ZonedDateTime createdDate) {
 
     private static final String ID = "id";
-    private static final String PAYMENT_ID = "payment_id";
+    private static final String OUTGOING_PAYMENT_ID = "outgoing_payment_id";
     private static final String RECIPIENT_FULL_NAME = "recipient_full_name";
     private static final String RECIPIENT_CARD_LAST_FOUR_DIGITS = "recipient_card_last_four_digits";
     private static final String SENDER_FULL_NAME = "sender_full_name";

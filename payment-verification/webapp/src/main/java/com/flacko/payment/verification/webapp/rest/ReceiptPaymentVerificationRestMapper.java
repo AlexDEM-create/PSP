@@ -11,7 +11,7 @@ public class ReceiptPaymentVerificationRestMapper {
     ReceiptPaymentVerificationResponse mapModelToResponse(ReceiptPaymentVerification receiptPaymentVerification) {
         // add timezone from authorization
         return new ReceiptPaymentVerificationResponse(receiptPaymentVerification.getId(),
-                receiptPaymentVerification.getPaymentId(),
+                receiptPaymentVerification.getOutgoingPaymentId(),
                 receiptPaymentVerification.getRecipientFullName(),
                 receiptPaymentVerification.getRecipientCardLastFourDigits(),
                 receiptPaymentVerification.getSenderFullName(),

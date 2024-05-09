@@ -28,6 +28,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentBuilder {
 
+    private final Instant now = Instant.now();
+
     private final OutgoingPaymentRepository outgoingPaymentRepository;
     private final MerchantService merchantService;
     private final TraderTeamService traderTeamService;
@@ -58,8 +60,10 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
                 .amount(existingOutgoingPayment.getAmount())
                 .currency(existingOutgoingPayment.getCurrency())
                 .currentState(existingOutgoingPayment.getCurrentState())
+                .booked(existingOutgoingPayment.isBooked())
                 .createdDate(existingOutgoingPayment.getCreatedDate())
-                .updatedDate(Instant.now());
+                .updatedDate(now)
+                .bookedDate(existingOutgoingPayment.getBookedDate().orElse(null));
         id = existingOutgoingPayment.getId();
         currentState = existingOutgoingPayment.getCurrentState();
         return this;
@@ -102,6 +106,13 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
             throw new OutgoingPaymentIllegalStateTransitionException(id, currentState, newState);
         }
         pojoBuilder.currentState(newState);
+        return this;
+    }
+
+    @Override
+    public OutgoingPaymentBuilder withBooked() {
+        pojoBuilder.booked(true);
+        pojoBuilder.bookedDate(now);
         return this;
     }
 

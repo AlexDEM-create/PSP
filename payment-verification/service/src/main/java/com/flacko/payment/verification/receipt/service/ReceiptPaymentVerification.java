@@ -14,7 +14,7 @@ public interface ReceiptPaymentVerification {
 
     String getId();
 
-    String getPaymentId();
+    String getOutgoingPaymentId();
 
     String getRecipientFullName();
 
