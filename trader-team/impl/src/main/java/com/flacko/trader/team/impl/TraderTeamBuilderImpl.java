@@ -16,7 +16,7 @@ import com.flacko.trader.team.service.exception.TraderTeamIllegalLeaderException
 import com.flacko.trader.team.service.exception.TraderTeamInvalidFeeRateException;
 import com.flacko.trader.team.service.exception.TraderTeamMissingRequiredAttributeException;
 import com.flacko.user.service.User;
-import com.flacko.user.service.UserRole;
+import com.flacko.common.role.UserRole;
 import com.flacko.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;

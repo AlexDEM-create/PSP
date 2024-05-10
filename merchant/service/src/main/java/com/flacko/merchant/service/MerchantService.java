@@ -12,6 +12,8 @@ public interface MerchantService {
 
     Merchant get(String id) throws MerchantNotFoundException;
 
+    Merchant getByUserId(String userId) throws MerchantNotFoundException;
+
 }
 
 

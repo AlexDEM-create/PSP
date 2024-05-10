@@ -29,6 +29,12 @@ public class MerchantServiceImpl implements MerchantService {
                 .orElseThrow(() -> new MerchantNotFoundException(id));
     }
 
+    @Override
+    public Merchant getByUserId(String userId) throws MerchantNotFoundException {
+        return merchantRepository.findByUserId(userId)
+                .orElseThrow(() -> new MerchantNotFoundException("user", userId));
+    }
+
     @Transactional
     @Override
     public MerchantBuilder create() {

@@ -2,7 +2,7 @@ package com.flacko.user.impl;
 
 import com.flacko.user.service.User;
 import com.flacko.user.service.UserListBuilder;
-import com.flacko.user.service.UserRole;
+import com.flacko.common.role.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;

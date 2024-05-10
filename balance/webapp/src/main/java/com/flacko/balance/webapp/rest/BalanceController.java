@@ -1,12 +1,15 @@
 package com.flacko.balance.webapp.rest;
 
+import com.auth0.jwt.JWT;
 import com.flacko.balance.service.*;
-import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
-import com.flacko.common.exception.BalanceNotFoundException;
-import com.flacko.common.exception.MerchantNotFoundException;
-import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.balance.service.EntityType;
+import com.flacko.common.exception.*;
+import com.flacko.security.SecurityConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,6 +18,17 @@ public class BalanceController {
 
     private final BalanceService balanceService;
     private final BalanceRestMapper balanceRestMapper;
+
+    @GetMapping("/my")
+    public List<BalanceResponse> getMyBalances(@RequestHeader("Authorization") String tokenWithPrefix)
+            throws BalanceNotFoundException, UserNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException {
+        String token = tokenWithPrefix.substring(SecurityConfig.TOKEN_PREFIX.length());
+        String login = JWT.decode(token).getSubject();
+        return balanceService.getMy(login)
+                .stream()
+                .map(balanceRestMapper::mapModelToResponse)
+                .collect(Collectors.toList());
+    }
 
     @GetMapping("/trader-teams/{traderTeamId}")
     public BalanceResponse getTraderTeamBalance(@PathVariable String traderTeamId) throws BalanceNotFoundException {

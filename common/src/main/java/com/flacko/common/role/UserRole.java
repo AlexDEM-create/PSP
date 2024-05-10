@@ -1,4 +1,4 @@
-package com.flacko.user.service;
+package com.flacko.common.role;
 
 public enum UserRole {
     USER_ADMIN,

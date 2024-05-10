@@ -1,7 +1,7 @@
 package com.flacko.user.webapp.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.flacko.user.service.UserRole;
+import com.flacko.common.role.UserRole;
 
 public record UserCreateRequest(@JsonProperty(LOGIN) String login,
                                 @JsonProperty(PASSWORD) String password,

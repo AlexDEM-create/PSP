@@ -6,4 +6,8 @@ public class MerchantNotFoundException extends NotFoundException {
         super(String.format("Merchant %s not found", id));
     }
 
+    public MerchantNotFoundException(String entity, String entityId) {
+        super(String.format("Merchant not found by %s %s", entity, entityId));
+    }
+
 }

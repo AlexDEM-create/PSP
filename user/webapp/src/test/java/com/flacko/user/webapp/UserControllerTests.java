@@ -1,7 +1,7 @@
 package com.flacko.user.webapp;
 
 import com.flacko.common.spring.ServiceLocator;
-import com.flacko.user.service.UserRole;
+import com.flacko.common.role.UserRole;
 import com.flacko.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,5 +1,6 @@
 package com.flacko.user.service;
 
+import com.flacko.common.role.UserRole;
 import com.flacko.user.service.exception.UserLoginAlreadyInUseException;
 import com.flacko.user.service.exception.UserMissingRequiredAttributeException;
 import com.flacko.user.service.exception.UserWeakPasswordException;

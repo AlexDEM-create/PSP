@@ -14,4 +14,7 @@ public interface MerchantRepository extends CrudRepository<MerchantPojo, Long>, 
     @Query("SELECT m FROM MerchantPojo m WHERE m.id = :id")
     Optional<Merchant> findById(String id);
 
+    @Query("SELECT m FROM MerchantPojo m WHERE m.userId = :userId")
+    Optional<Merchant> findByUserId(String userId);
+
 }

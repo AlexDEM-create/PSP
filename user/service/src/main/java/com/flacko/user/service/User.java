@@ -1,5 +1,7 @@
 package com.flacko.user.service;
 
+import com.flacko.common.role.UserRole;
+
 import java.time.Instant;
 import java.util.Optional;
 

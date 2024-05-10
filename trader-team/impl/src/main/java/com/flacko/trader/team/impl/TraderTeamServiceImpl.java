@@ -28,6 +28,12 @@ public class TraderTeamServiceImpl implements TraderTeamService {
                 .orElseThrow(() -> new TraderTeamNotFoundException(id));
     }
 
+    @Override
+    public TraderTeam getByUserId(String userId) throws TraderTeamNotFoundException {
+        return traderTeamRepository.findByUserId(userId)
+                .orElseThrow(() -> new TraderTeamNotFoundException("user", userId));
+    }
+
     @Transactional
     @Override
     public TraderTeamBuilder create() {

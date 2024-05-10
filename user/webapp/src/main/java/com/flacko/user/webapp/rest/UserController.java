@@ -1,6 +1,7 @@
 package com.flacko.user.webapp.rest;
 
 import com.auth0.jwt.JWT;
+import com.flacko.common.role.UserRole;
 import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.security.SecurityConfig;
 import com.flacko.user.service.*;
