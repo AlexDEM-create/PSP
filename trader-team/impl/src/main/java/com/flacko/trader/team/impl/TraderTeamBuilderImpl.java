@@ -1,7 +1,10 @@
 package com.flacko.trader.team.impl;
 
 import com.flacko.balance.service.BalanceService;
+import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
+import com.flacko.common.country.Country;
+import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -79,6 +82,12 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
     }
 
     @Override
+    public TraderTeamBuilder withCountry(Country country) {
+        pojoBuilder.country(country);
+        return this;
+    }
+
+    @Override
     public TraderTeamBuilder withLeaderId(String leaderId) {
         pojoBuilder.leaderId(leaderId);
         return this;
@@ -137,6 +146,8 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
         balanceService.create()
                 .withEntityId(traderTeam.getId())
                 .withEntityType(EntityType.TRADER_TEAM)
+                .withType(BalanceType.GENERIC)
+                .withCurrency(parseCurrency(traderTeam.getCountry()))
                 .build();
 
         return traderTeam;
@@ -183,6 +194,13 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
         } else if (pojo.getTraderOutgoingFeeRate().compareTo(BigDecimal.ZERO) < 0) {
             throw new TraderTeamInvalidFeeRateException("leaderOutgoingFeeRate", pojo.getId());
         }
+    }
+
+    private Currency parseCurrency(Country country) {
+        return switch (country) {
+            case RUSSIA -> Currency.RUB;
+            case UZBEKISTAN -> Currency.UZS;
+        };
     }
 
 }

@@ -1,8 +1,10 @@
 package com.flacko.merchant.impl;
 
 import com.flacko.balance.service.BalanceService;
+import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
 import com.flacko.common.country.Country;
+import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -114,6 +116,15 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
         balanceService.create()
                 .withEntityId(merchant.getId())
                 .withEntityType(EntityType.MERCHANT)
+                .withType(BalanceType.INCOMING)
+                .withCurrency(parseCurrency(merchant.getCountry()))
+                .build();
+
+        balanceService.create()
+                .withEntityId(merchant.getId())
+                .withEntityType(EntityType.MERCHANT)
+                .withType(BalanceType.OUTGOING)
+                .withCurrency(parseCurrency(merchant.getCountry()))
                 .build();
 
         return merchant;
@@ -145,6 +156,13 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
         } else if (pojo.getOutgoingFeeRate().compareTo(BigDecimal.ZERO) <= 0) {
             throw new MerchantInvalidFeeRateException("Outgoing", pojo.getId());
         }
+    }
+
+    private Currency parseCurrency(Country country) {
+        return switch (country) {
+            case RUSSIA -> Currency.RUB;
+            case UZBEKISTAN -> Currency.UZS;
+        };
     }
 
 }

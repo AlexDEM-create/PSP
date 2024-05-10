@@ -14,6 +14,7 @@ public class TraderTeamRestMapper {
                 traderTeam.getId(),
                 traderTeam.getName(),
                 traderTeam.getUserId(),
+                traderTeam.getCountry(),
                 traderTeam.getLeaderId(),
                 traderTeam.getTraderIncomingFeeRate(),
                 traderTeam.getTraderOutgoingFeeRate(),

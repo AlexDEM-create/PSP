@@ -1,9 +1,6 @@
 package com.flacko.balance.webapp.rest;
 
-import com.flacko.balance.service.Balance;
-import com.flacko.balance.service.BalanceBuilder;
-import com.flacko.balance.service.BalanceService;
-import com.flacko.balance.service.EntityType;
+import com.flacko.balance.service.*;
 import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.common.exception.BalanceNotFoundException;
 import com.flacko.common.exception.MerchantNotFoundException;
@@ -21,34 +18,84 @@ public class BalanceController {
 
     @GetMapping("/trader-teams/{traderTeamId}")
     public BalanceResponse getTraderTeamBalance(@PathVariable String traderTeamId) throws BalanceNotFoundException {
-        return balanceRestMapper.mapModelToResponse(balanceService.get(traderTeamId, EntityType.TRADER_TEAM));
+        return balanceRestMapper.mapModelToResponse(balanceService.get(traderTeamId, EntityType.TRADER_TEAM,
+                BalanceType.GENERIC));
     }
 
-    @GetMapping("/merchants/{merchantId}")
-    public BalanceResponse getMerchantBalance(@PathVariable String merchantId) throws BalanceNotFoundException {
-        return balanceRestMapper.mapModelToResponse(balanceService.get(merchantId, EntityType.MERCHANT));
+    @GetMapping("/merchants/{merchantId}/incoming")
+    public BalanceResponse getMerchantIncomingBalance(@PathVariable String merchantId) throws BalanceNotFoundException {
+        return balanceRestMapper.mapModelToResponse(balanceService.get(merchantId, EntityType.MERCHANT,
+                BalanceType.INCOMING));
     }
 
-    public BalanceResponse
+    @GetMapping("/merchants/{merchantId}/outgoing")
+    public BalanceResponse getMerchantOutgoingBalance(@PathVariable String merchantId) throws BalanceNotFoundException {
+        return balanceRestMapper.mapModelToResponse(balanceService.get(merchantId, EntityType.MERCHANT,
+                BalanceType.OUTGOING));
+    }
 
-    @PutMapping("/trader-teams/{traderTeamId}")
-    public BalanceResponse updateTraderTeamBalance(@PathVariable String traderTeamId,
-                                                   @RequestBody BalanceUpdateRequest balanceUpdateRequest)
+    @PutMapping("/trader-teams/{traderTeamId}/deposit")
+    public BalanceResponse depositTraderTeamBalance(@PathVariable String traderTeamId,
+                                                    @RequestBody BalanceUpdateRequest balanceUpdateRequest)
             throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
             BalanceMissingRequiredAttributeException {
-        BalanceBuilder builder = balanceService.update(traderTeamId, EntityType.TRADER_TEAM)
+        BalanceBuilder builder = balanceService.update(traderTeamId, EntityType.TRADER_TEAM, BalanceType.GENERIC)
                 .deposit(balanceUpdateRequest.amount());
         Balance balance = builder.build();
         return balanceRestMapper.mapModelToResponse(balance);
     }
 
-    @PutMapping("/merchants/{merchantId}")
-    public BalanceResponse updateMerchantBalance(@PathVariable String merchantId,
-                                                 @RequestBody BalanceUpdateRequest balanceUpdateRequest)
+    @PutMapping("/trader-teams/{traderTeamId}/withdraw")
+    public BalanceResponse withdrawTraderTeamBalance(@PathVariable String traderTeamId,
+                                                     @RequestBody BalanceUpdateRequest balanceUpdateRequest)
             throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
             BalanceMissingRequiredAttributeException {
-        BalanceBuilder builder = balanceService.update(merchantId, EntityType.MERCHANT)
+        BalanceBuilder builder = balanceService.update(traderTeamId, EntityType.TRADER_TEAM, BalanceType.GENERIC)
+                .withdraw(balanceUpdateRequest.amount());
+        Balance balance = builder.build();
+        return balanceRestMapper.mapModelToResponse(balance);
+    }
+
+    @PutMapping("/merchants/{merchantId}/incoming/deposit")
+    public BalanceResponse depositMerchantIncomingBalance(@PathVariable String merchantId,
+                                                          @RequestBody BalanceUpdateRequest balanceUpdateRequest)
+            throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
+            BalanceMissingRequiredAttributeException {
+        BalanceBuilder builder = balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.INCOMING)
                 .deposit(balanceUpdateRequest.amount());
+        Balance balance = builder.build();
+        return balanceRestMapper.mapModelToResponse(balance);
+    }
+
+    @PutMapping("/merchants/{merchantId}/incoming/withdraw")
+    public BalanceResponse withdrawMerchantIncomingBalance(@PathVariable String merchantId,
+                                                           @RequestBody BalanceUpdateRequest balanceUpdateRequest)
+            throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
+            BalanceMissingRequiredAttributeException {
+        BalanceBuilder builder = balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.INCOMING)
+                .withdraw(balanceUpdateRequest.amount());
+        Balance balance = builder.build();
+        return balanceRestMapper.mapModelToResponse(balance);
+    }
+
+    @PutMapping("/merchants/{merchantId}/outgoing/deposit")
+    public BalanceResponse depositMerchantOutgoingBalance(@PathVariable String merchantId,
+                                                          @RequestBody BalanceUpdateRequest balanceUpdateRequest)
+            throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
+            BalanceMissingRequiredAttributeException {
+        BalanceBuilder builder = balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.OUTGOING)
+                .deposit(balanceUpdateRequest.amount());
+        Balance balance = builder.build();
+        return balanceRestMapper.mapModelToResponse(balance);
+    }
+
+    @PutMapping("/merchants/{merchantId}/outgoing/withdraw")
+    public BalanceResponse withdrawMerchantOutgoingBalance(@PathVariable String merchantId,
+                                                           @RequestBody BalanceUpdateRequest balanceUpdateRequest)
+            throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
+            BalanceMissingRequiredAttributeException {
+        BalanceBuilder builder = balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.OUTGOING)
+                .withdraw(balanceUpdateRequest.amount());
         Balance balance = builder.build();
         return balanceRestMapper.mapModelToResponse(balance);
     }

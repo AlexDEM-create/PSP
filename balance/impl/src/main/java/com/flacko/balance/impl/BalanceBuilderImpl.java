@@ -2,7 +2,9 @@ package com.flacko.balance.impl;
 
 import com.flacko.balance.service.Balance;
 import com.flacko.balance.service.BalanceBuilder;
+import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
+import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -69,6 +71,18 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
     }
 
     @Override
+    public BalanceBuilder withType(BalanceType type) {
+        pojoBuilder.type(type);
+        return this;
+    }
+
+    @Override
+    public BalanceBuilder withCurrency(Currency currency) {
+        pojoBuilder.currency(currency);
+        return this;
+    }
+
+    @Override
     public BalanceBuilder deposit(BigDecimal amount) {
         currentBalance = currentBalance.add(amount);
         pojoBuilder.currentBalance(currentBalance);
@@ -108,6 +122,9 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
         if (pojo.getEntityType() == null) {
             throw new BalanceMissingRequiredAttributeException("entityType", Optional.of(pojo.getId()));
         }
+        if (pojo.getType() == null) {
+            throw new BalanceMissingRequiredAttributeException("type", Optional.of(pojo.getId()));
+        }
         if (pojo.getEntityType() == EntityType.MERCHANT) {
             merchantService.get(pojo.getEntityId());
         } else if (pojo.getEntityType() == EntityType.TRADER_TEAM) {
@@ -115,6 +132,9 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
         }
         if (pojo.getCurrentBalance() == null) {
             throw new BalanceMissingRequiredAttributeException("currentBalance", Optional.of(pojo.getId()));
+        }
+        if (pojo.getCurrency() == null) {
+            throw new BalanceMissingRequiredAttributeException("currency", Optional.of(pojo.getId()));
         }
     }
 

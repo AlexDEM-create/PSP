@@ -1,5 +1,6 @@
 package com.flacko.trader.team.impl;
 
+import com.flacko.common.country.Country;
 import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamListBuilder;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
     private Optional<Boolean> online = Optional.empty();
     private Optional<Boolean> kickedOut = Optional.empty();
     private Optional<String> leaderId = Optional.empty();
+    private Optional<Country> country = Optional.empty();
 
     @Override
     public TraderTeamListBuilder withOnline(Boolean online) {
@@ -37,6 +39,12 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
     @Override
     public TraderTeamListBuilder withLeaderId(String leaderId) {
         this.leaderId = Optional.of(leaderId);
+        return this;
+    }
+
+    @Override
+    public TraderTeamListBuilder withCountry(Country country) {
+        this.country = Optional.of(country);
         return this;
     }
 
@@ -58,6 +66,10 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
         if (leaderId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("leaderId"), leaderId.get()));
+        }
+        if (country.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("country"), country.get()));
         }
         return spec;
     }

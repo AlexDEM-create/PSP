@@ -1,9 +1,6 @@
 package com.flacko.balance.impl;
 
-import com.flacko.balance.service.Balance;
-import com.flacko.balance.service.BalanceBuilder;
-import com.flacko.balance.service.BalanceService;
-import com.flacko.balance.service.EntityType;
+import com.flacko.balance.service.*;
 import com.flacko.common.exception.BalanceNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +15,8 @@ public class BalanceServiceImpl implements BalanceService {
     private final ServiceLocator serviceLocator;
 
     @Override
-    public Balance get(String entityId, EntityType entityType) throws BalanceNotFoundException {
-        return balanceRepository.findByEntityIdAndEntityType(entityId, entityType)
+    public Balance get(String entityId, EntityType entityType, BalanceType type) throws BalanceNotFoundException {
+        return balanceRepository.findByEntityIdAndEntityTypeAndType(entityId, entityType, type)
                 .orElseThrow(() -> new BalanceNotFoundException(entityId));
     }
 
@@ -32,8 +29,9 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Override
     @Transactional
-    public BalanceBuilder update(String entityId, EntityType entityType) throws BalanceNotFoundException {
-        Balance existingBalance = get(entityId, entityType);
+    public BalanceBuilder update(String entityId, EntityType entityType, BalanceType type)
+            throws BalanceNotFoundException {
+        Balance existingBalance = get(entityId, entityType, type);
         return serviceLocator.create(InitializableBalanceBuilder.class)
                 .initializeExisting(existingBalance);
     }

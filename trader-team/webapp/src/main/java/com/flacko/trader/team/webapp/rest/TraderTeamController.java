@@ -1,5 +1,6 @@
 package com.flacko.trader.team.webapp.rest;
 
+import com.flacko.common.country.Country;
 import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -26,6 +27,7 @@ public class TraderTeamController {
     private static final String ONLINE = "online";
     private static final String KICKED_OUT = "kicked_out";
     private static final String LEADER_ID = "leader_id";
+    private static final String COUNTRY = "country";
     private static final String LIMIT = "limit";
     private static final String OFFSET = "offset";
 
@@ -36,12 +38,14 @@ public class TraderTeamController {
     public List<TraderTeamResponse> list(@RequestParam(ONLINE) Optional<Boolean> online,
                                          @RequestParam(KICKED_OUT) Optional<Boolean> kickedOut,
                                          @RequestParam(LEADER_ID) Optional<String> leaderId,
+                                         @RequestParam(COUNTRY) Optional<Country> country,
                                          @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
                                          @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
         TraderTeamListBuilder builder = traderTeamService.list();
         online.ifPresent(builder::withOnline);
         kickedOut.ifPresent(builder::withKickedOut);
         leaderId.ifPresent(builder::withLeaderId);
+        country.ifPresent(builder::withCountry);
         return builder.build()
                 .stream()
                 .map(traderTeamRestMapper::mapModelToResponse)
@@ -63,6 +67,7 @@ public class TraderTeamController {
         TraderTeamBuilder builder = traderTeamService.create();
         builder.withName(traderTeamCreateRequest.name())
                 .withUserId(traderTeamCreateRequest.userId())
+                .withCountry(traderTeamCreateRequest.country())
                 .withLeaderId(traderTeamCreateRequest.leaderId())
                 .withTraderIncomingFeeRate(traderTeamCreateRequest.traderIncomingFeeRate())
                 .withTraderOutgoingFeeRate(traderTeamCreateRequest.traderOutgoingFeeRate())

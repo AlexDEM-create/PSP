@@ -12,7 +12,9 @@ public class BalanceRestMapper {
         return new BalanceResponse(balance.getId(),
                 balance.getEntityId(),
                 balance.getEntityType(),
+                balance.getType(),
                 balance.getCurrentBalance(),
+                balance.getCurrency(),
                 balance.getCreatedDate().atZone(ZoneId.systemDefault()),
                 balance.getUpdatedDate().atZone(ZoneId.systemDefault()));
     }

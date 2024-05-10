@@ -1,5 +1,6 @@
 package com.flacko.trader.team.impl;
 
+import com.flacko.common.country.Country;
 import com.flacko.trader.team.service.TraderTeam;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,10 @@ public class TraderTeamPojo implements TraderTeam {
 
     @Column(name = "user_id", nullable = false)
     private String userId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Country country;
 
     @Column(name = "leader_id", nullable = false)
     private String leaderId;

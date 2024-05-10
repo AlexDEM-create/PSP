@@ -16,9 +16,11 @@ public interface Balance {
 
     EntityType getEntityType();
 
+    BalanceType getType();
+
     BigDecimal getCurrentBalance();
 
-//    Currency getCurrency();
+    Currency getCurrency();
 
     Instant getCreatedDate();
 

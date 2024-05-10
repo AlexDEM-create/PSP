@@ -1,7 +1,9 @@
 package com.flacko.balance.impl;
 
 import com.flacko.balance.service.Balance;
+import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
+import com.flacko.common.currency.Currency;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +24,7 @@ public class BalancePojo implements Balance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "balance_id", nullable = false)
+    @Column(name = "primary_key", nullable = false)
     private Long primaryKey;
 
     @Column(nullable = false)
@@ -35,8 +37,16 @@ public class BalancePojo implements Balance {
     @Column(name = "entity_type", nullable = false)
     private EntityType entityType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private BalanceType type;
+
     @Column(name = "current_balance", nullable = false)
     private BigDecimal currentBalance;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Currency currency;
 
     @Column(name = "created_date", nullable = false)
     private Instant createdDate;

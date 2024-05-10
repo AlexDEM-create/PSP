@@ -1,5 +1,6 @@
 package com.flacko.trader.team.service;
 
+import com.flacko.common.country.Country;
 import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -15,6 +16,8 @@ public interface TraderTeamBuilder {
     TraderTeamBuilder withName(String name);
 
     TraderTeamBuilder withUserId(String userId);
+
+    TraderTeamBuilder withCountry(Country country);
 
     TraderTeamBuilder withLeaderId(String leaderId);
 
