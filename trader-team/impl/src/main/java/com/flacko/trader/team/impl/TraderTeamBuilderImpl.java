@@ -44,7 +44,9 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
     public TraderTeamBuilder initializeNew() {
         pojoBuilder = TraderTeamPojo.builder()
                 .id(new IdGenerator().generateId())
-                .online(false)
+                .verified(false)
+                .incomingOnline(false)
+                .outgoingOnline(false)
                 .kickedOut(false);
         return this;
     }
@@ -62,7 +64,9 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
                 .traderOutgoingFeeRate(existingTraderTeam.getTraderOutgoingFeeRate())
                 .leaderIncomingFeeRate(existingTraderTeam.getLeaderIncomingFeeRate())
                 .leaderOutgoingFeeRate(existingTraderTeam.getLeaderOutgoingFeeRate())
-                .online(existingTraderTeam.isOnline())
+                .verified(existingTraderTeam.isVerified())
+                .incomingOnline(existingTraderTeam.isIncomingOnline())
+                .outgoingOnline(existingTraderTeam.isOutgoingOnline())
                 .kickedOut(existingTraderTeam.isKickedOut())
                 .createdDate(existingTraderTeam.getCreatedDate())
                 .updatedDate(now)
@@ -119,14 +123,30 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
     }
 
     @Override
-    public TraderTeamBuilder withOnline(boolean online) {
-        pojoBuilder.online(online);
+    public TraderTeamBuilder withVerified() {
+        pojoBuilder.verified(true);
+        return this;
+    }
+
+    @Override
+    public TraderTeamBuilder withIncomingOnline(boolean incomingOnline) {
+        pojoBuilder.incomingOnline(incomingOnline);
+        pojoBuilder.outgoingOnline(false);
+        return this;
+    }
+
+    @Override
+    public TraderTeamBuilder withOutgoingOnline(boolean outgoingOnline) {
+        pojoBuilder.outgoingOnline(outgoingOnline);
+        pojoBuilder.incomingOnline(false);
         return this;
     }
 
     @Override
     public TraderTeamBuilder withKickedOut(boolean kickedOut) {
         pojoBuilder.kickedOut(kickedOut);
+        pojoBuilder.incomingOnline(false);
+        pojoBuilder.outgoingOnline(false);
         return this;
     }
 

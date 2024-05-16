@@ -24,7 +24,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/trader-teams")
 public class TraderTeamController {
 
-    private static final String ONLINE = "online";
+    private static final String VERIFIED = "verified";
+    private static final String INCOMING_ONLINE = "incoming_online";
+    private static final String OUTGOING_ONLINE = "outgoing_online";
     private static final String KICKED_OUT = "kicked_out";
     private static final String LEADER_ID = "leader_id";
     private static final String COUNTRY = "country";
@@ -35,14 +37,18 @@ public class TraderTeamController {
     private final TraderTeamRestMapper traderTeamRestMapper;
 
     @GetMapping
-    public List<TraderTeamResponse> list(@RequestParam(ONLINE) Optional<Boolean> online,
+    public List<TraderTeamResponse> list(@RequestParam(VERIFIED) Optional<Boolean> verified,
+                                         @RequestParam(INCOMING_ONLINE) Optional<Boolean> incomingOnline,
+                                         @RequestParam(OUTGOING_ONLINE) Optional<Boolean> outgoingOnline,
                                          @RequestParam(KICKED_OUT) Optional<Boolean> kickedOut,
                                          @RequestParam(LEADER_ID) Optional<String> leaderId,
                                          @RequestParam(COUNTRY) Optional<Country> country,
                                          @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
                                          @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
         TraderTeamListBuilder builder = traderTeamService.list();
-        online.ifPresent(builder::withOnline);
+        verified.ifPresent(builder::withVerified);
+        incomingOnline.ifPresent(builder::withIncomingOnline);
+        outgoingOnline.ifPresent(builder::withOutgoingOnline);
         kickedOut.ifPresent(builder::withKickedOut);
         leaderId.ifPresent(builder::withLeaderId);
         country.ifPresent(builder::withCountry);
@@ -88,13 +94,46 @@ public class TraderTeamController {
         return traderTeamRestMapper.mapModelToResponse(traderTeam);
     }
 
-    @PatchMapping("/{traderTeamId}/online")
+    @PatchMapping("/{traderTeamId}/incoming-online")
+    public TraderTeamResponse incomingOnline(@PathVariable String traderTeamId)
+            throws TraderTeamNotFoundException, TraderTeamMissingRequiredAttributeException, UserNotFoundException,
+            TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
+            BalanceMissingRequiredAttributeException {
+        TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
+        builder.withIncomingOnline(true);
+        TraderTeam traderTeam = builder.build();
+        return traderTeamRestMapper.mapModelToResponse(traderTeam);
+    }
+
+    @PatchMapping("/{traderTeamId}/incoming-offline")
+    public TraderTeamResponse incomingOffline(@PathVariable String traderTeamId)
+            throws TraderTeamNotFoundException, TraderTeamMissingRequiredAttributeException, UserNotFoundException,
+            TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
+            BalanceMissingRequiredAttributeException {
+        TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
+        builder.withIncomingOnline(false);
+        TraderTeam traderTeam = builder.build();
+        return traderTeamRestMapper.mapModelToResponse(traderTeam);
+    }
+
+    @PatchMapping("/{traderTeamId}/outgoing-online")
+    public TraderTeamResponse outgoingOnline(@PathVariable String traderTeamId)
+            throws TraderTeamNotFoundException, TraderTeamMissingRequiredAttributeException, UserNotFoundException,
+            TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
+            BalanceMissingRequiredAttributeException {
+        TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
+        builder.withOutgoingOnline(true);
+        TraderTeam traderTeam = builder.build();
+        return traderTeamRestMapper.mapModelToResponse(traderTeam);
+    }
+
+    @PatchMapping("/{traderTeamId}/outgoing-offline")
     public TraderTeamResponse online(@PathVariable String traderTeamId)
             throws TraderTeamNotFoundException, TraderTeamMissingRequiredAttributeException, UserNotFoundException,
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
             BalanceMissingRequiredAttributeException {
         TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
-        builder.withOnline(true);
+        builder.withOutgoingOnline(false);
         TraderTeam traderTeam = builder.build();
         return traderTeamRestMapper.mapModelToResponse(traderTeam);
     }
