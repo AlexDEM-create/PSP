@@ -17,7 +17,7 @@ public interface BalanceBuilder {
 
     BalanceBuilder withCurrency(Currency currency);
 
-    BalanceBuilder deposit(BigDecimal amount);
+    BalanceBuilder deposit(BigDecimal amount) throws MerchantNotFoundException;
 
     BalanceBuilder withdraw(BigDecimal amount);
 

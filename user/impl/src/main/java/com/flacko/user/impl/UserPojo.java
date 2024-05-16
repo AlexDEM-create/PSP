@@ -1,7 +1,7 @@
 package com.flacko.user.impl;
 
+import com.flacko.common.role.UserRole;
 import com.flacko.user.service.User;
-import com.flacko.user.service.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.flacko.payment.service.outgoing.exception;
+package com.flacko.common.exception;
 
 public class OutgoingPaymentInvalidAmountException extends Exception {
 

@@ -1,5 +1,8 @@
 package com.flacko.payment.service.outgoing;
 
+import com.flacko.common.bank.Bank;
+import com.flacko.common.currency.Currency;
+import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
 
 import java.util.List;
@@ -12,9 +15,15 @@ public interface OutgoingPaymentListBuilder {
 
     OutgoingPaymentListBuilder withPaymentMethodId(String paymentMethodId);
 
-    OutgoingPaymentListBuilder withCurrentState(PaymentState currentState);
+    OutgoingPaymentListBuilder withCurrency(Currency currency);
 
-    OutgoingPaymentListBuilder withBooked(Boolean booked);
+    OutgoingPaymentListBuilder withRecipient(String recipient);
+
+    OutgoingPaymentListBuilder withBank(Bank bank);
+
+    OutgoingPaymentListBuilder withRecipientPaymentMethodType(RecipientPaymentMethodType recipientPaymentMethodType);
+
+    OutgoingPaymentListBuilder withCurrentState(PaymentState currentState);
 
     List<OutgoingPayment> build();
 

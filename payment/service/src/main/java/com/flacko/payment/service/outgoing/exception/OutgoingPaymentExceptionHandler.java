@@ -1,6 +1,7 @@
 package com.flacko.payment.service.outgoing.exception;
 
 import com.flacko.common.exception.NotFoundException;
+import com.flacko.common.exception.OutgoingPaymentIllegalStateTransitionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

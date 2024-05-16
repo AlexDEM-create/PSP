@@ -16,4 +16,6 @@ public interface TraderTeamService {
 
     TraderTeam getByUserId(String userId) throws TraderTeamNotFoundException;
 
+    TraderTeam getByLeaderId(String leaderId) throws TraderTeamNotFoundException;
+
 }

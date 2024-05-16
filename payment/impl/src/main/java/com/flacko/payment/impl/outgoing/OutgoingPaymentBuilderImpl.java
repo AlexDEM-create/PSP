@@ -1,18 +1,20 @@
 package com.flacko.payment.impl.outgoing;
 
+import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
 import com.flacko.merchant.service.MerchantService;
 import com.flacko.payment.method.service.PaymentMethodService;
 import com.flacko.payment.service.outgoing.OutgoingPayment;
 import com.flacko.payment.service.outgoing.OutgoingPaymentBuilder;
-import com.flacko.payment.service.outgoing.exception.OutgoingPaymentIllegalStateTransitionException;
-import com.flacko.payment.service.outgoing.exception.OutgoingPaymentInvalidAmountException;
-import com.flacko.payment.service.outgoing.exception.OutgoingPaymentMissingRequiredAttributeException;
+import com.flacko.common.exception.OutgoingPaymentIllegalStateTransitionException;
+import com.flacko.common.exception.OutgoingPaymentInvalidAmountException;
+import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
 import com.flacko.trader.team.service.TraderTeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -59,11 +61,13 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
                 .paymentMethodId(existingOutgoingPayment.getPaymentMethodId())
                 .amount(existingOutgoingPayment.getAmount())
                 .currency(existingOutgoingPayment.getCurrency())
+                .recipient(existingOutgoingPayment.getRecipient())
+                .bank(existingOutgoingPayment.getBank())
+                .recipientPaymentMethodType(existingOutgoingPayment.getRecipientPaymentMethodType())
+                .partnerPaymentId(existingOutgoingPayment.getPartnerPaymentId())
                 .currentState(existingOutgoingPayment.getCurrentState())
-                .booked(existingOutgoingPayment.isBooked())
                 .createdDate(existingOutgoingPayment.getCreatedDate())
-                .updatedDate(now)
-                .bookedDate(existingOutgoingPayment.getBookedDate().orElse(null));
+                .updatedDate(now);
         id = existingOutgoingPayment.getId();
         currentState = existingOutgoingPayment.getCurrentState();
         return this;
@@ -100,19 +104,36 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
     }
 
     @Override
+    public OutgoingPaymentBuilder withRecipient(String recipient) {
+        pojoBuilder.recipient(recipient);
+        return this;
+    }
+
+    @Override
+    public OutgoingPaymentBuilder withBank(Bank bank) {
+        pojoBuilder.bank(bank);
+        return this;
+    }
+
+    @Override
+    public OutgoingPaymentBuilder withRecipientPaymentMethodType(RecipientPaymentMethodType recipientPaymentMethodType) {
+        pojoBuilder.recipientPaymentMethodType(recipientPaymentMethodType);
+        return this;
+    }
+
+    @Override
+    public OutgoingPaymentBuilder withPartnerPaymentId(String partnerPaymentId) {
+        pojoBuilder.partnerPaymentId(partnerPaymentId);
+        return this;
+    }
+
+    @Override
     public OutgoingPaymentBuilder withState(PaymentState newState)
             throws OutgoingPaymentIllegalStateTransitionException {
         if (!currentState.canChangeTo(newState)) {
             throw new OutgoingPaymentIllegalStateTransitionException(id, currentState, newState);
         }
         pojoBuilder.currentState(newState);
-        return this;
-    }
-
-    @Override
-    public OutgoingPaymentBuilder withBooked() {
-        pojoBuilder.booked(true);
-        pojoBuilder.bookedDate(now);
         return this;
     }
 
@@ -154,6 +175,19 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
         }
         if (pojo.getCurrency() == null) {
             throw new OutgoingPaymentMissingRequiredAttributeException("currency", Optional.of(pojo.getId()));
+        }
+        if (pojo.getRecipient() == null || pojo.getRecipient().isBlank()) {
+            throw new OutgoingPaymentMissingRequiredAttributeException("recipient", Optional.of(pojo.getId()));
+        }
+        if (pojo.getBank() == null) {
+            throw new OutgoingPaymentMissingRequiredAttributeException("bank", Optional.of(pojo.getId()));
+        }
+        if (pojo.getRecipientPaymentMethodType() == null) {
+            throw new OutgoingPaymentMissingRequiredAttributeException("recipientPaymentMethodType",
+                    Optional.of(pojo.getId()));
+        }
+        if (pojo.getPartnerPaymentId() == null || pojo.getPartnerPaymentId().isBlank()) {
+            throw new OutgoingPaymentMissingRequiredAttributeException("partnerPaymentId", Optional.of(pojo.getId()));
         }
         if (pojo.getCurrentState() == null) {
             throw new OutgoingPaymentMissingRequiredAttributeException("currentState", Optional.of(pojo.getId()));

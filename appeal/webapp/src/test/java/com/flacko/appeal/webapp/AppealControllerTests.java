@@ -6,18 +6,17 @@ import com.flacko.appeal.service.AppealService;
 import com.flacko.appeal.service.AppealSource;
 import com.flacko.appeal.service.AppealState;
 import com.flacko.appeal.webapp.rest.AppealCreateRequest;
-import com.flacko.bank.service.BankService;
+import com.flacko.common.bank.Bank;
 import com.flacko.common.country.Country;
 import com.flacko.common.currency.Currency;
+import com.flacko.common.role.UserRole;
 import com.flacko.common.state.PaymentState;
 import com.flacko.merchant.service.MerchantService;
 import com.flacko.payment.method.service.PaymentMethodService;
-import com.flacko.payment.method.service.PaymentMethodType;
 import com.flacko.payment.service.incoming.IncomingPaymentService;
 import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeamService;
-import com.flacko.user.service.UserRole;
 import com.flacko.user.service.UserService;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,9 +77,6 @@ public class AppealControllerTests {
     private UserService userService;
 
     @Autowired
-    private BankService bankService;
-
-    @Autowired
     private TerminalService terminalService;
 
     private String incomingPaymentId;
@@ -132,12 +128,6 @@ public class AppealControllerTests {
                 .build()
                 .getId();
 
-        String bankId = bankService.create()
-                .withName("test_bank")
-                .withCountry(Country.RUSSIA)
-                .build()
-                .getId();
-
         String terminalId = terminalService.create()
                 .withTraderTeamId(traderTeamId)
                 .withVerified()
@@ -147,11 +137,11 @@ public class AppealControllerTests {
                 .getId();
 
         paymentMethodId = paymentMethodService.create()
-                .withType(PaymentMethodType.BANK_CARD)
                 .withNumber("1234567812345678")
-                .withHolderName("John Grey")
+                .withFirstName("John")
+                .withLastName("Grey")
                 .withCurrency(Currency.RUB)
-                .withBankId(bankId)
+                .withBank(Bank.SBER)
                 .withTraderTeamId(traderTeamId)
                 .withTerminalId(terminalId)
                 .build()

@@ -15,4 +15,7 @@ public interface ReceiptPaymentVerificationRepository extends CrudRepository<Rec
     @Query("SELECT r FROM ReceiptPaymentVerificationPojo r WHERE r.id = :id")
     Optional<ReceiptPaymentVerification> findById(String id);
 
+    @Query("SELECT r FROM ReceiptPaymentVerificationPojo r WHERE r.outgoingPaymentId = :outgoingPaymentId")
+    Optional<ReceiptPaymentVerification> findByOutgoingPaymentId(String outgoingPaymentId);
+
 }

@@ -41,16 +41,16 @@ public class TraderTeamPojo implements TraderTeam {
     @Column(name = "leader_id", nullable = false)
     private String leaderId;
 
-    @Column(name = "trader_incoming_fee_rate", nullable = false)
+    @Column(name = "trader_incoming_fee_rate", nullable = false, precision = 6, scale = 5)
     private BigDecimal traderIncomingFeeRate;
 
-    @Column(name = "trader_outgoing_fee_rate", nullable = false)
+    @Column(name = "trader_outgoing_fee_rate", nullable = false, precision = 6, scale = 5)
     private BigDecimal traderOutgoingFeeRate;
 
-    @Column(name = "leader_incoming_fee_rate", nullable = false)
+    @Column(name = "leader_incoming_fee_rate", nullable = false, precision = 6, scale = 5)
     private BigDecimal leaderIncomingFeeRate;
 
-    @Column(name = "leader_outgoing_fee_rate", nullable = false)
+    @Column(name = "leader_outgoing_fee_rate", nullable = false, precision = 6, scale = 5)
     private BigDecimal leaderOutgoingFeeRate;
 
     @Column(name = "online", nullable = false)

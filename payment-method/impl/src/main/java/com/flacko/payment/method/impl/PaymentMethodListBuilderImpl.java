@@ -1,9 +1,9 @@
 package com.flacko.payment.method.impl;
 
+import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
 import com.flacko.payment.method.service.PaymentMethod;
 import com.flacko.payment.method.service.PaymentMethodListBuilder;
-import com.flacko.payment.method.service.PaymentMethodType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -20,18 +20,11 @@ public class PaymentMethodListBuilderImpl implements PaymentMethodListBuilder {
 
     private final PaymentMethodRepository paymentMethodRepository;
 
-    private Optional<PaymentMethodType> type = Optional.empty();
     private Optional<Currency> currency = Optional.empty();
-    private Optional<String> bankId = Optional.empty();
+    private Optional<Bank> bank = Optional.empty();
     private Optional<String> traderTeamId = Optional.empty();
     private Optional<String> terminalId = Optional.empty();
     private Optional<Boolean> busy = Optional.empty();
-
-    @Override
-    public PaymentMethodListBuilder withType(PaymentMethodType type) {
-        this.type = Optional.of(type);
-        return this;
-    }
 
     @Override
     public PaymentMethodListBuilder withCurrency(Currency currency) {
@@ -40,8 +33,8 @@ public class PaymentMethodListBuilderImpl implements PaymentMethodListBuilder {
     }
 
     @Override
-    public PaymentMethodListBuilder withBankId(String bankId) {
-        this.bankId = Optional.of(bankId);
+    public PaymentMethodListBuilder withBank(Bank bank) {
+        this.bank = Optional.of(bank);
         return this;
     }
 
@@ -70,17 +63,13 @@ public class PaymentMethodListBuilderImpl implements PaymentMethodListBuilder {
 
     private Specification<PaymentMethod> createSpecification() {
         Specification<PaymentMethod> spec = Specification.where(null);
-        if (type.isPresent()) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("type"), type.get()));
-        }
         if (currency.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("currency"), currency.get()));
         }
-        if (bankId.isPresent()) {
+        if (bank.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("bankId"), bankId.get()));
+                    criteriaBuilder.equal(root.get("bank"), bank.get()));
         }
         if (traderTeamId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->

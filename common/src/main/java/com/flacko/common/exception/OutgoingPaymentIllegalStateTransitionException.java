@@ -1,4 +1,4 @@
-package com.flacko.payment.service.outgoing.exception;
+package com.flacko.common.exception;
 
 import com.flacko.common.state.PaymentState;
 

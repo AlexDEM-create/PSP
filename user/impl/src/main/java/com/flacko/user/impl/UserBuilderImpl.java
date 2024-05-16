@@ -1,9 +1,9 @@
 package com.flacko.user.impl;
 
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.role.UserRole;
 import com.flacko.user.service.User;
 import com.flacko.user.service.UserBuilder;
-import com.flacko.user.service.UserRole;
 import com.flacko.user.service.exception.UserLoginAlreadyInUseException;
 import com.flacko.user.service.exception.UserMissingRequiredAttributeException;
 import com.flacko.user.service.exception.UserWeakPasswordException;

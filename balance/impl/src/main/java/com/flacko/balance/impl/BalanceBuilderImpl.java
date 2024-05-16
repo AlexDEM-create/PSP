@@ -9,6 +9,7 @@ import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.id.IdGenerator;
+import com.flacko.merchant.service.Merchant;
 import com.flacko.merchant.service.MerchantService;
 import com.flacko.trader.team.service.TraderTeamService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,9 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
 
     private BalancePojo.BalancePojoBuilder pojoBuilder;
     private BigDecimal currentBalance;
+    private EntityType entityType;
+    private String entityId;
+    private BalanceType type;
 
     @Override
     public BalanceBuilder initializeNew() {
@@ -50,28 +54,36 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
                 .id(existingBalance.getId())
                 .entityId(existingBalance.getEntityId())
                 .entityType(existingBalance.getEntityType())
+                .type(existingBalance.getType())
                 .currentBalance(existingBalance.getCurrentBalance())
+                .currency(existingBalance.getCurrency())
                 .createdDate(existingBalance.getCreatedDate())
                 .updatedDate(now)
                 .deletedDate(existingBalance.getDeletedDate().orElse(null));
         currentBalance = existingBalance.getCurrentBalance();
+        entityType = existingBalance.getEntityType();
+        entityId = existingBalance.getEntityId();
+        type = existingBalance.getType();
         return this;
     }
 
     @Override
     public BalanceBuilder withEntityId(String entityId) {
+        this.entityId = entityId;
         pojoBuilder.entityId(entityId);
         return this;
     }
 
     @Override
     public BalanceBuilder withEntityType(EntityType entityType) {
+        this.entityType = entityType;
         pojoBuilder.entityType(entityType);
         return this;
     }
 
     @Override
     public BalanceBuilder withType(BalanceType type) {
+        this.type = type;
         pojoBuilder.type(type);
         return this;
     }
@@ -83,8 +95,16 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
     }
 
     @Override
-    public BalanceBuilder deposit(BigDecimal amount) {
-        currentBalance = currentBalance.add(amount);
+    public BalanceBuilder deposit(BigDecimal amount) throws MerchantNotFoundException {
+        if (entityType == EntityType.MERCHANT && type == BalanceType.OUTGOING) {
+            Merchant merchant = merchantService.get(entityId);
+            BigDecimal outgoingFeeRate = merchant.getOutgoingFeeRate();
+            BigDecimal fee = amount.multiply(outgoingFeeRate);
+            BigDecimal netAmount = amount.subtract(fee);
+            currentBalance = currentBalance.add(netAmount);
+        } else {
+            currentBalance = currentBalance.add(amount);
+        }
         pojoBuilder.currentBalance(currentBalance);
         return this;
     }

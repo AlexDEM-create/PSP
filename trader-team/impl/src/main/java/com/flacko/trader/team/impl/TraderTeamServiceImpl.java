@@ -34,6 +34,12 @@ public class TraderTeamServiceImpl implements TraderTeamService {
                 .orElseThrow(() -> new TraderTeamNotFoundException("user", userId));
     }
 
+    @Override
+    public TraderTeam getByLeaderId(String leaderId) throws TraderTeamNotFoundException {
+        return traderTeamRepository.findByLeaderId(leaderId)
+                .orElseThrow(() -> new TraderTeamNotFoundException("leader", leaderId));
+    }
+
     @Transactional
     @Override
     public TraderTeamBuilder create() {

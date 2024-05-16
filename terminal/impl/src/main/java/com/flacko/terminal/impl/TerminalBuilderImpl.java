@@ -37,12 +37,12 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
 
     @Override
     public TerminalBuilder initializeExisting(Terminal existingTerminal) {
-        // need to solve the problem with primary key
         pojoBuilder = TerminalPojo.builder()
                 .primaryKey(existingTerminal.getPrimaryKey())
                 .id(existingTerminal.getId())
                 .traderTeamId(existingTerminal.getTraderTeamId())
                 .verified(existingTerminal.isVerified())
+                .online(existingTerminal.isOnline())
                 .model(existingTerminal.getModel().orElse(null))
                 .operatingSystem(existingTerminal.getOperatingSystem().orElse(null))
                 .createdDate(existingTerminal.getCreatedDate())

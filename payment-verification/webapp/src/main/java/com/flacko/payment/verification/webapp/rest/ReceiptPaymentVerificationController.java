@@ -1,8 +1,6 @@
 package com.flacko.payment.verification.webapp.rest;
 
-import com.flacko.common.exception.IncomingPaymentNotFoundException;
-import com.flacko.common.exception.OutgoingPaymentNotFoundException;
-import com.flacko.common.exception.ReceiptPaymentVerificationNotFoundException;
+import com.flacko.common.exception.*;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationListBuilder;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationService;
 import com.flacko.payment.verification.receipt.service.exception.*;
@@ -45,7 +43,7 @@ public class ReceiptPaymentVerificationController {
     public ReceiptPaymentVerificationResponse get(@PathVariable String outgoingPaymentId)
             throws ReceiptPaymentVerificationNotFoundException {
         return receiptPaymentVerificationRestMapper.mapModelToResponse(
-                receiptPaymentVerificationService.get(outgoingPaymentId));
+                receiptPaymentVerificationService.getByOutgoingPaymentId(outgoingPaymentId));
     }
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -53,10 +51,12 @@ public class ReceiptPaymentVerificationController {
                                                      @RequestParam(OUTGOING_PAYMENT_ID) String outgoingPaymentId)
             throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException,
             ReceiptPaymentVerificationCurrencyNotSupportedException, IncomingPaymentNotFoundException,
-            ReceiptPaymentVerificationInvalidCardLastFourDigitsException,
             ReceiptPaymentVerificationMissingRequiredAttributeException,
             ReceiptPaymentVerificationInvalidAmountException, ReceiptPaymentVerificationUnexpectedAmountException,
-            OutgoingPaymentNotFoundException {
+            OutgoingPaymentNotFoundException, TraderTeamNotFoundException, BalanceNotFoundException,
+            PaymentMethodNotFoundException, MerchantNotFoundException, BalanceMissingRequiredAttributeException,
+            OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
+            OutgoingPaymentInvalidAmountException {
         return receiptPaymentVerificationRestMapper.mapModelToResponse(
                 receiptPaymentVerificationService.verify(file, outgoingPaymentId));
     }

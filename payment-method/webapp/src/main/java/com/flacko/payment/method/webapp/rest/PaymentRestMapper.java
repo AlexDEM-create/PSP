@@ -10,11 +10,11 @@ public class PaymentRestMapper {
 
     PaymentMethodResponse mapModelToResponse(PaymentMethod paymentMethod) {
         return new PaymentMethodResponse(paymentMethod.getId(),
-                paymentMethod.getType(),
                 paymentMethod.getNumber(),
-                paymentMethod.getHolderName(),
+                paymentMethod.getFirstName(),
+                paymentMethod.getLastName(),
                 paymentMethod.getCurrency(),
-                paymentMethod.getBankId(),
+                paymentMethod.getBank(),
                 paymentMethod.getTraderTeamId(),
                 paymentMethod.getTerminalId(),
                 paymentMethod.isBusy(),

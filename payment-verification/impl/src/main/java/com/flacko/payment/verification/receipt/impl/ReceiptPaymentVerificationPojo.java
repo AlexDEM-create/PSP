@@ -1,7 +1,6 @@
 package com.flacko.payment.verification.receipt.impl;
 
 import com.flacko.common.converter.HashMapConverter;
-import com.flacko.common.currency.Currency;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerification;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +8,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
 
@@ -33,36 +31,12 @@ public class ReceiptPaymentVerificationPojo implements ReceiptPaymentVerificatio
     @Column(name = "outgoing_payment_id", nullable = false)
     private String outgoingPaymentId;
 
-    @Column(name = "recipient_full_name", nullable = false)
-    private String recipientFullName;
-
-    @Column(name = "recipient_card_last_four_digits", nullable = false)
-    private String recipientCardLastFourDigits;
-
-    @Column(name = "sender_full_name", nullable = false)
-    private String senderFullName;
-
-    @Column(name = "sender_card_last_four_digits", nullable = false)
-    private String senderCardLastFourDigits;
-
-    @Column(nullable = false)
-    private BigDecimal amount;
-
-    @Column(name = "amount_currency", nullable = false)
-    private Currency amountCurrency;
-
-    @Column(nullable = false)
-    private BigDecimal commission;
-
-    @Column(name = "commission_currency", nullable = false)
-    private Currency commissionCurrency;
-
     // https://www.baeldung.com/hibernate-persist-json-object
     @Convert(converter = HashMapConverter.class)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 4096)
     private Map<String, Object> data;
 
-    @Lob
+//    @Lob
     @Column(name = "uploaded_file", nullable = false, length = MAX_RECEIPT_SIZE)
     private byte[] uploadedFile;
 

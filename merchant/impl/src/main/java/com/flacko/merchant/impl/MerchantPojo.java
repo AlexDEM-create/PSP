@@ -38,10 +38,10 @@ public class MerchantPojo implements Merchant {
     @Column(nullable = false)
     private Country country;
 
-    @Column(name = "incoming_fee_rate", nullable = false)
+    @Column(name = "incoming_fee_rate", nullable = false, precision = 6, scale = 5)
     private BigDecimal incomingFeeRate;
 
-    @Column(name = "outgoing_fee_rate", nullable = false)
+    @Column(name = "outgoing_fee_rate", nullable = false, precision = 6, scale = 5)
     private BigDecimal outgoingFeeRate;
 
     @Column(name = "outgoing_traffic_stopped", nullable = false)

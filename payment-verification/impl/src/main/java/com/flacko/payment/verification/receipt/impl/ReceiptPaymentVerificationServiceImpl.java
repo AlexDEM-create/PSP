@@ -1,19 +1,30 @@
 package com.flacko.payment.verification.receipt.impl;
 
-import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.IncomingPaymentNotFoundException;
-import com.flacko.common.exception.OutgoingPaymentNotFoundException;
-import com.flacko.common.exception.ReceiptPaymentVerificationNotFoundException;
+import com.flacko.balance.service.BalanceService;
+import com.flacko.balance.service.BalanceType;
+import com.flacko.balance.service.EntityType;
+import com.flacko.common.exception.*;
+import com.flacko.common.payment.RecipientPaymentMethodType;
+import com.flacko.common.receipt.ReceiptPattern;
+import com.flacko.common.receipt.ReceiptPatternType;
 import com.flacko.common.spring.ServiceLocator;
+import com.flacko.common.state.PaymentState;
+import com.flacko.payment.method.service.PaymentMethod;
+import com.flacko.payment.method.service.PaymentMethodService;
+import com.flacko.payment.service.outgoing.OutgoingPayment;
+import com.flacko.payment.service.outgoing.OutgoingPaymentService;
+import com.flacko.payment.verification.receipt.impl.validator.ReceiptValidator;
+import com.flacko.payment.verification.receipt.impl.validator.ReceiptValidatorFactory;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerification;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationBuilder;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationListBuilder;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationService;
 import com.flacko.payment.verification.receipt.service.exception.*;
+import com.flacko.trader.team.service.TraderTeam;
+import com.flacko.trader.team.service.TraderTeamService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -24,20 +35,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static com.flacko.payment.verification.receipt.service.ReceiptPaymentVerification.MAX_RECEIPT_SIZE;
@@ -49,6 +50,10 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
 
     private final ReceiptPaymentVerificationRepository receiptPaymentVerificationRepository;
     private final ServiceLocator serviceLocator;
+    private final BalanceService balanceService;
+    private final OutgoingPaymentService outgoingPaymentService;
+    private final PaymentMethodService paymentMethodService;
+    private final TraderTeamService traderTeamService;
     private final RestTemplate restTemplate;
     @Value("${receipt.data.extractor.url}")
     private String receiptDataExtractorUrl;
@@ -59,9 +64,10 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
     }
 
     @Override
-    public ReceiptPaymentVerification get(String id) throws ReceiptPaymentVerificationNotFoundException {
-        return receiptPaymentVerificationRepository.findById(id)
-                .orElseThrow(() -> new ReceiptPaymentVerificationNotFoundException(id));
+    public ReceiptPaymentVerification getByOutgoingPaymentId(String outgoingPaymentId)
+            throws ReceiptPaymentVerificationNotFoundException {
+        return receiptPaymentVerificationRepository.findByOutgoingPaymentId(outgoingPaymentId)
+                .orElseThrow(() -> new ReceiptPaymentVerificationNotFoundException(outgoingPaymentId));
     }
 
     @Transactional
@@ -69,10 +75,12 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
     public ReceiptPaymentVerification verify(MultipartFile file, String outgoingPaymentId)
             throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException,
             ReceiptPaymentVerificationCurrencyNotSupportedException, IncomingPaymentNotFoundException,
-            ReceiptPaymentVerificationInvalidCardLastFourDigitsException,
             ReceiptPaymentVerificationMissingRequiredAttributeException,
             ReceiptPaymentVerificationInvalidAmountException, ReceiptPaymentVerificationUnexpectedAmountException,
-            OutgoingPaymentNotFoundException {
+            OutgoingPaymentNotFoundException, PaymentMethodNotFoundException, TraderTeamNotFoundException,
+            BalanceNotFoundException, MerchantNotFoundException, BalanceMissingRequiredAttributeException,
+            OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
+            OutgoingPaymentInvalidAmountException {
         if (file.isEmpty()) {
             throw new ReceiptPaymentVerificationRequestValidationException("Please upload a file.");
         }
@@ -85,6 +93,10 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
             throw new ReceiptPaymentVerificationRequestValidationException("File size exceeds 256 KB.");
         }
 
+        OutgoingPayment outgoingPayment = outgoingPaymentService.get(outgoingPaymentId);
+        PaymentMethod paymentMethod = paymentMethodService.get(outgoingPayment.getPaymentMethodId());
+        ReceiptPatternType receiptPatternType = getReceiptPatternType(outgoingPayment, paymentMethod);
+
         try {
             String fileName = StringUtils.cleanPath(file.getOriginalFilename());
             Path tempDir = Files.createTempDirectory("uploads");
@@ -92,16 +104,12 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             String fileAbsolutePath = filePath.toAbsolutePath().toString();
 
-            List<String> patterns = readPatterns();
-
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
             formData.add("file", new FileSystemResource(fileAbsolutePath));
-            for (String pattern : patterns) {
-                formData.add("patterns", pattern);
-            }
+            formData.add("pattern", ReceiptPattern.getPattern(paymentMethod.getBank(), receiptPatternType));
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(formData, headers);
 
@@ -110,15 +118,41 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
                     requestEntity,
                     ReceiptExtractedData.class);
 
+            // Клиент указывает, что хочет получить 5000 рублей на сбер по номеру телефона.
+            // Трейдер может отправить деньги с любой зарегистрированной карты, просто указывая с какой именно
+            // На основе этого мы можем подобрать паттерн для валидации чека
+            // Если клиент указывает номер карты, и банк клиента совпадает с банком выбранной трейдером карты, то подгружаем паттерн внутренних платежей
+            // Если клиент указывает номер телефона, то выбираем паттерн банка для переводов по СБП
+            // Если клиент указывает номер карты, но банки не совпадают, то выбираем паттерн банка трейдера для внешних платежей
 
-            if (response.getStatusCode() == HttpStatus.OK) {
-                ReceiptPaymentVerification receiptPaymentVerification =
-                        createReceiptPaymentVerification(Objects.requireNonNull(response.getBody()), file,
-                        outgoingPaymentId);
 
-                // update balances
+            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
+                ReceiptExtractedData receiptExtractedData = response.getBody();
 
-                return receiptPaymentVerification;
+                ReceiptValidator receiptValidator =
+                        ReceiptValidatorFactory.createValidator(paymentMethod.getBank(), receiptPatternType);
+                receiptValidator.validate(outgoingPayment, paymentMethod, receiptExtractedData.getData());
+
+                TraderTeam traderTeam = traderTeamService.get(outgoingPayment.getTraderTeamId());
+
+                balanceService.update(outgoingPayment.getTraderTeamId(), EntityType.TRADER_TEAM, BalanceType.GENERIC)
+                        .deposit(outgoingPayment.getAmount())
+                        .deposit(outgoingPayment.getAmount().multiply(traderTeam.getTraderOutgoingFeeRate()))
+                        .build();
+
+                balanceService.update(traderTeam.getLeaderId(), EntityType.TRADER_TEAM_LEADER, BalanceType.GENERIC)
+                        .deposit(outgoingPayment.getAmount().multiply(traderTeam.getLeaderOutgoingFeeRate()))
+                        .build();
+
+                balanceService.update(outgoingPayment.getMerchantId(), EntityType.MERCHANT, BalanceType.OUTGOING)
+                        .withdraw(outgoingPayment.getAmount())
+                        .build();
+
+                outgoingPaymentService.update(outgoingPaymentId)
+                        .withState(PaymentState.VERIFIED)
+                        .build();
+
+                return createReceiptPaymentVerification(receiptExtractedData, file, outgoingPaymentId);
             } else {
                 log.warn(String.format("Outgoing payment %s verification failed. verificationResponse=%s",
                         outgoingPaymentId, response));
@@ -126,68 +160,44 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
             }
         } catch (IOException e) {
             throw new ReceiptPaymentVerificationFailedException(outgoingPaymentId, e);
+        } catch (ReceiptPaymentVerificationFailedException e) {
+            outgoingPaymentService.update(outgoingPaymentId)
+                    .withState(PaymentState.FAILED_TO_VERIFY)
+                    .build();
+            throw e;
         }
     }
 
     private ReceiptPaymentVerification createReceiptPaymentVerification(
             ReceiptExtractedData extractedData, MultipartFile file, String outgoingPaymentId)
             throws IOException, ReceiptPaymentVerificationMissingRequiredAttributeException,
-            ReceiptPaymentVerificationCurrencyNotSupportedException, ReceiptPaymentVerificationInvalidAmountException,
             IncomingPaymentNotFoundException, ReceiptPaymentVerificationUnexpectedAmountException,
-            ReceiptPaymentVerificationInvalidCardLastFourDigitsException, OutgoingPaymentNotFoundException {
-        ReceiptPaymentVerificationBuilder builder = serviceLocator.create(ReceiptPaymentVerificationBuilderImpl.class)
-                .initializeNew();
+            OutgoingPaymentNotFoundException {
+        ReceiptPaymentVerificationBuilder builder =
+                serviceLocator.create(InitializableReceiptPaymentVerificationBuilder.class)
+                        .initializeNew();
         builder.withOutgoingPaymentId(outgoingPaymentId)
-                .withRecipientFullName(extractedData.getRecipientFullName())
-                .withRecipientCardLastFourDigits(extractedData.getRecipientCardLastFourDigits())
-                .withSenderFullName(extractedData.getSenderFullName())
-                .withSenderCardLastFourDigits(extractedData.getSenderCardLastFourDigits())
-                .withAmount(parseBigDecimal(extractedData.getAmount()))
-                .withAmountCurrency(parseCurrency(extractedData.getAmountCurrency()))
-                .withCommission(parseBigDecimal(extractedData.getCommission()))
-                .withCommissionCurrency(parseCurrency(extractedData.getCommissionCurrency()))
                 .withData(extractedData.getData())
                 .withUploadedFile(file.getBytes());
         return builder.build();
     }
 
-    private BigDecimal parseBigDecimal(String amount) throws ReceiptPaymentVerificationInvalidAmountException {
-        String cleanedAmountString = amount.replace(" ", "").replace(",", ".");
-
-        try {
-            DecimalFormat decimalFormat = new DecimalFormat();
-            DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-            symbols.setDecimalSeparator(',');
-            decimalFormat.setDecimalFormatSymbols(symbols);
-            return new BigDecimal(decimalFormat.parse(cleanedAmountString).toString());
-        } catch (ParseException e) {
-            throw new ReceiptPaymentVerificationInvalidAmountException(amount);
+    private ReceiptPatternType getReceiptPatternType(OutgoingPayment outgoingPayment, PaymentMethod paymentMethod) {
+        if (paymentMethod.getBank() == outgoingPayment.getBank()
+                && outgoingPayment.getRecipientPaymentMethodType() == RecipientPaymentMethodType.BANK_CARD) {
+            return ReceiptPatternType.BANK_CARD_INTERNAL;
+        } else if (paymentMethod.getBank() != outgoingPayment.getBank()
+                && outgoingPayment.getRecipientPaymentMethodType() == RecipientPaymentMethodType.BANK_CARD) {
+            return ReceiptPatternType.BANK_CARD_EXTERNAL;
+        } else if (paymentMethod.getBank() == outgoingPayment.getBank()
+                && outgoingPayment.getRecipientPaymentMethodType() == RecipientPaymentMethodType.PHONE_NUMBER) {
+            return ReceiptPatternType.PHONE_NUMBER_INTERNAL;
+        } else if (paymentMethod.getBank() != outgoingPayment.getBank()
+                && outgoingPayment.getRecipientPaymentMethodType() == RecipientPaymentMethodType.BANK_CARD) {
+            return ReceiptPatternType.PHONE_NUMBER_EXTERNAL;
         }
-    }
-
-    private Currency parseCurrency(String currency) throws ReceiptPaymentVerificationCurrencyNotSupportedException {
-        if ("R".equals(currency)) {
-            return Currency.RUB;
-        }
-        throw new ReceiptPaymentVerificationCurrencyNotSupportedException(currency);
-    }
-
-    private List<String> readPatterns() throws IOException {
-        List<String> patterns = new ArrayList<>();
-        try (InputStream inputStream = new ClassPathResource("pattern/receipt/patterns.csv").getInputStream();
-             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-
-            reader.readLine();
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split("\\|");
-                if (parts.length >= 3) {
-                    patterns.add(parts[2]);
-                }
-            }
-        }
-        return patterns;
+        throw new IllegalArgumentException(String.format(
+                "Could not determine receipt pattern type for outgoing payment %s", outgoingPayment.getId()));
     }
 
 }

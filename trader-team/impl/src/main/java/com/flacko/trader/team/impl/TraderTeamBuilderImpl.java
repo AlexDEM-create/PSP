@@ -10,13 +10,13 @@ import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.role.UserRole;
 import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamBuilder;
 import com.flacko.trader.team.service.exception.TraderTeamIllegalLeaderException;
 import com.flacko.trader.team.service.exception.TraderTeamInvalidFeeRateException;
 import com.flacko.trader.team.service.exception.TraderTeamMissingRequiredAttributeException;
 import com.flacko.user.service.User;
-import com.flacko.common.role.UserRole;
 import com.flacko.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -56,6 +56,7 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
                 .id(existingTraderTeam.getId())
                 .name(existingTraderTeam.getName())
                 .userId(existingTraderTeam.getUserId())
+                .country(existingTraderTeam.getCountry())
                 .leaderId(existingTraderTeam.getLeaderId())
                 .traderIncomingFeeRate(existingTraderTeam.getTraderIncomingFeeRate())
                 .traderOutgoingFeeRate(existingTraderTeam.getTraderOutgoingFeeRate())
@@ -150,6 +151,13 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
                 .withCurrency(parseCurrency(traderTeam.getCountry()))
                 .build();
 
+        balanceService.create()
+                .withEntityId(traderTeam.getLeaderId())
+                .withEntityType(EntityType.TRADER_TEAM_LEADER)
+                .withType(BalanceType.GENERIC)
+                .withCurrency(parseCurrency(traderTeam.getCountry()))
+                .build();
+
         return traderTeam;
     }
 
@@ -165,6 +173,9 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
             throw new TraderTeamMissingRequiredAttributeException("userId", Optional.of(pojo.getId()));
         } else {
             userService.get(pojo.getUserId());
+        }
+        if (pojo.getCountry() == null) {
+            throw new TraderTeamMissingRequiredAttributeException("country", Optional.of(pojo.getId()));
         }
         if (pojo.getLeaderId() == null || pojo.getLeaderId().isBlank()) {
             throw new TraderTeamMissingRequiredAttributeException("leaderId", Optional.of(pojo.getId()));
