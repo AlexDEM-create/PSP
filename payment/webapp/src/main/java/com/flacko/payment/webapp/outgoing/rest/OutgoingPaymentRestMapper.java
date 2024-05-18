@@ -25,4 +25,8 @@ public class OutgoingPaymentRestMapper {
                 outgoingPayment.getUpdatedDate().atZone(ZoneId.systemDefault()));
     }
 
+    OutgoingPaymentCreateResponse mapModelToCreateResponse(OutgoingPayment outgoingPayment) {
+        return new OutgoingPaymentCreateResponse(outgoingPayment.getId());
+    }
+
 }

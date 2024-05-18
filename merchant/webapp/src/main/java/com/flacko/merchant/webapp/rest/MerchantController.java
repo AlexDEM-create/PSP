@@ -9,8 +9,8 @@ import com.flacko.merchant.service.Merchant;
 import com.flacko.merchant.service.MerchantBuilder;
 import com.flacko.merchant.service.MerchantListBuilder;
 import com.flacko.merchant.service.MerchantService;
-import com.flacko.merchant.service.exception.MerchantInvalidFeeRateException;
-import com.flacko.merchant.service.exception.MerchantMissingRequiredAttributeException;
+import com.flacko.common.exception.MerchantInvalidFeeRateException;
+import com.flacko.common.exception.MerchantMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +25,7 @@ public class MerchantController {
 
     private static final String COUNTRY = "country";
     private static final String OUTGOING_TRAFFIC_STOPPED = "outgoing_traffic_stopped";
+    private static final String ARCHIVED = "archived";
     private static final String LIMIT = "limit";
     private static final String OFFSET = "offset";
 
@@ -34,11 +35,13 @@ public class MerchantController {
     @GetMapping
     public List<MerchantResponse> list(@RequestParam(COUNTRY) Optional<Country> country,
                                        @RequestParam(OUTGOING_TRAFFIC_STOPPED) Optional<Boolean> outgoingTrafficStopped,
+                                       @RequestParam(ARCHIVED) Optional<Boolean> archived,
                                        @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
                                        @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
         MerchantListBuilder builder = merchantService.list();
         country.ifPresent(builder::withCountry);
         outgoingTrafficStopped.ifPresent(builder::withOutgoingTrafficStopped);
+        archived.ifPresent(builder::withArchived);
         return builder.build()
                 .stream()
                 .map(merchantRestMapper::mapModelToResponse)

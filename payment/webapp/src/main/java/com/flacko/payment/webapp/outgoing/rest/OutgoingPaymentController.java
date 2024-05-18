@@ -1,12 +1,16 @@
 package com.flacko.payment.webapp.outgoing.rest;
 
+import com.auth0.jwt.JWT;
 import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.OutgoingPaymentNotFoundException;
+import com.flacko.common.exception.*;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
+import com.flacko.payment.service.outgoing.OutgoingPayment;
+import com.flacko.payment.service.outgoing.OutgoingPaymentBuilder;
 import com.flacko.payment.service.outgoing.OutgoingPaymentListBuilder;
 import com.flacko.payment.service.outgoing.OutgoingPaymentService;
+import com.flacko.security.SecurityConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,10 +71,39 @@ public class OutgoingPaymentController {
         return outgoingPaymentRestMapper.mapModelToResponse(outgoingPaymentService.get(outgoingPaymentId));
     }
 
-//    @PostMapping("/initiate/outgoing")
-//    public IncomingPaymentInitiateResponse initiateOutgoing(@RequestBody IncomingPaymentInitiateRequest paymentInitiateRequest) {
-//        return paymentRestMapper.mapToInitiateResponse(
-//                paymentService.create(paymentRestMapper.mapToModel(paymentInitiateRequest)));
-//    }
+    @PostMapping
+    public OutgoingPaymentCreateResponse create(@RequestHeader("Authorization") String tokenWithPrefix,
+                                                @RequestBody OutgoingPaymentCreateRequest outgoingPaymentCreateRequest)
+            throws TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
+            UserNotFoundException, NoEligibleTraderTeamsException {
+        String token = tokenWithPrefix.substring(SecurityConfig.TOKEN_PREFIX.length());
+        String login = JWT.decode(token).getSubject();
+
+        OutgoingPaymentBuilder builder = outgoingPaymentService.create(login);
+        builder.withAmount(outgoingPaymentCreateRequest.amount());
+        builder.withCurrency(outgoingPaymentCreateRequest.currency());
+        builder.withRecipient(outgoingPaymentCreateRequest.recipient());
+        builder.withBank(outgoingPaymentCreateRequest.bank());
+        builder.withRecipientPaymentMethodType(outgoingPaymentCreateRequest.recipientPaymentMethodType());
+        builder.withPartnerPaymentId(outgoingPaymentCreateRequest.partnerPaymentId());
+        builder.withRandomTraderTeamId();
+        OutgoingPayment outgoingPayment = builder.build();
+        return outgoingPaymentRestMapper.mapModelToCreateResponse(outgoingPayment);
+    }
+
+    @PatchMapping("/{outgoingPaymentId}/reassign")
+    public OutgoingPaymentResponse reassign(@RequestHeader("Authorization") String tokenWithPrefix,
+                                            @PathVariable String outgoingPaymentId) throws UserNotFoundException,
+            OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException, UnauthorizedAccessException,
+            OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
+            OutgoingPaymentInvalidAmountException, MerchantNotFoundException, OutgoingPaymentNotFoundException,
+            NoEligibleTraderTeamsException {
+        String token = tokenWithPrefix.substring(SecurityConfig.TOKEN_PREFIX.length());
+        String login = JWT.decode(token).getSubject();
+
+        OutgoingPayment outgoingPayment = outgoingPaymentService.reassignRandomTraderTeam(outgoingPaymentId, login);
+        return outgoingPaymentRestMapper.mapModelToResponse(outgoingPayment);
+    }
 
 }

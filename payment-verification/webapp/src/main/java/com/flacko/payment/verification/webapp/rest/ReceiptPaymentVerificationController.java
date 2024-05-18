@@ -20,6 +20,7 @@ public class ReceiptPaymentVerificationController {
 
     private static final String FILE = "file";
     private static final String OUTGOING_PAYMENT_ID = "outgoing_payment_id";
+    private static final String PAYMENT_METHOD_ID = "payment_method_id";
 
     private final ReceiptPaymentVerificationService receiptPaymentVerificationService;
     private final ReceiptPaymentVerificationRestMapper receiptPaymentVerificationRestMapper;
@@ -48,7 +49,8 @@ public class ReceiptPaymentVerificationController {
 
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
     public ReceiptPaymentVerificationResponse verify(@RequestParam(FILE) MultipartFile file,
-                                                     @RequestParam(OUTGOING_PAYMENT_ID) String outgoingPaymentId)
+                                                     @RequestParam(OUTGOING_PAYMENT_ID) String outgoingPaymentId,
+                                                     @RequestParam(PAYMENT_METHOD_ID) String paymentMethodId)
             throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException,
             ReceiptPaymentVerificationCurrencyNotSupportedException, IncomingPaymentNotFoundException,
             ReceiptPaymentVerificationMissingRequiredAttributeException,
@@ -58,7 +60,7 @@ public class ReceiptPaymentVerificationController {
             OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
             OutgoingPaymentInvalidAmountException {
         return receiptPaymentVerificationRestMapper.mapModelToResponse(
-                receiptPaymentVerificationService.verify(file, outgoingPaymentId));
+                receiptPaymentVerificationService.verify(file, outgoingPaymentId, paymentMethodId));
     }
 
 }

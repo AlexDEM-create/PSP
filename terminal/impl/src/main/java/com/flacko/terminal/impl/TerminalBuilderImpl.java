@@ -31,6 +31,7 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
         pojoBuilder = TerminalPojo.builder()
                 .id(new IdGenerator().generateId())
                 .verified(false)
+                .enabled(false)
                 .online(false);
         return this;
     }
@@ -42,6 +43,7 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
                 .id(existingTerminal.getId())
                 .traderTeamId(existingTerminal.getTraderTeamId())
                 .verified(existingTerminal.isVerified())
+                .enabled(existingTerminal.isEnabled())
                 .online(existingTerminal.isOnline())
                 .model(existingTerminal.getModel().orElse(null))
                 .operatingSystem(existingTerminal.getOperatingSystem().orElse(null))
@@ -60,6 +62,12 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
     @Override
     public TerminalBuilder withVerified() {
         pojoBuilder.verified(true);
+        return this;
+    }
+
+    @Override
+    public TerminalBuilder withEnabled(boolean enabled) {
+        pojoBuilder.enabled(enabled);
         return this;
     }
 

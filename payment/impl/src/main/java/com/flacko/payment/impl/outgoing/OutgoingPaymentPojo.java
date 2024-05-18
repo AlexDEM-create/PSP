@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 
 @Entity
 @Table(name = "outgoing_payments")
@@ -71,6 +72,10 @@ public class OutgoingPaymentPojo implements OutgoingPayment {
 
     @Column(name = "updated_date", nullable = false)
     private Instant updatedDate;
+
+    public Optional<String> getPaymentMethodId() {
+        return Optional.ofNullable(paymentMethodId);
+    }
 
     @PrePersist
     protected void onCreate() {

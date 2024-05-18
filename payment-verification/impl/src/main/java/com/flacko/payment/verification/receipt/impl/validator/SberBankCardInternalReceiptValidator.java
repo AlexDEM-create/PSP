@@ -80,15 +80,15 @@ public class SberBankCardInternalReceiptValidator implements ReceiptValidator {
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
         }
-        if (extractedData.containsKey(DATETIME)) {
-            Instant extractedDatetime = parseDatetime(extractedData.get(DATETIME).toString());
-            if (!extractedDatetime.isAfter(outgoingPayment.getCreatedDate())) {
-                log.warn("Datetime is not after outgoing payment created date for outgoing payment {}. " +
-                                "Expected datetime before: {}, actual datetime: {}",
-                        outgoingPayment.getId(), outgoingPayment.getCreatedDate(), extractedDatetime);
-                throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
-            }
-        }
+//        if (extractedData.containsKey(DATETIME)) {
+//            Instant extractedDatetime = parseDatetime(extractedData.get(DATETIME).toString());
+//            if (!extractedDatetime.isAfter(outgoingPayment.getCreatedDate())) {
+//                log.warn("Datetime is not after outgoing payment created date for outgoing payment {}. " +
+//                                "Expected datetime before: {}, actual datetime: {}",
+//                        outgoingPayment.getId(), outgoingPayment.getCreatedDate(), extractedDatetime);
+//                throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
+//            }
+//        }
     }
 
     private Instant parseDatetime(String inputDatetime) {

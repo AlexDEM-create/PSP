@@ -1,10 +1,7 @@
 package com.flacko.trader.team.service;
 
 import com.flacko.common.country.Country;
-import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
-import com.flacko.common.exception.MerchantNotFoundException;
-import com.flacko.common.exception.TraderTeamNotFoundException;
-import com.flacko.common.exception.UserNotFoundException;
+import com.flacko.common.exception.*;
 import com.flacko.trader.team.service.exception.TraderTeamIllegalLeaderException;
 import com.flacko.trader.team.service.exception.TraderTeamInvalidFeeRateException;
 import com.flacko.trader.team.service.exception.TraderTeamMissingRequiredAttributeException;
@@ -41,6 +38,8 @@ public interface TraderTeamBuilder {
 
     TraderTeam build() throws TraderTeamMissingRequiredAttributeException, UserNotFoundException,
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, TraderTeamNotFoundException,
-            MerchantNotFoundException, BalanceMissingRequiredAttributeException;
+            MerchantNotFoundException, BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
+            BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
+            MerchantMissingRequiredAttributeException;
 
 }

@@ -72,7 +72,7 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
 
     @Transactional
     @Override
-    public ReceiptPaymentVerification verify(MultipartFile file, String outgoingPaymentId)
+    public ReceiptPaymentVerification verify(MultipartFile file, String outgoingPaymentId, String paymentMethodId)
             throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException,
             ReceiptPaymentVerificationCurrencyNotSupportedException, IncomingPaymentNotFoundException,
             ReceiptPaymentVerificationMissingRequiredAttributeException,
@@ -94,7 +94,7 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
         }
 
         OutgoingPayment outgoingPayment = outgoingPaymentService.get(outgoingPaymentId);
-        PaymentMethod paymentMethod = paymentMethodService.get(outgoingPayment.getPaymentMethodId());
+        PaymentMethod paymentMethod = paymentMethodService.get(paymentMethodId);
         ReceiptPatternType receiptPatternType = getReceiptPatternType(outgoingPayment, paymentMethod);
 
         try {
@@ -150,6 +150,7 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
 
                 outgoingPaymentService.update(outgoingPaymentId)
                         .withState(PaymentState.VERIFIED)
+                        .withPaymentMethodId(paymentMethodId)
                         .build();
 
                 return createReceiptPaymentVerification(receiptExtractedData, file, outgoingPaymentId);

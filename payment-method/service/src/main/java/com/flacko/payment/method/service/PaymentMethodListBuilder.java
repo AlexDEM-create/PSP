@@ -15,7 +15,11 @@ public interface PaymentMethodListBuilder {
 
     PaymentMethodListBuilder withTerminalId(String terminalId);
 
-    PaymentMethodListBuilder withBusy(boolean busy);
+    PaymentMethodListBuilder withEnabled(Boolean enabled);
+
+    PaymentMethodListBuilder withBusy(Boolean busy);
+
+    PaymentMethodListBuilder withArchived(Boolean archived);
 
     List<PaymentMethod> build();
 

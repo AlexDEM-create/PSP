@@ -1,7 +1,9 @@
 package com.flacko.trader.team.impl;
 
+import com.flacko.common.exception.NoEligibleTraderTeamsException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
+import com.flacko.payment.method.service.PaymentMethodService;
 import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamBuilder;
 import com.flacko.trader.team.service.TraderTeamListBuilder;
@@ -10,12 +12,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class TraderTeamServiceImpl implements TraderTeamService {
 
     private final TraderTeamRepository traderTeamRepository;
     private final ServiceLocator serviceLocator;
+    private final PaymentMethodService paymentMethodService;
 
     @Override
     public TraderTeamListBuilder list() {
@@ -53,6 +60,33 @@ public class TraderTeamServiceImpl implements TraderTeamService {
         TraderTeam existingTraderTeam = get(id);
         return serviceLocator.create(InitializableTraderTeamBuilder.class)
                 .initializeExisting(existingTraderTeam);
+    }
+
+    @Override
+    public TraderTeam getRandomEligibleTraderTeamForOutgoingPayment() throws NoEligibleTraderTeamsException {
+        List<TraderTeam> eligibleTeams = list()
+                .withVerified(true)
+                .withOutgoingOnline(true)
+                .withKickedOut(false)
+                .withArchived(false)
+                .build()
+                .stream()
+                .filter(this::hasEnabledPaymentMethods)
+                .collect(Collectors.toList());
+
+        if (eligibleTeams.isEmpty()) {
+            throw new NoEligibleTraderTeamsException();
+        }
+        Random random = new Random();
+        return eligibleTeams.get(random.nextInt(eligibleTeams.size()));
+    }
+
+    private boolean hasEnabledPaymentMethods(TraderTeam traderTeam) {
+        return !paymentMethodService.list()
+                .withTraderTeamId(traderTeam.getId())
+                .withEnabled(true)
+                .build()
+                .isEmpty();
     }
 
 }

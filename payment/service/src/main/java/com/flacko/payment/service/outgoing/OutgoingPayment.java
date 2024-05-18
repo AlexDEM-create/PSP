@@ -7,6 +7,7 @@ import com.flacko.common.state.PaymentState;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Optional;
 
 public interface OutgoingPayment {
 
@@ -18,7 +19,7 @@ public interface OutgoingPayment {
 
     String getTraderTeamId();
 
-    String getPaymentMethodId();
+    Optional<String> getPaymentMethodId();
 
     BigDecimal getAmount();
 

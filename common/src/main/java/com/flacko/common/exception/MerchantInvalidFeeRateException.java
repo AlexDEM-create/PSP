@@ -1,4 +1,4 @@
-package com.flacko.merchant.service.exception;
+package com.flacko.common.exception;
 
 public class MerchantInvalidFeeRateException extends Exception {
 

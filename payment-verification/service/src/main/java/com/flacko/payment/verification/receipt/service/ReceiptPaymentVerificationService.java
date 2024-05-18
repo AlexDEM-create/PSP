@@ -11,7 +11,7 @@ public interface ReceiptPaymentVerificationService {
     ReceiptPaymentVerification getByOutgoingPaymentId(String outgoingPaymentId)
             throws ReceiptPaymentVerificationNotFoundException;
 
-    ReceiptPaymentVerification verify(MultipartFile file, String outgoingPaymentId)
+    ReceiptPaymentVerification verify(MultipartFile file, String outgoingPaymentId, String paymentMethodId)
             throws ReceiptPaymentVerificationRequestValidationException, ReceiptPaymentVerificationFailedException,
             ReceiptPaymentVerificationCurrencyNotSupportedException, IncomingPaymentNotFoundException,
             ReceiptPaymentVerificationMissingRequiredAttributeException,

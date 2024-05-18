@@ -2,7 +2,6 @@ package com.flacko.payment.method.impl;
 
 import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.BankNotFoundException;
 import com.flacko.common.exception.TerminalNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.id.IdGenerator;
@@ -41,7 +40,9 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
     @Override
     public PaymentMethodBuilder initializeNew() {
         pojoBuilder = PaymentMethodPojo.builder()
-                .id(new IdGenerator().generateId());
+                .id(new IdGenerator().generateId())
+                .enabled(false)
+                .busy(false);
         return this;
     }
 
@@ -57,6 +58,7 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
                 .bank(existingPaymentMethod.getBank())
                 .traderTeamId(existingPaymentMethod.getTraderTeamId())
                 .terminalId(existingPaymentMethod.getTerminalId())
+                .enabled(existingPaymentMethod.isEnabled())
                 .busy(existingPaymentMethod.isBusy())
                 .createdDate(existingPaymentMethod.getCreatedDate())
                 .updatedDate(now)
@@ -107,6 +109,12 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
     }
 
     @Override
+    public PaymentMethodBuilder withEnabled(boolean enabled) {
+        pojoBuilder.enabled(enabled);
+        return this;
+    }
+
+    @Override
     public PaymentMethodBuilder withBusy(boolean busy) {
         pojoBuilder.busy(busy);
         return this;
@@ -120,7 +128,7 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
 
     @Override
     public PaymentMethod build() throws PaymentMethodMissingRequiredAttributeException, TraderTeamNotFoundException,
-            PaymentMethodInvalidBankCardNumberException, BankNotFoundException, TerminalNotFoundException {
+            PaymentMethodInvalidBankCardNumberException, TerminalNotFoundException {
         PaymentMethodPojo card = pojoBuilder.build();
         validate(card);
         paymentMethodRepository.save(card);
@@ -128,8 +136,7 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
     }
 
     private void validate(PaymentMethodPojo pojo) throws PaymentMethodMissingRequiredAttributeException,
-            BankNotFoundException, TraderTeamNotFoundException, PaymentMethodInvalidBankCardNumberException,
-            TerminalNotFoundException {
+            TraderTeamNotFoundException, PaymentMethodInvalidBankCardNumberException, TerminalNotFoundException {
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new PaymentMethodMissingRequiredAttributeException("id", Optional.empty());
         }

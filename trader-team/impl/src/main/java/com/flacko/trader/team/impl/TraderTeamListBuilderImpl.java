@@ -25,6 +25,7 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
     private Optional<Boolean> kickedOut = Optional.empty();
     private Optional<String> leaderId = Optional.empty();
     private Optional<Country> country = Optional.empty();
+    private Optional<Boolean> archived = Optional.empty();
 
     @Override
     public TraderTeamListBuilder withVerified(Boolean verified) {
@@ -63,6 +64,12 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
     }
 
     @Override
+    public TraderTeamListBuilder withArchived(Boolean archived) {
+        this.archived = Optional.of(archived);
+        return this;
+    }
+
+    @Override
     public List<TraderTeam> build() {
         return traderTeamRepository.findAll(createSpecification());
     }
@@ -92,6 +99,10 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
         if (country.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("country"), country.get()));
+        }
+        if (archived.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.isNotNull(root.get("deletedDate")));
         }
         return spec;
     }

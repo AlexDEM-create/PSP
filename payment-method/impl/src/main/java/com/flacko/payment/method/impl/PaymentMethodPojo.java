@@ -52,6 +52,9 @@ public class PaymentMethodPojo implements PaymentMethod {
     private String terminalId;
 
     @Column(nullable = false)
+    private boolean enabled;
+
+    @Column(nullable = false)
     private boolean busy;
 
     @Column(name = "created_date", nullable = false)

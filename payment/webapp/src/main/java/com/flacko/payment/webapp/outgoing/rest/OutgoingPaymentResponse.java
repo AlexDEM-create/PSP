@@ -8,11 +8,12 @@ import com.flacko.common.state.PaymentState;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 public record OutgoingPaymentResponse(@JsonProperty(ID) String id,
                                       @JsonProperty(MERCHANT_ID) String merchantId,
                                       @JsonProperty(TRADER_TEAM_ID) String traderTeamId,
-                                      @JsonProperty(PAYMENT_METHOD_ID) String paymentMethodId,
+                                      @JsonProperty(PAYMENT_METHOD_ID) Optional<String> paymentMethodId,
                                       @JsonProperty(AMOUNT) BigDecimal amount,
                                       @JsonProperty(CURRENCY) Currency currency,
                                       @JsonProperty(RECIPIENT) String recipient,

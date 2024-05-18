@@ -16,6 +16,7 @@ import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamService;
+import com.flacko.user.service.User;
 import com.flacko.user.service.UserService;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -88,16 +89,15 @@ class ReceiptPaymentVerificationControllerTests {
 
     @BeforeEach
     public void setup() throws Exception {
-        String merchantUserId = userService.create()
+        User merchantUser = userService.create()
                 .withLogin(RandomStringUtils.randomAlphanumeric(10))
                 .withPassword("qwerty123456")
                 .withRole(UserRole.MERCHANT)
-                .build()
-                .getId();
+                .build();
 
         Merchant merchant = merchantService.create()
                 .withName("test_merchant")
-                .withUserId(merchantUserId)
+                .withUserId(merchantUser.getId())
                 .withCountry(Country.RUSSIA)
                 .withIncomingFeeRate(BigDecimal.valueOf(0.05))
                 .withOutgoingFeeRate(BigDecimal.valueOf(0.05))
@@ -152,9 +152,8 @@ class ReceiptPaymentVerificationControllerTests {
                 .build()
                 .getId();
 
-        outgoingPaymentId = outgoingPaymentService.create()
-                .withMerchantId(merchantId)
-                .withTraderTeamId(traderTeamId)
+        outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
+                .withRandomTraderTeamId()
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(AMOUNT)
                 .withCurrency(Currency.RUB)
@@ -195,7 +194,8 @@ class ReceiptPaymentVerificationControllerTests {
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/payment-verifications/receipts")
                 .file(file)
-                .param("outgoing_payment_id", outgoingPaymentId))
+                .param("outgoing_payment_id", outgoingPaymentId)
+                .param("payment_method_id", paymentMethodId))
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         assertThat(outgoingPaymentService.get(outgoingPaymentId).getCurrentState())

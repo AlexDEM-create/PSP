@@ -49,9 +49,10 @@
     <orderEntry type="library" name="Maven: com.google.j2objc:j2objc-annotations:3.0.0" level="project" />
     <orderEntry type="module" module-name="payment-method-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="trader-team-service" scope="RUNTIME" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.flacko:terminal-service:0.0.1-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="terminal-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="trader-team-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="balance-service" scope="RUNTIME" />
+    <orderEntry type="module" module-name="payment-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="terminal-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="user-impl" scope="RUNTIME" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.10.2" level="project" />

@@ -21,7 +21,9 @@ public class TerminalController {
 
     private static final String TRADER_TEAM_ID = "trader_team_id";
     private static final String VERIFIED = "verified";
+    private static final String ENABLED = "enabled";
     private static final String ONLINE = "online";
+    private static final String ARCHIVED = "archived";
     private static final String LIMIT = "limit";
     private static final String OFFSET = "offset";
 
@@ -31,13 +33,17 @@ public class TerminalController {
     @GetMapping
     public List<TerminalResponse> list(@RequestParam(TRADER_TEAM_ID) Optional<String> traderTeamId,
                                        @RequestParam(VERIFIED) Optional<Boolean> verified,
+                                       @RequestParam(ENABLED) Optional<Boolean> enabled,
                                        @RequestParam(ONLINE) Optional<Boolean> online,
+                                       @RequestParam(ARCHIVED) Optional<Boolean> archived,
                                        @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
                                        @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
         TerminalListBuilder builder = terminalService.list();
         traderTeamId.ifPresent(builder::withTraderTeamId);
         verified.ifPresent(builder::withVerified);
+        enabled.ifPresent(builder::withEnabled);
         online.ifPresent(builder::withOnline);
+        archived.ifPresent(builder::withArchived);
         return builder.build()
                 .stream()
                 .map(terminalRestMapper::mapModelToResponse)
@@ -80,6 +86,24 @@ public class TerminalController {
             throws TerminalNotFoundException, TerminalMissingRequiredAttributeException, TraderTeamNotFoundException {
         TerminalBuilder builder = terminalService.update(terminalId);
         builder.withVerified();
+        Terminal terminal = builder.build();
+        return terminalRestMapper.mapModelToResponse(terminal);
+    }
+
+    @PatchMapping("/{terminalId}/enable")
+    public TerminalResponse enable(@PathVariable String terminalId)
+            throws TerminalNotFoundException, TerminalMissingRequiredAttributeException, TraderTeamNotFoundException {
+        TerminalBuilder builder = terminalService.update(terminalId);
+        builder.withEnabled(true);
+        Terminal terminal = builder.build();
+        return terminalRestMapper.mapModelToResponse(terminal);
+    }
+
+    @PatchMapping("/{terminalId}/disable")
+    public TerminalResponse disable(@PathVariable String terminalId)
+            throws TerminalNotFoundException, TerminalMissingRequiredAttributeException, TraderTeamNotFoundException {
+        TerminalBuilder builder = terminalService.update(terminalId);
+        builder.withEnabled(false);
         Terminal terminal = builder.build();
         return terminalRestMapper.mapModelToResponse(terminal);
     }

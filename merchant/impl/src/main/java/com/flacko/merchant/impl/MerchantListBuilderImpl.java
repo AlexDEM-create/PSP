@@ -21,6 +21,7 @@ public class MerchantListBuilderImpl implements MerchantListBuilder {
 
     private Optional<Country> country = Optional.empty();
     private Optional<Boolean> outgoingTrafficStopped = Optional.empty();
+    private Optional<Boolean> archived = Optional.empty();
 
     @Override
     public MerchantListBuilder withCountry(Country country) {
@@ -31,6 +32,12 @@ public class MerchantListBuilderImpl implements MerchantListBuilder {
     @Override
     public MerchantListBuilder withOutgoingTrafficStopped(boolean outgoingTrafficStopped) {
         this.outgoingTrafficStopped = Optional.of(outgoingTrafficStopped);
+        return this;
+    }
+
+    @Override
+    public MerchantListBuilder withArchived(Boolean archived) {
+        this.archived = Optional.of(archived);
         return this;
     }
 
@@ -48,6 +55,10 @@ public class MerchantListBuilderImpl implements MerchantListBuilder {
         if (outgoingTrafficStopped.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("outgoingTrafficStopped"), outgoingTrafficStopped.get()));
+        }
+        if (archived.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.isNotNull(root.get("deletedDate")));
         }
         return spec;
     }

@@ -26,6 +26,8 @@ public interface PaymentMethod {
 
     String getTerminalId();
 
+    boolean isEnabled();
+
     boolean isBusy();
 
     Instant getCreatedDate();

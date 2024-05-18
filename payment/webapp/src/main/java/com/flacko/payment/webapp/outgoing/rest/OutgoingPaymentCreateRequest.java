@@ -11,7 +11,8 @@ public record OutgoingPaymentCreateRequest(@JsonProperty(AMOUNT) BigDecimal amou
                                            @JsonProperty(CURRENCY) Currency currency,
                                            @JsonProperty(RECIPIENT) String recipient,
                                            @JsonProperty(BANK) Bank bank,
-                                           @JsonProperty(PAYMENT_METHOD) RecipientPaymentMethodType recipientPaymentMethodType,
+                                           @JsonProperty(PAYMENT_METHOD)
+                                           RecipientPaymentMethodType recipientPaymentMethodType,
                                            @JsonProperty(PARTNER_PAYMENT_ID) String partnerPaymentId) {
 
     private static final String AMOUNT = "amount";

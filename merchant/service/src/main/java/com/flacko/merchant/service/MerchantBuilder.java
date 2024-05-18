@@ -5,8 +5,8 @@ import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.exception.UserNotFoundException;
-import com.flacko.merchant.service.exception.MerchantInvalidFeeRateException;
-import com.flacko.merchant.service.exception.MerchantMissingRequiredAttributeException;
+import com.flacko.common.exception.MerchantInvalidFeeRateException;
+import com.flacko.common.exception.MerchantMissingRequiredAttributeException;
 
 import java.math.BigDecimal;
 

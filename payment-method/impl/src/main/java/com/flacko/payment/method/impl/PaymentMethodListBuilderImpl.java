@@ -24,7 +24,9 @@ public class PaymentMethodListBuilderImpl implements PaymentMethodListBuilder {
     private Optional<Bank> bank = Optional.empty();
     private Optional<String> traderTeamId = Optional.empty();
     private Optional<String> terminalId = Optional.empty();
+    private Optional<Boolean> enabled = Optional.empty();
     private Optional<Boolean> busy = Optional.empty();
+    private Optional<Boolean> archived = Optional.empty();
 
     @Override
     public PaymentMethodListBuilder withCurrency(Currency currency) {
@@ -51,8 +53,20 @@ public class PaymentMethodListBuilderImpl implements PaymentMethodListBuilder {
     }
 
     @Override
-    public PaymentMethodListBuilder withBusy(boolean busy) {
+    public PaymentMethodListBuilder withEnabled(Boolean enabled) {
+        this.enabled = Optional.of(enabled);
+        return this;
+    }
+
+    @Override
+    public PaymentMethodListBuilder withBusy(Boolean busy) {
         this.busy = Optional.of(busy);
+        return this;
+    }
+
+    @Override
+    public PaymentMethodListBuilder withArchived(Boolean archived) {
+        this.archived = Optional.of(archived);
         return this;
     }
 
@@ -79,9 +93,17 @@ public class PaymentMethodListBuilderImpl implements PaymentMethodListBuilder {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("terminalId"), terminalId.get()));
         }
+        if (enabled.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("enabled"), enabled.get()));
+        }
         if (busy.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("busy"), busy.get()));
+        }
+        if (archived.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.isNotNull(root.get("deletedDate")));
         }
         return spec;
     }

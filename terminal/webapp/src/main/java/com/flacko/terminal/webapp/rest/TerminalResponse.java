@@ -8,6 +8,7 @@ import java.util.Optional;
 public record TerminalResponse(@JsonProperty(ID) String id,
                                @JsonProperty(TRADER_TEAM_ID) String traderTeamId,
                                @JsonProperty(VERIFIED) boolean verified,
+                               @JsonProperty(ENABLED) boolean enabled,
                                @JsonProperty(ONLINE) boolean online,
                                @JsonProperty(MODEL) Optional<String> model,
                                @JsonProperty(OPERATING_SYSTEM) Optional<String> operatingSystem,
@@ -17,6 +18,7 @@ public record TerminalResponse(@JsonProperty(ID) String id,
     private static final String ID = "id";
     private static final String TRADER_TEAM_ID = "trader_team_id";
     private static final String VERIFIED = "verified";
+    private static final String ENABLED = "enabled";
     private static final String ONLINE = "online";
     private static final String MODEL = "model";
     private static final String OPERATING_SYSTEM = "operating_system";

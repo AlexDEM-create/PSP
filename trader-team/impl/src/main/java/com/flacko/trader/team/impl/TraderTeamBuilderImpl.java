@@ -5,12 +5,10 @@ import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
 import com.flacko.common.country.Country;
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
-import com.flacko.common.exception.MerchantNotFoundException;
-import com.flacko.common.exception.TraderTeamNotFoundException;
-import com.flacko.common.exception.UserNotFoundException;
+import com.flacko.common.exception.*;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.common.role.UserRole;
+import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamBuilder;
 import com.flacko.trader.team.service.exception.TraderTeamIllegalLeaderException;
@@ -37,6 +35,7 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
     private final TraderTeamRepository traderTeamRepository;
     private final UserService userService;
     private final BalanceService balanceService;
+    private final OutgoingPaymentService outgoingPaymentService;
 
     private TraderTeamPojo.TraderTeamPojoBuilder pojoBuilder;
 
@@ -131,22 +130,28 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
     @Override
     public TraderTeamBuilder withIncomingOnline(boolean incomingOnline) {
         pojoBuilder.incomingOnline(incomingOnline);
-        pojoBuilder.outgoingOnline(false);
+        if (incomingOnline) {
+            pojoBuilder.outgoingOnline(false);
+        }
         return this;
     }
 
     @Override
     public TraderTeamBuilder withOutgoingOnline(boolean outgoingOnline) {
         pojoBuilder.outgoingOnline(outgoingOnline);
-        pojoBuilder.incomingOnline(false);
+        if (outgoingOnline) {
+            pojoBuilder.incomingOnline(false);
+        }
         return this;
     }
 
     @Override
     public TraderTeamBuilder withKickedOut(boolean kickedOut) {
         pojoBuilder.kickedOut(kickedOut);
-        pojoBuilder.incomingOnline(false);
-        pojoBuilder.outgoingOnline(false);
+        if (kickedOut) {
+            pojoBuilder.incomingOnline(false);
+            pojoBuilder.outgoingOnline(false);
+        }
         return this;
     }
 
@@ -159,7 +164,9 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
     @Override
     public TraderTeam build() throws TraderTeamMissingRequiredAttributeException, UserNotFoundException,
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, TraderTeamNotFoundException,
-            MerchantNotFoundException, BalanceMissingRequiredAttributeException {
+            MerchantNotFoundException, BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
+            BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
+            MerchantMissingRequiredAttributeException {
         TraderTeamPojo traderTeam = pojoBuilder.build();
         validate(traderTeam);
         traderTeamRepository.save(traderTeam);
@@ -182,7 +189,8 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
     }
 
     private void validate(TraderTeamPojo pojo) throws TraderTeamMissingRequiredAttributeException,
-            UserNotFoundException, TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException {
+            UserNotFoundException, TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException,
+            TraderTeamNotAllowedOnlineException {
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new TraderTeamMissingRequiredAttributeException("id", Optional.empty());
         }
@@ -224,6 +232,9 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
             throw new TraderTeamMissingRequiredAttributeException("leaderOutgoingFeeRate", Optional.of(pojo.getId()));
         } else if (pojo.getTraderOutgoingFeeRate().compareTo(BigDecimal.ZERO) < 0) {
             throw new TraderTeamInvalidFeeRateException("leaderOutgoingFeeRate", pojo.getId());
+        }
+        if (pojo.isKickedOut() && (pojo.isIncomingOnline() || pojo.isOutgoingOnline())) {
+            throw new TraderTeamNotAllowedOnlineException("Trader team is kicked out and cannot be online");
         }
     }
 

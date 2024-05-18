@@ -2,7 +2,6 @@ package com.flacko.payment.method.service;
 
 import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.BankNotFoundException;
 import com.flacko.common.exception.TerminalNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.payment.method.service.exception.PaymentMethodInvalidBankCardNumberException;
@@ -23,6 +22,8 @@ public interface PaymentMethodBuilder {
     PaymentMethodBuilder withTraderTeamId(String traderTeamId);
 
     PaymentMethodBuilder withTerminalId(String terminalId);
+
+    PaymentMethodBuilder withEnabled(boolean busy);
 
     PaymentMethodBuilder withBusy(boolean busy);
 

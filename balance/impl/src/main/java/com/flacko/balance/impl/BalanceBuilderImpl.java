@@ -5,11 +5,10 @@ import com.flacko.balance.service.BalanceBuilder;
 import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
-import com.flacko.common.exception.MerchantNotFoundException;
-import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.*;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.merchant.service.Merchant;
+import com.flacko.merchant.service.MerchantBuilder;
 import com.flacko.merchant.service.MerchantService;
 import com.flacko.trader.team.service.TraderTeamService;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +36,7 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
     private EntityType entityType;
     private String entityId;
     private BalanceType type;
+    private Currency currency;
 
     @Override
     public BalanceBuilder initializeNew() {
@@ -64,6 +64,7 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
         entityType = existingBalance.getEntityType();
         entityId = existingBalance.getEntityId();
         type = existingBalance.getType();
+        currency = existingBalance.getCurrency();
         return this;
     }
 
@@ -90,6 +91,7 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
 
     @Override
     public BalanceBuilder withCurrency(Currency currency) {
+        this.currency = currency;
         pojoBuilder.currency(currency);
         return this;
     }
@@ -124,15 +126,26 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
 
     @Override
     public Balance build() throws BalanceMissingRequiredAttributeException, TraderTeamNotFoundException,
-            MerchantNotFoundException {
+            MerchantNotFoundException, UserNotFoundException, MerchantInvalidFeeRateException,
+            MerchantMissingRequiredAttributeException, BalanceInvalidCurrentBalanceException {
         BalancePojo balance = pojoBuilder.build();
         validate(balance);
         balanceRepository.save(balance);
+
+        if (balance.getEntityType() == EntityType.MERCHANT && balance.getType() == BalanceType.OUTGOING) {
+            BigDecimal limit = getOutgoingTrafficStopLimit(currency);
+            if (currentBalance.compareTo(limit) < 0) {
+                MerchantBuilder merchantBuilder = merchantService.update(entityId);
+                merchantBuilder.withOutgoingTrafficStopped(true)
+                        .build();
+            }
+        }
+
         return balance;
     }
 
     private void validate(BalancePojo pojo) throws BalanceMissingRequiredAttributeException, MerchantNotFoundException,
-            TraderTeamNotFoundException {
+            TraderTeamNotFoundException, BalanceInvalidCurrentBalanceException {
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new BalanceMissingRequiredAttributeException("id", Optional.empty());
         }
@@ -152,10 +165,21 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
         }
         if (pojo.getCurrentBalance() == null) {
             throw new BalanceMissingRequiredAttributeException("currentBalance", Optional.of(pojo.getId()));
+        } else if (pojo.getCurrentBalance().compareTo(BigDecimal.ZERO) < 0) {
+            throw new BalanceInvalidCurrentBalanceException(pojo.getType().name(), pojo.getId(),
+                    pojo.getEntityType().name(), pojo.getEntityId());
         }
         if (pojo.getCurrency() == null) {
             throw new BalanceMissingRequiredAttributeException("currency", Optional.of(pojo.getId()));
         }
+    }
+
+    private BigDecimal getOutgoingTrafficStopLimit(Currency currency) {
+        return switch (currency) {
+            case RUB -> BigDecimal.valueOf(50000);
+            case USDT -> BigDecimal.valueOf(500);
+            case UZS -> BigDecimal.valueOf(6500000);
+        };
     }
 
 }

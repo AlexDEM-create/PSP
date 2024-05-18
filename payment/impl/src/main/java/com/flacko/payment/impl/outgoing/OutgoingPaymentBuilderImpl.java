@@ -2,9 +2,7 @@ package com.flacko.payment.impl.outgoing;
 
 import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.MerchantNotFoundException;
-import com.flacko.common.exception.PaymentMethodNotFoundException;
-import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.*;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
@@ -12,9 +10,7 @@ import com.flacko.merchant.service.MerchantService;
 import com.flacko.payment.method.service.PaymentMethodService;
 import com.flacko.payment.service.outgoing.OutgoingPayment;
 import com.flacko.payment.service.outgoing.OutgoingPaymentBuilder;
-import com.flacko.common.exception.OutgoingPaymentIllegalStateTransitionException;
-import com.flacko.common.exception.OutgoingPaymentInvalidAmountException;
-import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
+import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -42,12 +38,15 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
     private PaymentState currentState;
 
     @Override
-    public OutgoingPaymentBuilder initializeNew() {
+    public OutgoingPaymentBuilder initializeNew(String login) throws UserNotFoundException, MerchantNotFoundException {
+        String merchantId = merchantService.getMy(login)
+                .getId();
         id = new IdGenerator().generateId();
         currentState = PaymentState.INITIATED;
         pojoBuilder = OutgoingPaymentPojo.builder()
                 .id(id)
-                .currentState(currentState);
+                .currentState(currentState)
+                .merchantId(merchantId);
         return this;
     }
 
@@ -58,7 +57,7 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
                 .id(existingOutgoingPayment.getId())
                 .merchantId(existingOutgoingPayment.getMerchantId())
                 .traderTeamId(existingOutgoingPayment.getTraderTeamId())
-                .paymentMethodId(existingOutgoingPayment.getPaymentMethodId())
+                .paymentMethodId(existingOutgoingPayment.getPaymentMethodId().orElse(null))
                 .amount(existingOutgoingPayment.getAmount())
                 .currency(existingOutgoingPayment.getCurrency())
                 .recipient(existingOutgoingPayment.getRecipient())
@@ -74,14 +73,9 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
     }
 
     @Override
-    public OutgoingPaymentBuilder withMerchantId(String merchantId) {
-        pojoBuilder.merchantId(merchantId);
-        return this;
-    }
-
-    @Override
-    public OutgoingPaymentBuilder withTraderTeamId(String traderTeamId) {
-        pojoBuilder.traderTeamId(traderTeamId);
+    public OutgoingPaymentBuilder withRandomTraderTeamId() throws NoEligibleTraderTeamsException {
+        TraderTeam randomTraderTeam = traderTeamService.getRandomEligibleTraderTeamForOutgoingPayment();
+        pojoBuilder.traderTeamId(randomTraderTeam.getId());
         return this;
     }
 
@@ -163,10 +157,10 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
         } else {
             traderTeamService.get(pojo.getTraderTeamId());
         }
-        if (pojo.getPaymentMethodId() == null || pojo.getPaymentMethodId().isBlank()) {
+        if (pojo.getCurrentState() == PaymentState.VERIFIED && pojo.getPaymentMethodId().isEmpty()) {
             throw new OutgoingPaymentMissingRequiredAttributeException("paymentMethodId", Optional.of(pojo.getId()));
         } else {
-            paymentMethodService.get(pojo.getPaymentMethodId());
+            paymentMethodService.get(pojo.getPaymentMethodId().get());
         }
         if (pojo.getAmount() == null) {
             throw new OutgoingPaymentMissingRequiredAttributeException("amount", Optional.of(pojo.getId()));

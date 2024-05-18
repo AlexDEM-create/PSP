@@ -18,6 +18,8 @@ public interface TraderTeamListBuilder {
 
     TraderTeamListBuilder withCountry(Country country);
 
+    TraderTeamListBuilder withArchived(Boolean archived);
+
     List<TraderTeam> build();
 
 }

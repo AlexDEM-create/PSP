@@ -66,6 +66,7 @@
     <orderEntry type="library" scope="TEST" name="Maven: com.h2database:h2:2.2.224" level="project" />
     <orderEntry type="module" module-name="appeal-service" scope="TEST" />
     <orderEntry type="module" module-name="appeal-impl" scope="TEST" />
+    <orderEntry type="module" module-name="terminal-impl" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-data-jpa:3.2.4" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-starter-aop:3.2.4" level="project" />
