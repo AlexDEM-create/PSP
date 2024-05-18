@@ -19,7 +19,7 @@ public enum PaymentState {
         VERIFYING.nextPossibleStates = EnumSet.of(VERIFIED, FAILED_TO_VERIFY);
         VERIFIED.nextPossibleStates = EnumSet.of(DISPUTED);
         FAILED_TO_VERIFY.nextPossibleStates = EnumSet.of(DISPUTED);
-        DISPUTED.nextPossibleStates = EnumSet.of(VERIFIED, FAILED_TO_VERIFY);
+        DISPUTED.nextPossibleStates = EnumSet.of(VERIFIED, FAILED_TO_VERIFY, INITIATED);
         VERIFICATION_EXPIRED.nextPossibleStates = EnumSet.of(DISPUTED);
     }
 

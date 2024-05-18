@@ -1,6 +1,8 @@
 package com.flacko.payment.impl.outgoing;
 
+import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
+import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.outgoing.OutgoingPayment;
 import jakarta.persistence.*;
@@ -41,18 +43,29 @@ public class OutgoingPaymentPojo implements OutgoingPayment {
     @Column(name = "payment_method_id", nullable = false)
     private String paymentMethodId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 11, scale = 2)
     private BigDecimal amount;
 
     @Column(nullable = false)
     private Currency currency;
 
+    @Column(nullable = false)
+    private String recipient;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Bank bank;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "recipient_payment_method_type", nullable = false)
+    private RecipientPaymentMethodType recipientPaymentMethodType;
+
+    @Column(name = "partner_payment_id", nullable = false)
+    private String partnerPaymentId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "current_state", nullable = false)
     private PaymentState currentState;
-
-    @Column(nullable = false)
-    private boolean booked;
 
     @Column(name = "created_date", nullable = false)
     private Instant createdDate;
@@ -60,11 +73,8 @@ public class OutgoingPaymentPojo implements OutgoingPayment {
     @Column(name = "updated_date", nullable = false)
     private Instant updatedDate;
 
-    @Column(name = "booked_date")
-    private Instant bookedDate;
-
-    public Optional<Instant> getBookedDate() {
-        return Optional.ofNullable(bookedDate);
+    public Optional<String> getPaymentMethodId() {
+        return Optional.ofNullable(paymentMethodId);
     }
 
     @PrePersist

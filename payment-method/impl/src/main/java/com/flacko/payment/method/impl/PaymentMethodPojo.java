@@ -1,8 +1,8 @@
 package com.flacko.payment.method.impl;
 
+import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
 import com.flacko.payment.method.service.PaymentMethod;
-import com.flacko.payment.method.service.PaymentMethodType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,29 +28,31 @@ public class PaymentMethodPojo implements PaymentMethod {
     @Column(nullable = false)
     private String id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private PaymentMethodType type;
-
     @Column(nullable = false)
     private String number;
 
-    @Column(name = "holder_name", nullable = false)
-    private String holderName;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Currency currency;
 
-
-    @Column(name = "bank_id", nullable = false)
-    private String bankId;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Bank bank;
 
     @Column(name = "trader_team_id", nullable = false)
     private String traderTeamId;
 
     @Column(name = "terminal_id", nullable = false)
     private String terminalId;
+
+    @Column(nullable = false)
+    private boolean enabled;
 
     @Column(nullable = false)
     private boolean busy;

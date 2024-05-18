@@ -1,6 +1,7 @@
 package com.flacko.merchant.service;
 
 import com.flacko.common.exception.MerchantNotFoundException;
+import com.flacko.common.exception.UserNotFoundException;
 
 public interface MerchantService {
 
@@ -13,6 +14,8 @@ public interface MerchantService {
     Merchant get(String id) throws MerchantNotFoundException;
 
     Merchant getByUserId(String userId) throws MerchantNotFoundException;
+
+    Merchant getMy(String login) throws MerchantNotFoundException, UserNotFoundException;
 
 }
 

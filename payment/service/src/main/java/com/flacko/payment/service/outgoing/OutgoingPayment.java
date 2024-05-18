@@ -1,6 +1,8 @@
 package com.flacko.payment.service.outgoing;
 
+import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
+import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
 
 import java.math.BigDecimal;
@@ -17,20 +19,24 @@ public interface OutgoingPayment {
 
     String getTraderTeamId();
 
-    String getPaymentMethodId();
+    Optional<String> getPaymentMethodId();
 
     BigDecimal getAmount();
 
     Currency getCurrency();
 
-    PaymentState getCurrentState();
+    String getRecipient();
 
-    boolean isBooked();
+    Bank getBank();
+
+    RecipientPaymentMethodType getRecipientPaymentMethodType();
+
+    String getPartnerPaymentId();
+
+    PaymentState getCurrentState();
 
     Instant getCreatedDate();
 
     Instant getUpdatedDate();
-
-    Optional<Instant> getBookedDate();
 
 }

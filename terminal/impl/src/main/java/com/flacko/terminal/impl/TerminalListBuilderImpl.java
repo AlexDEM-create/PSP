@@ -20,7 +20,9 @@ public class TerminalListBuilderImpl implements TerminalListBuilder {
 
     private Optional<String> traderTeamId = Optional.empty();
     private Optional<Boolean> verified = Optional.empty();
+    private Optional<Boolean> enabled = Optional.empty();
     private Optional<Boolean> online = Optional.empty();
+    private Optional<Boolean> archived = Optional.empty();
 
     @Override
     public TerminalListBuilder withTraderTeamId(String traderTeamId) {
@@ -35,8 +37,20 @@ public class TerminalListBuilderImpl implements TerminalListBuilder {
     }
 
     @Override
+    public TerminalListBuilder withEnabled(Boolean enabled) {
+        this.enabled = Optional.of(enabled);
+        return this;
+    }
+
+    @Override
     public TerminalListBuilder withOnline(Boolean online) {
         this.online = Optional.of(online);
+        return this;
+    }
+
+    @Override
+    public TerminalListBuilder withArchived(Boolean archived) {
+        this.archived = Optional.of(archived);
         return this;
     }
 
@@ -55,9 +69,17 @@ public class TerminalListBuilderImpl implements TerminalListBuilder {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("verified"), verified.get()));
         }
+        if (enabled.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("enabled"), enabled.get()));
+        }
         if (online.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("online"), online.get()));
+        }
+        if (archived.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.isNotNull(root.get("deletedDate")));
         }
         return spec;
     }

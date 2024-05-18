@@ -1,22 +1,25 @@
 package com.flacko.payment.method.service;
 
+import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
 
 import java.util.List;
 
 public interface PaymentMethodListBuilder {
 
-    PaymentMethodListBuilder withType(PaymentMethodType type);
-
     PaymentMethodListBuilder withCurrency(Currency currency);
 
-    PaymentMethodListBuilder withBankId(String bankId);
+    PaymentMethodListBuilder withBank(Bank bank);
 
     PaymentMethodListBuilder withTraderTeamId(String traderTeamId);
 
     PaymentMethodListBuilder withTerminalId(String terminalId);
 
-    PaymentMethodListBuilder withBusy(boolean busy);
+    PaymentMethodListBuilder withEnabled(Boolean enabled);
+
+    PaymentMethodListBuilder withBusy(Boolean busy);
+
+    PaymentMethodListBuilder withArchived(Boolean archived);
 
     List<PaymentMethod> build();
 

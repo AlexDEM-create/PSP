@@ -8,6 +8,8 @@ public interface BalanceListBuilder {
 
     BalanceListBuilder withEntityType(EntityType entityType);
 
+    BalanceListBuilder withArchived(Boolean archived);
+
     List<Balance> build();
 
 }

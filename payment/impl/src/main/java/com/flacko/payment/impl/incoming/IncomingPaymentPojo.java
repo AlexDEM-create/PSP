@@ -40,7 +40,7 @@ public class IncomingPaymentPojo implements IncomingPayment {
     @Column(name = "payment_method_id", nullable = false)
     private String paymentMethodId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 11, scale = 2)
     private BigDecimal amount;
 
     @Column(nullable = false)

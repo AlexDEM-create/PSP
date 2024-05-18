@@ -12,14 +12,6 @@ public class ReceiptPaymentVerificationRestMapper {
         // add timezone from authorization
         return new ReceiptPaymentVerificationResponse(receiptPaymentVerification.getId(),
                 receiptPaymentVerification.getOutgoingPaymentId(),
-                receiptPaymentVerification.getRecipientFullName(),
-                receiptPaymentVerification.getRecipientCardLastFourDigits(),
-                receiptPaymentVerification.getSenderFullName(),
-                receiptPaymentVerification.getSenderCardLastFourDigits(),
-                receiptPaymentVerification.getAmount(),
-                receiptPaymentVerification.getAmountCurrency(),
-                receiptPaymentVerification.getCommission(),
-                receiptPaymentVerification.getCommissionCurrency(),
                 receiptPaymentVerification.getData(),
                 receiptPaymentVerification.getCreatedDate().atZone(ZoneId.systemDefault()));
     }

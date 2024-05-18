@@ -1,16 +1,15 @@
 package com.flacko.payment.webapp;
 
-import com.flacko.bank.service.BankService;
-import com.flacko.common.country.Country;
+import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
+import com.flacko.common.role.UserRole;
 import com.flacko.common.state.PaymentState;
 import com.flacko.merchant.service.MerchantService;
 import com.flacko.payment.method.service.PaymentMethodService;
-import com.flacko.payment.method.service.PaymentMethodType;
 import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeamService;
-import com.flacko.user.service.UserRole;
+import com.flacko.user.service.User;
 import com.flacko.user.service.UserService;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,25 +57,21 @@ public class OutgoingPaymentControllerTests {
     private UserService userService;
 
     @Autowired
-    private BankService bankService;
-
-    @Autowired
     private TerminalService terminalService;
 
     private String paymentId;
 
     @BeforeEach
     public void setup() throws Exception {
-        String merchantUserId = userService.create()
+        User merchantUser = userService.create()
                 .withLogin(RandomStringUtils.randomAlphanumeric(10))
                 .withPassword("qwerty123456")
                 .withRole(UserRole.MERCHANT)
-                .build()
-                .getId();
+                .build();
 
         String merchantId = merchantService.create()
                 .withName("test_merchant")
-                .withUserId(merchantUserId)
+                .withUserId(merchantUser.getId())
                 .withIncomingFeeRate(BigDecimal.valueOf(0.02))
                 .withOutgoingFeeRate(BigDecimal.valueOf(0.02))
                 .build()
@@ -107,12 +102,6 @@ public class OutgoingPaymentControllerTests {
                 .build()
                 .getId();
 
-        String bankId = bankService.create()
-                .withName("test_bank")
-                .withCountry(Country.RUSSIA)
-                .build()
-                .getId();
-
         String terminalId = terminalService.create()
                 .withTraderTeamId(traderTeamId)
                 .withVerified()
@@ -122,19 +111,18 @@ public class OutgoingPaymentControllerTests {
                 .getId();
 
         String paymentMethodId = paymentMethodService.create()
-                .withType(PaymentMethodType.BANK_CARD)
                 .withNumber("1234567812345678")
-                .withHolderName("John Grey")
+                .withFirstName("John")
+                .withLastName("Grey")
                 .withCurrency(Currency.RUB)
-                .withBankId(bankId)
+                .withBank(Bank.RAIFFEISEN)
                 .withTraderTeamId(traderTeamId)
                 .withTerminalId(terminalId)
                 .build()
                 .getId();
 
-        paymentId = outgoingPaymentService.create()
-                .withMerchantId(merchantId)
-                .withTraderTeamId(traderTeamId)
+        paymentId = outgoingPaymentService.create(merchantUser.getLogin())
+                .withRandomTraderTeamId()
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(5000))
                 .withCurrency(Currency.RUB)

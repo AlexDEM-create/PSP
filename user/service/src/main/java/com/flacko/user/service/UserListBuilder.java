@@ -10,6 +10,8 @@ public interface UserListBuilder {
 
     UserListBuilder withRole(UserRole role);
 
+    UserListBuilder withArchived(Boolean archived);
+
     List<User> build();
 
 }

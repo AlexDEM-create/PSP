@@ -19,14 +19,29 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
 
     private final TraderTeamRepository traderTeamRepository;
 
-    private Optional<Boolean> online = Optional.empty();
+    private Optional<Boolean> verified = Optional.empty();
+    private Optional<Boolean> incomingOnline = Optional.empty();
+    private Optional<Boolean> outgoingOnline = Optional.empty();
     private Optional<Boolean> kickedOut = Optional.empty();
     private Optional<String> leaderId = Optional.empty();
     private Optional<Country> country = Optional.empty();
+    private Optional<Boolean> archived = Optional.empty();
 
     @Override
-    public TraderTeamListBuilder withOnline(Boolean online) {
-        this.online = Optional.of(online);
+    public TraderTeamListBuilder withVerified(Boolean verified) {
+        this.verified = Optional.of(verified);
+        return this;
+    }
+
+    @Override
+    public TraderTeamListBuilder withIncomingOnline(Boolean incomingOnline) {
+        this.incomingOnline = Optional.of(incomingOnline);
+        return this;
+    }
+
+    @Override
+    public TraderTeamListBuilder withOutgoingOnline(Boolean outgoingOnline) {
+        this.outgoingOnline = Optional.of(outgoingOnline);
         return this;
     }
 
@@ -49,15 +64,29 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
     }
 
     @Override
+    public TraderTeamListBuilder withArchived(Boolean archived) {
+        this.archived = Optional.of(archived);
+        return this;
+    }
+
+    @Override
     public List<TraderTeam> build() {
         return traderTeamRepository.findAll(createSpecification());
     }
 
     private Specification<TraderTeam> createSpecification() {
         Specification<TraderTeam> spec = Specification.where(null);
-        if (online.isPresent()) {
+        if (verified.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("online"), online.get()));
+                    criteriaBuilder.equal(root.get("verified"), verified.get()));
+        }
+        if (incomingOnline.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("incomingOnline"), incomingOnline.get()));
+        }
+        if (outgoingOnline.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("outgoingOnline"), outgoingOnline.get()));
         }
         if (kickedOut.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
@@ -70,6 +99,10 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
         if (country.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("country"), country.get()));
+        }
+        if (archived.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.isNotNull(root.get("deletedDate")));
         }
         return spec;
     }

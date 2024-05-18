@@ -21,6 +21,7 @@ public class BalanceListBuilderImpl implements BalanceListBuilder {
 
     private Optional<String> entityId = Optional.empty();
     private Optional<EntityType> entityType = Optional.empty();
+    private Optional<Boolean> archived = Optional.empty();
 
     @Override
     public BalanceListBuilder withEntityId(String entityId) {
@@ -31,6 +32,12 @@ public class BalanceListBuilderImpl implements BalanceListBuilder {
     @Override
     public BalanceListBuilder withEntityType(EntityType entityType) {
         this.entityType = Optional.of(entityType);
+        return this;
+    }
+
+    @Override
+    public BalanceListBuilder withArchived(Boolean archived) {
+        this.archived = Optional.of(archived);
         return this;
     }
 
@@ -48,6 +55,10 @@ public class BalanceListBuilderImpl implements BalanceListBuilder {
         if (entityType.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("entityType"), entityType.get()));
+        }
+        if (archived.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.isNotNull(root.get("deletedDate")));
         }
         return spec;
     }

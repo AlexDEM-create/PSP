@@ -10,6 +10,8 @@ public interface MerchantListBuilder {
 
     MerchantListBuilder withOutgoingTrafficStopped(boolean outgoingTrafficStopped);
 
+    MerchantListBuilder withArchived(Boolean archived);
+
     List<Merchant> build();
 
 }

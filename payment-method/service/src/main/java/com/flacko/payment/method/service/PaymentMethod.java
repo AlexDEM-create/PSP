@@ -1,5 +1,6 @@
 package com.flacko.payment.method.service;
 
+import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
 
 import java.time.Instant;
@@ -11,19 +12,21 @@ public interface PaymentMethod {
 
     String getId();
 
-    PaymentMethodType getType();
-
     String getNumber();
 
-    String getHolderName();
+    String getFirstName();
+
+    String getLastName();
 
     Currency getCurrency();
 
-    String getBankId();
+    Bank getBank();
 
     String getTraderTeamId();
 
     String getTerminalId();
+
+    boolean isEnabled();
 
     boolean isBusy();
 

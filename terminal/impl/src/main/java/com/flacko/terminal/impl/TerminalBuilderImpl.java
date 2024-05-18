@@ -31,18 +31,20 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
         pojoBuilder = TerminalPojo.builder()
                 .id(new IdGenerator().generateId())
                 .verified(false)
+                .enabled(false)
                 .online(false);
         return this;
     }
 
     @Override
     public TerminalBuilder initializeExisting(Terminal existingTerminal) {
-        // need to solve the problem with primary key
         pojoBuilder = TerminalPojo.builder()
                 .primaryKey(existingTerminal.getPrimaryKey())
                 .id(existingTerminal.getId())
                 .traderTeamId(existingTerminal.getTraderTeamId())
                 .verified(existingTerminal.isVerified())
+                .enabled(existingTerminal.isEnabled())
+                .online(existingTerminal.isOnline())
                 .model(existingTerminal.getModel().orElse(null))
                 .operatingSystem(existingTerminal.getOperatingSystem().orElse(null))
                 .createdDate(existingTerminal.getCreatedDate())
@@ -60,6 +62,12 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
     @Override
     public TerminalBuilder withVerified() {
         pojoBuilder.verified(true);
+        return this;
+    }
+
+    @Override
+    public TerminalBuilder withEnabled(boolean enabled) {
+        pojoBuilder.enabled(enabled);
         return this;
     }
 

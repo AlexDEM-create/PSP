@@ -1,5 +1,8 @@
 package com.flacko.payment.impl.outgoing;
 
+import com.flacko.common.bank.Bank;
+import com.flacko.common.currency.Currency;
+import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.outgoing.OutgoingPayment;
 import com.flacko.payment.service.outgoing.OutgoingPaymentListBuilder;
@@ -22,8 +25,11 @@ public class OutgoingPaymentListBuilderImpl implements OutgoingPaymentListBuilde
     private Optional<String> merchantId = Optional.empty();
     private Optional<String> traderTeamId = Optional.empty();
     private Optional<String> paymentMethodId = Optional.empty();
+    private Optional<Currency> currency = Optional.empty();
+    private Optional<String> recipient = Optional.empty();
+    private Optional<Bank> bank = Optional.empty();
+    private Optional<RecipientPaymentMethodType> recipientPaymentMethodType = Optional.empty();
     private Optional<PaymentState> currentState = Optional.empty();
-    private Optional<Boolean> booked = Optional.empty();
 
     @Override
     public OutgoingPaymentListBuilder withMerchantId(String merchantId) {
@@ -44,14 +50,32 @@ public class OutgoingPaymentListBuilderImpl implements OutgoingPaymentListBuilde
     }
 
     @Override
-    public OutgoingPaymentListBuilder withCurrentState(PaymentState currentState) {
-        this.currentState = Optional.ofNullable(currentState);
+    public OutgoingPaymentListBuilder withCurrency(Currency currency) {
+        this.currency = Optional.of(currency);
         return this;
     }
 
     @Override
-    public OutgoingPaymentListBuilder withBooked(Boolean booked) {
-        this.booked = Optional.ofNullable(booked);
+    public OutgoingPaymentListBuilder withRecipient(String recipient) {
+        this.recipient = Optional.of(recipient);
+        return this;
+    }
+
+    @Override
+    public OutgoingPaymentListBuilder withBank(Bank bank) {
+        this.bank = Optional.of(bank);
+        return this;
+    }
+
+    @Override
+    public OutgoingPaymentListBuilder withRecipientPaymentMethodType(RecipientPaymentMethodType recipientPaymentMethodType) {
+        this.recipientPaymentMethodType = Optional.of(recipientPaymentMethodType);
+        return this;
+    }
+
+    @Override
+    public OutgoingPaymentListBuilder withCurrentState(PaymentState currentState) {
+        this.currentState = Optional.ofNullable(currentState);
         return this;
     }
 
@@ -74,13 +98,25 @@ public class OutgoingPaymentListBuilderImpl implements OutgoingPaymentListBuilde
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("paymentMethodId"), paymentMethodId.get()));
         }
+        if (currency.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("currency"), currency.get()));
+        }
+        if (recipient.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("recipient"), recipient.get()));
+        }
+        if (bank.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("bank"), bank.get()));
+        }
+        if (recipientPaymentMethodType.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("recipientPaymentMethodType"), recipientPaymentMethodType.get()));
+        }
         if (currentState.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("currentState"), currentState.get()));
-        }
-        if (booked.isPresent()) {
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("booked"), booked.get()));
         }
         return spec;
     }

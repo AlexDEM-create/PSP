@@ -1,8 +1,8 @@
 package com.flacko.user.impl;
 
+import com.flacko.common.role.UserRole;
 import com.flacko.user.service.User;
 import com.flacko.user.service.UserListBuilder;
-import com.flacko.common.role.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -21,6 +21,7 @@ public class UserListBuilderImpl implements UserListBuilder {
 
     private Optional<Boolean> banned = Optional.empty();
     private Optional<UserRole> role = Optional.empty();
+    private Optional<Boolean> archived = Optional.empty();
 
     @Override
     public UserListBuilder withBanned(Boolean banned) {
@@ -31,6 +32,12 @@ public class UserListBuilderImpl implements UserListBuilder {
     @Override
     public UserListBuilder withRole(UserRole role) {
         this.role = Optional.of(role);
+        return this;
+    }
+
+    @Override
+    public UserListBuilder withArchived(Boolean archived) {
+        this.archived = Optional.of(archived);
         return this;
     }
 
@@ -48,6 +55,10 @@ public class UserListBuilderImpl implements UserListBuilder {
         if (role.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("role"), role.get()));
+        }
+        if (archived.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.isNotNull(root.get("deletedDate")));
         }
         return spec;
     }

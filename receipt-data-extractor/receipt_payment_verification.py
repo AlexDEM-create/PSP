@@ -29,12 +29,10 @@ def extract_data_from_pdf(pdf_file):
     return pdf_reader.pages[0].extract_text()
 
 
-def verify_data(patterns, text):
-    for pattern in patterns:
-        match = re.match(pattern, text, re.MULTILINE | re.DOTALL)
-        if match:
-            return {key: unidecode(value) for key, value in match.groupdict().items()}
-    return None
+def verify_data(pattern, text):
+    match = re.match(pattern, text, re.MULTILINE | re.DOTALL)
+    if match:
+        return {key: unidecode(value) for key, value in match.groupdict().items()}
 
 
 @app.route('/payment-verifications/receipts/extract-data', methods=['POST'])
@@ -47,10 +45,10 @@ def upload_receipt():
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 403
 
-    if 'patterns' not in request.form:
-        return jsonify({'error': 'No patterns part'}), 403
+    if 'pattern' not in request.form:
+        return jsonify({'error': 'No pattern part'}), 403
 
-    patterns = request.form.getlist('patterns')
+    pattern = request.form.get('pattern')
 
     if file and allowed_file(file.filename):
         if file.content_length > 256 * 1024:
@@ -58,7 +56,7 @@ def upload_receipt():
 
         file_data = extract_data_from_pdf(file)
 
-        data = verify_data(patterns, file_data)
+        data = verify_data(pattern, file_data)
 
         if data is not None:
             return jsonify(data)
@@ -69,4 +67,4 @@ def upload_receipt():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    app.run(debug=True, port=5000)

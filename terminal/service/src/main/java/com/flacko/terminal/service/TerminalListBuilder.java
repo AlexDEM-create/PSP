@@ -8,7 +8,11 @@ public interface TerminalListBuilder {
 
     TerminalListBuilder withVerified(Boolean verified);
 
+    TerminalListBuilder withEnabled(Boolean enabled);
+
     TerminalListBuilder withOnline(Boolean online);
+
+    TerminalListBuilder withArchived(Boolean archived);
 
     List<Terminal> build();
 

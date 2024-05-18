@@ -53,6 +53,8 @@
     <orderEntry type="module" module-name="trader-team-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="merchant-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="trader-team-impl" scope="RUNTIME" />
+    <orderEntry type="module" module-name="payment-method-service" scope="RUNTIME" />
+    <orderEntry type="module" module-name="payment-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="merchant-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="user-impl" scope="RUNTIME" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.10.2" level="project" />

@@ -22,6 +22,7 @@ public class UserController {
 
     private static final String BANNED = "banned";
     private static final String ROLE = "role";
+    private static final String ARCHIVED = "archived";
     private static final String LIMIT = "limit";
     private static final String OFFSET = "offset";
 
@@ -31,11 +32,13 @@ public class UserController {
     @GetMapping
     public List<UserResponse> list(@RequestParam(BANNED) Optional<Boolean> banned,
                                    @RequestParam(ROLE) Optional<UserRole> role,
+                                   @RequestParam(ARCHIVED) Optional<Boolean> archived,
                                    @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
                                    @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
         UserListBuilder builder = userService.list();
         banned.ifPresent(builder::withBanned);
         role.ifPresent(builder::withRole);
+        archived.ifPresent(builder::withArchived);
         return builder.build().stream()
                 .map(userRestMapper::mapModelToResponse)
                 .skip(offset)

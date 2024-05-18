@@ -28,7 +28,11 @@ public interface TraderTeam {
 
     BigDecimal getLeaderOutgoingFeeRate();
 
-    boolean isOnline();
+    boolean isVerified();
+
+    boolean isIncomingOnline();
+
+    boolean isOutgoingOnline();
 
     boolean isKickedOut();
 

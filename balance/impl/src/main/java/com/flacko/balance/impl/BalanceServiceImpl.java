@@ -48,10 +48,14 @@ public class BalanceServiceImpl implements BalanceService {
             entityId = merchantService.getByUserId(user.getId())
                     .getId();
             entityType = EntityType.MERCHANT;
-        } else if (user.getRole() == UserRole.TRADER_TEAM || user.getRole() == UserRole.TRADER_TEAM_LEADER) {
+        } else if (user.getRole() == UserRole.TRADER_TEAM) {
             entityId = traderTeamService.getByUserId(user.getId())
                     .getId();
             entityType = EntityType.TRADER_TEAM;
+        } else if (user.getRole() == UserRole.TRADER_TEAM_LEADER) {
+            entityId = traderTeamService.getByLeaderId(user.getId())
+                    .getId();
+            entityType = EntityType.TRADER_TEAM_LEADER;
         } else {
             throw new BalanceNotFoundException(user.getRole(), user.getId());
         }

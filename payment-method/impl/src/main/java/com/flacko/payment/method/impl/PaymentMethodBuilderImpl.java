@@ -1,16 +1,13 @@
 package com.flacko.payment.method.impl;
 
-import com.flacko.bank.service.BankService;
+import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.BankNotFoundException;
 import com.flacko.common.exception.TerminalNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.payment.method.service.PaymentMethod;
 import com.flacko.payment.method.service.PaymentMethodBuilder;
-import com.flacko.payment.method.service.PaymentMethodType;
 import com.flacko.payment.method.service.exception.PaymentMethodInvalidBankCardNumberException;
-import com.flacko.payment.method.service.exception.PaymentMethodInvalidPhoneNumberException;
 import com.flacko.payment.method.service.exception.PaymentMethodMissingRequiredAttributeException;
 import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeamService;
@@ -35,7 +32,6 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
     private final Instant now = Instant.now();
 
     private final PaymentMethodRepository paymentMethodRepository;
-    private final BankService bankService;
     private final TraderTeamService traderTeamService;
     private final TerminalService terminalService;
 
@@ -44,7 +40,9 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
     @Override
     public PaymentMethodBuilder initializeNew() {
         pojoBuilder = PaymentMethodPojo.builder()
-                .id(new IdGenerator().generateId());
+                .id(new IdGenerator().generateId())
+                .enabled(false)
+                .busy(false);
         return this;
     }
 
@@ -53,22 +51,18 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
         pojoBuilder = PaymentMethodPojo.builder()
                 .primaryKey(existingPaymentMethod.getPrimaryKey())
                 .id(existingPaymentMethod.getId())
-                .type(existingPaymentMethod.getType())
                 .number(existingPaymentMethod.getNumber())
-                .holderName(existingPaymentMethod.getHolderName())
+                .firstName(existingPaymentMethod.getFirstName())
+                .lastName(existingPaymentMethod.getLastName())
                 .currency(existingPaymentMethod.getCurrency())
-                .bankId(existingPaymentMethod.getBankId())
+                .bank(existingPaymentMethod.getBank())
                 .traderTeamId(existingPaymentMethod.getTraderTeamId())
+                .terminalId(existingPaymentMethod.getTerminalId())
+                .enabled(existingPaymentMethod.isEnabled())
                 .busy(existingPaymentMethod.isBusy())
                 .createdDate(existingPaymentMethod.getCreatedDate())
                 .updatedDate(now)
                 .deletedDate(existingPaymentMethod.getDeletedDate().orElse(null));
-        return this;
-    }
-
-    @Override
-    public PaymentMethodBuilder withType(PaymentMethodType type) {
-        pojoBuilder.type(type);
         return this;
     }
 
@@ -79,8 +73,14 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
     }
 
     @Override
-    public PaymentMethodBuilder withHolderName(String holderName) {
-        pojoBuilder.holderName(holderName);
+    public PaymentMethodBuilder withFirstName(String firstName) {
+        pojoBuilder.firstName(firstName);
+        return this;
+    }
+
+    @Override
+    public PaymentMethodBuilder withLastName(String lastName) {
+        pojoBuilder.lastName(lastName);
         return this;
     }
 
@@ -91,8 +91,8 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
     }
 
     @Override
-    public PaymentMethodBuilder withBankId(String id) {
-        pojoBuilder.bankId(id);
+    public PaymentMethodBuilder withBank(Bank bank) {
+        pojoBuilder.bank(bank);
         return this;
     }
 
@@ -105,6 +105,12 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
     @Override
     public PaymentMethodBuilder withTerminalId(String terminalId) {
         pojoBuilder.terminalId(terminalId);
+        return this;
+    }
+
+    @Override
+    public PaymentMethodBuilder withEnabled(boolean enabled) {
+        pojoBuilder.enabled(enabled);
         return this;
     }
 
@@ -122,8 +128,7 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
 
     @Override
     public PaymentMethod build() throws PaymentMethodMissingRequiredAttributeException, TraderTeamNotFoundException,
-            PaymentMethodInvalidBankCardNumberException, BankNotFoundException, TerminalNotFoundException,
-            PaymentMethodInvalidPhoneNumberException {
+            PaymentMethodInvalidBankCardNumberException, TerminalNotFoundException {
         PaymentMethodPojo card = pojoBuilder.build();
         validate(card);
         paymentMethodRepository.save(card);
@@ -131,35 +136,27 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
     }
 
     private void validate(PaymentMethodPojo pojo) throws PaymentMethodMissingRequiredAttributeException,
-            BankNotFoundException, TraderTeamNotFoundException, PaymentMethodInvalidBankCardNumberException,
-            TerminalNotFoundException, PaymentMethodInvalidPhoneNumberException {
+            TraderTeamNotFoundException, PaymentMethodInvalidBankCardNumberException, TerminalNotFoundException {
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new PaymentMethodMissingRequiredAttributeException("id", Optional.empty());
-        }
-        if (pojo.getType() == null) {
-            throw new PaymentMethodMissingRequiredAttributeException("type", Optional.of(pojo.getId()));
         }
         if (pojo.getNumber() == null || pojo.getNumber().isBlank()) {
             throw new PaymentMethodMissingRequiredAttributeException("number", Optional.of(pojo.getId()));
         }
-        if (pojo.getType() == PaymentMethodType.BANK_CARD &&
-                !CARD_NUMBER_PATTERN.matcher(pojo.getNumber()).matches()) {
+        if (!CARD_NUMBER_PATTERN.matcher(pojo.getNumber()).matches()) {
             throw new PaymentMethodInvalidBankCardNumberException(pojo.getId(), pojo.getNumber());
         }
-        if (pojo.getType() == PaymentMethodType.PHONE_NUMBER &&
-                !PHONE_NUMBER_PATTERN.matcher(pojo.getNumber()).matches()) {
-            throw new PaymentMethodInvalidPhoneNumberException(pojo.getId(), pojo.getNumber());
+        if (pojo.getFirstName() == null || pojo.getFirstName().isBlank()) {
+            throw new PaymentMethodMissingRequiredAttributeException("firstName", Optional.of(pojo.getId()));
         }
-        if (pojo.getHolderName() == null || pojo.getHolderName().isBlank()) {
-            throw new PaymentMethodMissingRequiredAttributeException("holderName", Optional.of(pojo.getId()));
+        if (pojo.getLastName() == null || pojo.getLastName().isBlank()) {
+            throw new PaymentMethodMissingRequiredAttributeException("lastName", Optional.of(pojo.getId()));
         }
         if (pojo.getCurrency() == null) {
             throw new PaymentMethodMissingRequiredAttributeException("currency", Optional.of(pojo.getId()));
         }
-        if (pojo.getBankId() == null || pojo.getBankId().isBlank()) {
-            throw new PaymentMethodMissingRequiredAttributeException("bankId", Optional.of(pojo.getId()));
-        } else {
-            bankService.get(pojo.getBankId());
+        if (pojo.getBank() == null) {
+            throw new PaymentMethodMissingRequiredAttributeException("bank", Optional.of(pojo.getId()));
         }
         if (pojo.getTraderTeamId() == null || pojo.getTraderTeamId().isBlank()) {
             throw new PaymentMethodMissingRequiredAttributeException("traderTeamId", Optional.of(pojo.getId()));

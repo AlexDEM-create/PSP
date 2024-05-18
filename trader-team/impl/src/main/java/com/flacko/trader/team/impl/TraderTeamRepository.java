@@ -18,4 +18,7 @@ public interface TraderTeamRepository extends CrudRepository<TraderTeamPojo, Lon
     @Query("SELECT tt FROM TraderTeamPojo tt WHERE tt.userId = :userId")
     Optional<TraderTeam> findByUserId(String userId);
 
+    @Query("SELECT tt FROM TraderTeamPojo tt WHERE tt.leaderId = :leaderId")
+    Optional<TraderTeam> findByLeaderId(String leaderId);
+
 }
