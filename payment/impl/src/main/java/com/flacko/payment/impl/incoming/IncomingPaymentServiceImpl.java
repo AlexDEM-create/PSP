@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Service
 @RequiredArgsConstructor
 public class IncomingPaymentServiceImpl implements IncomingPaymentService {
@@ -42,5 +43,4 @@ public class IncomingPaymentServiceImpl implements IncomingPaymentService {
         return serviceLocator.create(InitializableIncomingPaymentBuilder.class)
                 .initializeExisting(existingIncomingPayment);
     }
-
 }

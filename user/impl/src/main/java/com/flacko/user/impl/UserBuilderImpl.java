@@ -1,9 +1,9 @@
 package com.flacko.user.impl;
 
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.role.UserRole;
 import com.flacko.user.service.User;
 import com.flacko.user.service.UserBuilder;
-import com.flacko.user.service.UserRole;
 import com.flacko.user.service.exception.UserLoginAlreadyInUseException;
 import com.flacko.user.service.exception.UserMissingRequiredAttributeException;
 import com.flacko.user.service.exception.UserWeakPasswordException;
@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @RequiredArgsConstructor
-public class UserBuilderImpl implements InitializableUserBuilder {
+public abstract class UserBuilderImpl implements InitializableUserBuilder {
 
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^.{10,}$");
 
