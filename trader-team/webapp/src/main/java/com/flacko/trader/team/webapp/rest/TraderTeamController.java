@@ -71,7 +71,10 @@ public class TraderTeamController {
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, TraderTeamNotFoundException,
             MerchantNotFoundException, BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
             BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
-            MerchantMissingRequiredAttributeException {
+            MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
+            UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
+            NoEligibleTraderTeamsException {
         TraderTeamBuilder builder = traderTeamService.create();
         builder.withName(traderTeamCreateRequest.name())
                 .withUserId(traderTeamCreateRequest.userId())
@@ -91,7 +94,10 @@ public class TraderTeamController {
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
             BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
             BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
-            MerchantMissingRequiredAttributeException {
+            MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
+            UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
+            NoEligibleTraderTeamsException {
         TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
         builder.withArchived();
         TraderTeam traderTeam = builder.build();
@@ -104,7 +110,10 @@ public class TraderTeamController {
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
             BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
             BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
-            MerchantMissingRequiredAttributeException {
+            MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
+            UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
+            NoEligibleTraderTeamsException {
         TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
         builder.withIncomingOnline(true);
         TraderTeam traderTeam = builder.build();
@@ -117,7 +126,10 @@ public class TraderTeamController {
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
             BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
             BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
-            MerchantMissingRequiredAttributeException {
+            MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
+            UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
+            NoEligibleTraderTeamsException {
         TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
         builder.withIncomingOnline(false);
         TraderTeam traderTeam = builder.build();
@@ -130,7 +142,10 @@ public class TraderTeamController {
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
             BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
             BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
-            MerchantMissingRequiredAttributeException {
+            MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
+            UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
+            NoEligibleTraderTeamsException {
         TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
         builder.withOutgoingOnline(true);
         TraderTeam traderTeam = builder.build();
@@ -143,7 +158,10 @@ public class TraderTeamController {
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
             BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
             BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
-            MerchantMissingRequiredAttributeException {
+            MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
+            UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
+            NoEligibleTraderTeamsException {
         TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
         builder.withOutgoingOnline(false);
         TraderTeam traderTeam = builder.build();
@@ -156,7 +174,10 @@ public class TraderTeamController {
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
             BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
             BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
-            MerchantMissingRequiredAttributeException {
+            MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
+            UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
+            NoEligibleTraderTeamsException {
         TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
         builder.withKickedOut(true);
         TraderTeam traderTeam = builder.build();
@@ -169,7 +190,10 @@ public class TraderTeamController {
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
             BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
             BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
-            MerchantMissingRequiredAttributeException {
+            MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
+            UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
+            NoEligibleTraderTeamsException {
         TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
         builder.withKickedOut(false);
         TraderTeam traderTeam = builder.build();

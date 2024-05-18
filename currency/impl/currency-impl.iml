@@ -30,7 +30,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: com.flacko:currency-service:0.0.1-SNAPSHOT" level="project" />
+    <orderEntry type="module" module-name="currency-service" />
     <orderEntry type="module" module-name="common" />
     <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.17.2" level="project" />
     <orderEntry type="library" name="Maven: org.json:json:20240303" level="project" />

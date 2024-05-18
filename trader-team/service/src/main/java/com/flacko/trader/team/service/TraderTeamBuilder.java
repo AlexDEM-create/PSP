@@ -40,6 +40,6 @@ public interface TraderTeamBuilder {
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, TraderTeamNotFoundException,
             MerchantNotFoundException, BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
             BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
-            MerchantMissingRequiredAttributeException;
+            MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException, UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException, NoEligibleTraderTeamsException;
 
 }

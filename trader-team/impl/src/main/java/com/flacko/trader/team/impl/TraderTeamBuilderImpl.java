@@ -7,7 +7,9 @@ import com.flacko.common.country.Country;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.*;
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.operation.CrudOperation;
 import com.flacko.common.role.UserRole;
+import com.flacko.payment.service.outgoing.OutgoingPayment;
 import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamBuilder;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -38,9 +41,11 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
     private final OutgoingPaymentService outgoingPaymentService;
 
     private TraderTeamPojo.TraderTeamPojoBuilder pojoBuilder;
+    private CrudOperation crudOperation;
 
     @Override
     public TraderTeamBuilder initializeNew() {
+        crudOperation = CrudOperation.CREATE;
         pojoBuilder = TraderTeamPojo.builder()
                 .id(new IdGenerator().generateId())
                 .verified(false)
@@ -52,6 +57,7 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
 
     @Override
     public TraderTeamBuilder initializeExisting(TraderTeam existingTraderTeam) {
+        crudOperation = CrudOperation.UPDATE;
         pojoBuilder = TraderTeamPojo.builder()
                 .primaryKey(existingTraderTeam.getPrimaryKey())
                 .id(existingTraderTeam.getId())
@@ -166,24 +172,40 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
             TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, TraderTeamNotFoundException,
             MerchantNotFoundException, BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
             BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
-            MerchantMissingRequiredAttributeException {
+            MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
+            UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
+            NoEligibleTraderTeamsException {
         TraderTeamPojo traderTeam = pojoBuilder.build();
         validate(traderTeam);
         traderTeamRepository.save(traderTeam);
 
-        balanceService.create()
-                .withEntityId(traderTeam.getId())
-                .withEntityType(EntityType.TRADER_TEAM)
-                .withType(BalanceType.GENERIC)
-                .withCurrency(parseCurrency(traderTeam.getCountry()))
-                .build();
+        if (traderTeam.isKickedOut()) {
+            String login = userService.get(traderTeam.getUserId())
+                    .getLogin();
+            List<OutgoingPayment> outgoingPayments = outgoingPaymentService.list()
+                    .withTraderTeamId(traderTeam.getId())
+                    .build();
+            for (OutgoingPayment payment : outgoingPayments) {
+                outgoingPaymentService.reassignRandomTraderTeam(payment.getId(), login);
+            }
+        }
 
-        balanceService.create()
-                .withEntityId(traderTeam.getLeaderId())
-                .withEntityType(EntityType.TRADER_TEAM_LEADER)
-                .withType(BalanceType.GENERIC)
-                .withCurrency(parseCurrency(traderTeam.getCountry()))
-                .build();
+        if (crudOperation == CrudOperation.CREATE) {
+            balanceService.create()
+                    .withEntityId(traderTeam.getId())
+                    .withEntityType(EntityType.TRADER_TEAM)
+                    .withType(BalanceType.GENERIC)
+                    .withCurrency(parseCurrency(traderTeam.getCountry()))
+                    .build();
+
+            balanceService.create()
+                    .withEntityId(traderTeam.getLeaderId())
+                    .withEntityType(EntityType.TRADER_TEAM_LEADER)
+                    .withType(BalanceType.GENERIC)
+                    .withCurrency(parseCurrency(traderTeam.getCountry()))
+                    .build();
+        }
 
         return traderTeam;
     }

@@ -14,7 +14,6 @@ import com.flacko.payment.service.incoming.IncomingPayment;
 import com.flacko.payment.service.incoming.IncomingPaymentService;
 import com.flacko.payment.service.outgoing.OutgoingPayment;
 import com.flacko.payment.service.outgoing.OutgoingPaymentService;
-import com.flacko.trader.team.service.TraderTeamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -36,7 +35,6 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
     private final AppealRepository appealRepository;
     private final IncomingPaymentService incomingPaymentService;
     private final OutgoingPaymentService outgoingPaymentService;
-    private final TraderTeamService traderTeamService;
 
     private AppealPojo.AppealPojoBuilder pojoBuilder;
     private String id;

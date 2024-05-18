@@ -1,12 +1,7 @@
 package com.flacko.merchant.service;
 
 import com.flacko.common.country.Country;
-import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
-import com.flacko.common.exception.MerchantNotFoundException;
-import com.flacko.common.exception.TraderTeamNotFoundException;
-import com.flacko.common.exception.UserNotFoundException;
-import com.flacko.common.exception.MerchantInvalidFeeRateException;
-import com.flacko.common.exception.MerchantMissingRequiredAttributeException;
+import com.flacko.common.exception.*;
 
 import java.math.BigDecimal;
 
@@ -28,6 +23,6 @@ public interface MerchantBuilder {
 
     Merchant build() throws MerchantMissingRequiredAttributeException, UserNotFoundException,
             MerchantInvalidFeeRateException, TraderTeamNotFoundException, MerchantNotFoundException,
-            BalanceMissingRequiredAttributeException;
+            BalanceMissingRequiredAttributeException, BalanceInvalidCurrentBalanceException;
 
 }

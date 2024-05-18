@@ -5,15 +5,11 @@ import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
 import com.flacko.common.country.Country;
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
-import com.flacko.common.exception.MerchantNotFoundException;
-import com.flacko.common.exception.TraderTeamNotFoundException;
-import com.flacko.common.exception.UserNotFoundException;
+import com.flacko.common.exception.*;
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.operation.CrudOperation;
 import com.flacko.merchant.service.Merchant;
 import com.flacko.merchant.service.MerchantBuilder;
-import com.flacko.common.exception.MerchantInvalidFeeRateException;
-import com.flacko.common.exception.MerchantMissingRequiredAttributeException;
 import com.flacko.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -36,9 +32,11 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
     private final BalanceService balanceService;
 
     private MerchantPojo.MerchantPojoBuilder pojoBuilder;
+    private CrudOperation crudOperation;
 
     @Override
     public MerchantBuilder initializeNew() {
+        crudOperation = CrudOperation.CREATE;
         pojoBuilder = MerchantPojo.builder()
                 .id(new IdGenerator().generateId())
                 .outgoingTrafficStopped(false);
@@ -48,6 +46,7 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
 
     @Override
     public MerchantBuilder initializeExisting(Merchant existingMerchant) {
+        crudOperation = CrudOperation.UPDATE;
         pojoBuilder = MerchantPojo.builder()
                 .primaryKey(existingMerchant.getPrimaryKey())
                 .id(existingMerchant.getId())
@@ -108,24 +107,26 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
     @Override
     public Merchant build() throws MerchantMissingRequiredAttributeException, UserNotFoundException,
             MerchantInvalidFeeRateException, TraderTeamNotFoundException, MerchantNotFoundException,
-            BalanceMissingRequiredAttributeException {
+            BalanceMissingRequiredAttributeException, BalanceInvalidCurrentBalanceException {
         MerchantPojo merchant = pojoBuilder.build();
         validate(merchant);
         merchantRepository.save(merchant);
 
-        balanceService.create()
-                .withEntityId(merchant.getId())
-                .withEntityType(EntityType.MERCHANT)
-                .withType(BalanceType.INCOMING)
-                .withCurrency(parseCurrency(merchant.getCountry()))
-                .build();
+        if (crudOperation == CrudOperation.CREATE) {
+            balanceService.create()
+                    .withEntityId(merchant.getId())
+                    .withEntityType(EntityType.MERCHANT)
+                    .withType(BalanceType.INCOMING)
+                    .withCurrency(parseCurrency(merchant.getCountry()))
+                    .build();
 
-        balanceService.create()
-                .withEntityId(merchant.getId())
-                .withEntityType(EntityType.MERCHANT)
-                .withType(BalanceType.OUTGOING)
-                .withCurrency(parseCurrency(merchant.getCountry()))
-                .build();
+            balanceService.create()
+                    .withEntityId(merchant.getId())
+                    .withEntityType(EntityType.MERCHANT)
+                    .withType(BalanceType.OUTGOING)
+                    .withCurrency(parseCurrency(merchant.getCountry()))
+                    .build();
+        }
 
         return merchant;
     }
