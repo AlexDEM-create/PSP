@@ -1,9 +1,9 @@
 package com.flacko.merchant.webapp;
 
 import com.flacko.common.country.Country;
+import com.flacko.common.role.UserRole;
 import com.flacko.merchant.service.Merchant;
 import com.flacko.merchant.service.MerchantService;
-import com.flacko.user.service.UserRole;
 import com.flacko.user.service.UserService;
 import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;

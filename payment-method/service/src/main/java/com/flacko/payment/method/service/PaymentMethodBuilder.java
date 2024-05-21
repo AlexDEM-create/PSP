@@ -4,6 +4,7 @@ import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.TerminalNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.payment.method.service.exception.BankNotFoundException;
 import com.flacko.payment.method.service.exception.PaymentMethodInvalidBankCardNumberException;
 import com.flacko.payment.method.service.exception.PaymentMethodMissingRequiredAttributeException;
 
