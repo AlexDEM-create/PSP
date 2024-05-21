@@ -87,7 +87,7 @@ public class PaymentMethodListBuilderImpl implements PaymentMethodListBuilder {
         }
         if (traderTeamId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get("tradeTeamId"), traderTeamId.get()));
+                    criteriaBuilder.equal(root.get("traderTeamId"), traderTeamId.get()));
         }
         if (terminalId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
@@ -101,7 +101,7 @@ public class PaymentMethodListBuilderImpl implements PaymentMethodListBuilder {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("busy"), busy.get()));
         }
-        if (archived.isPresent()) {
+        if (archived.isPresent() && archived.get()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.isNotNull(root.get("deletedDate")));
         }

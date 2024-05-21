@@ -4,7 +4,7 @@ import com.flacko.balance.service.BalanceService;
 import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
 import com.flacko.common.country.Country;
-import com.flacko.common.currency.Currency;
+import com.flacko.common.currency.CurrencyParser;
 import com.flacko.common.exception.*;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.common.operation.CrudOperation;
@@ -175,7 +175,7 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
             MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
             UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
             PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
-            NoEligibleTraderTeamsException {
+            NoEligibleTraderTeamsException, MerchantInsufficientOutgoingBalanceException {
         TraderTeamPojo traderTeam = pojoBuilder.build();
         validate(traderTeam);
         traderTeamRepository.save(traderTeam);
@@ -196,14 +196,14 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
                     .withEntityId(traderTeam.getId())
                     .withEntityType(EntityType.TRADER_TEAM)
                     .withType(BalanceType.GENERIC)
-                    .withCurrency(parseCurrency(traderTeam.getCountry()))
+                    .withCurrency(CurrencyParser.parseCurrency(traderTeam.getCountry()))
                     .build();
 
             balanceService.create()
                     .withEntityId(traderTeam.getLeaderId())
                     .withEntityType(EntityType.TRADER_TEAM_LEADER)
                     .withType(BalanceType.GENERIC)
-                    .withCurrency(parseCurrency(traderTeam.getCountry()))
+                    .withCurrency(CurrencyParser.parseCurrency(traderTeam.getCountry()))
                     .build();
         }
 
@@ -258,13 +258,6 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
         if (pojo.isKickedOut() && (pojo.isIncomingOnline() || pojo.isOutgoingOnline())) {
             throw new TraderTeamNotAllowedOnlineException("Trader team is kicked out and cannot be online");
         }
-    }
-
-    private Currency parseCurrency(Country country) {
-        return switch (country) {
-            case RUSSIA -> Currency.RUB;
-            case UZBEKISTAN -> Currency.UZS;
-        };
     }
 
 }

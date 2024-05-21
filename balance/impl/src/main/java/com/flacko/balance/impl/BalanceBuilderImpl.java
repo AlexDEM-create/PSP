@@ -4,9 +4,11 @@ import com.flacko.balance.service.Balance;
 import com.flacko.balance.service.BalanceBuilder;
 import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
+import com.flacko.common.balance.BalanceLimit;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.*;
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.operation.CrudOperation;
 import com.flacko.merchant.service.Merchant;
 import com.flacko.merchant.service.MerchantBuilder;
 import com.flacko.merchant.service.MerchantService;
@@ -32,6 +34,7 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
     private final MerchantService merchantService;
 
     private BalancePojo.BalancePojoBuilder pojoBuilder;
+    private CrudOperation crudOperation;
     private BigDecimal currentBalance;
     private EntityType entityType;
     private String entityId;
@@ -40,6 +43,7 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
 
     @Override
     public BalanceBuilder initializeNew() {
+        crudOperation = CrudOperation.CREATE;
         currentBalance = BigDecimal.ZERO;
         pojoBuilder = BalancePojo.builder()
                 .id(new IdGenerator().generateId())
@@ -49,6 +53,7 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
 
     @Override
     public BalanceBuilder initializeExisting(Balance existingBalance) {
+        crudOperation = CrudOperation.UPDATE;
         pojoBuilder = BalancePojo.builder()
                 .primaryKey(existingBalance.getPrimaryKey())
                 .id(existingBalance.getId())
@@ -133,10 +138,14 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
         balanceRepository.save(balance);
 
         if (balance.getEntityType() == EntityType.MERCHANT && balance.getType() == BalanceType.OUTGOING) {
-            BigDecimal limit = getOutgoingTrafficStopLimit(currency);
+            BigDecimal limit = BalanceLimit.getOutgoingTrafficStopLimit(currency);
             if (currentBalance.compareTo(limit) < 0) {
                 MerchantBuilder merchantBuilder = merchantService.update(entityId);
                 merchantBuilder.withOutgoingTrafficStopped(true)
+                        .build();
+            } else {
+                MerchantBuilder merchantBuilder = merchantService.update(entityId);
+                merchantBuilder.withOutgoingTrafficStopped(false)
                         .build();
             }
         }
@@ -172,14 +181,6 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
         if (pojo.getCurrency() == null) {
             throw new BalanceMissingRequiredAttributeException("currency", Optional.of(pojo.getId()));
         }
-    }
-
-    private BigDecimal getOutgoingTrafficStopLimit(Currency currency) {
-        return switch (currency) {
-            case RUB -> BigDecimal.valueOf(50000);
-            case USDT -> BigDecimal.valueOf(500);
-            case UZS -> BigDecimal.valueOf(6500000);
-        };
     }
 
 }

@@ -56,7 +56,7 @@ public class UserListBuilderImpl implements UserListBuilder {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("role"), role.get()));
         }
-        if (archived.isPresent()) {
+        if (archived.isPresent() && archived.get()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.isNotNull(root.get("deletedDate")));
         }

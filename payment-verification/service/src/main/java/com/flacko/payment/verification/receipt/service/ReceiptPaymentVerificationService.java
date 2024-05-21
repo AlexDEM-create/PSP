@@ -19,6 +19,6 @@ public interface ReceiptPaymentVerificationService {
             OutgoingPaymentNotFoundException, PaymentMethodNotFoundException, TraderTeamNotFoundException,
             BalanceNotFoundException, MerchantNotFoundException, BalanceMissingRequiredAttributeException,
             OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
-            OutgoingPaymentInvalidAmountException;
+            OutgoingPaymentInvalidAmountException, UserNotFoundException, BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException, MerchantInsufficientOutgoingBalanceException;
 
 }

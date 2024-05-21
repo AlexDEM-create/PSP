@@ -12,6 +12,6 @@ public interface OutgoingPaymentService {
 
     OutgoingPayment get(String id) throws OutgoingPaymentNotFoundException;
 
-    OutgoingPayment reassignRandomTraderTeam(String id, String login) throws TraderTeamNotFoundException, OutgoingPaymentNotFoundException, UnauthorizedAccessException, NoEligibleTraderTeamsException, OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException, UserNotFoundException;
+    OutgoingPayment reassignRandomTraderTeam(String id, String login) throws TraderTeamNotFoundException, OutgoingPaymentNotFoundException, UnauthorizedAccessException, NoEligibleTraderTeamsException, OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException, UserNotFoundException, MerchantInsufficientOutgoingBalanceException;
 
 }

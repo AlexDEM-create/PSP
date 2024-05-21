@@ -100,7 +100,7 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("country"), country.get()));
         }
-        if (archived.isPresent()) {
+        if (archived.isPresent() && archived.get()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.isNotNull(root.get("deletedDate")));
         }

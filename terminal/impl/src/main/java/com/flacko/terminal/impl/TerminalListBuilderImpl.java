@@ -77,7 +77,7 @@ public class TerminalListBuilderImpl implements TerminalListBuilder {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("online"), online.get()));
         }
-        if (archived.isPresent()) {
+        if (archived.isPresent() && archived.get()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.isNotNull(root.get("deletedDate")));
         }

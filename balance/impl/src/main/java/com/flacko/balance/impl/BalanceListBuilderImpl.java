@@ -56,7 +56,7 @@ public class BalanceListBuilderImpl implements BalanceListBuilder {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("entityType"), entityType.get()));
         }
-        if (archived.isPresent()) {
+        if (archived.isPresent() && archived.get()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.isNotNull(root.get("deletedDate")));
         }

@@ -20,9 +20,8 @@ import java.util.Map;
 public class SberPhoneNumberInternalReceiptValidator implements ReceiptValidator {
 
     private static final String DATETIME = "datetime";
-    private static final String RECIPIENT_CARD_LAST_FOUR_DIGITS = "recipient_card_last_four_digits";
+    private static final String RECIPIENT_PHONE_NUMBER = "recipient_phone_number";
     private static final String SENDER_FULL_NAME = "sender_full_name";
-    private static final String SENDER_CARD_LAST_FOUR_DIGITS = "sender_card_last_four_digits";
     private static final String AMOUNT = "amount";
     private static final String AMOUNT_CURRENCY = "amount_currency";
 
@@ -40,25 +39,15 @@ public class SberPhoneNumberInternalReceiptValidator implements ReceiptValidator
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
         }
-        if (extractedData.containsKey(SENDER_CARD_LAST_FOUR_DIGITS)) {
-            String paymentMethodLastFourDigits = paymentMethod.getNumber()
-                    .substring(paymentMethod.getNumber().length() - 4);
-            if (!extractedData.get(SENDER_CARD_LAST_FOUR_DIGITS).equals(paymentMethodLastFourDigits)) {
-                log.warn("Sender card last 4 digits don't match for outgoing payment {}. " +
-                                "Expected card last 4 digits: {}, actual card last 4 digits: {}",
-                        outgoingPayment.getId(), paymentMethodLastFourDigits,
-                        extractedData.get(SENDER_CARD_LAST_FOUR_DIGITS));
-                throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
-            }
-        }
-        if (extractedData.containsKey(RECIPIENT_CARD_LAST_FOUR_DIGITS)) {
-            String outgoingPaymentLastFourDigits = outgoingPayment.getRecipient()
-                    .substring(outgoingPayment.getRecipient().length() - 4);
-            if (!extractedData.get(RECIPIENT_CARD_LAST_FOUR_DIGITS).equals(outgoingPaymentLastFourDigits)) {
-                log.warn("Recipient card last 4 digits don't match for outgoing payment {}. " +
-                                "Expected card last 4 digits: {}, actual card last 4 digits: {}",
-                        outgoingPayment.getId(), outgoingPaymentLastFourDigits,
-                        extractedData.get(RECIPIENT_CARD_LAST_FOUR_DIGITS));
+        if (extractedData.containsKey(RECIPIENT_PHONE_NUMBER)) {
+            String outgoingPaymentRecipient = sanitizePhoneNumber(outgoingPayment.getRecipient());
+            String extractedRecipientPhoneNumber =
+                    sanitizePhoneNumber(extractedData.get(RECIPIENT_PHONE_NUMBER).toString());
+            if (!extractedRecipientPhoneNumber.equals(outgoingPaymentRecipient)) {
+                log.warn("Recipient phone number don't match for outgoing payment {}. " +
+                                "Expected phone number: {}, phone number: {}",
+                        outgoingPayment.getId(), outgoingPaymentRecipient,
+                        extractedRecipientPhoneNumber);
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
         }
@@ -94,6 +83,15 @@ public class SberPhoneNumberInternalReceiptValidator implements ReceiptValidator
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm:ss (zzz)", Locale.of("ru"));
         ZonedDateTime zonedDateTime = ZonedDateTime.parse(inputDatetime, formatter);
         return zonedDateTime.withZoneSameInstant(ZoneOffset.UTC).toInstant();
+    }
+
+    private String sanitizePhoneNumber(String phoneNumber) {
+        return phoneNumber
+                .replaceAll(" ", "")
+                .replaceAll("\\+", "")
+                .replaceAll("-", "")
+                .replaceAll("\\(", "")
+                .replaceAll("\\)", "");
     }
 
 }
