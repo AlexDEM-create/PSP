@@ -1,11 +1,12 @@
-package impl;
+package com.flacko.reporting.impl;
 
-import service.Stats;
-import service.StatsBuilder;
+import com.flacko.reporting.service.Stats;
+import com.flacko.reporting.service.StatsBuilder;
 
 public interface InitializableStatsBuilder extends StatsBuilder {
 
     StatsBuilder initializeNew();
 
     StatsBuilder initializeExisting(Stats existingStats);
+
 }

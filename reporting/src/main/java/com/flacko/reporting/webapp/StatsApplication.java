@@ -1,4 +1,4 @@
-package com.flacko.reporting;
+package com.flacko.reporting.webapp;
 
 import com.flacko.security.AuthorizationConfig;
 import com.flacko.security.SecurityConfig;
@@ -17,10 +17,10 @@ import java.util.TimeZone;
 @EnableJpaRepositories(basePackages = {"com.flacko"})
 @EntityScan(basePackages = {"com.flacko"})
 @ComponentScan(basePackages = {"com.flacko"})
-public class ReportingApplication {
+public class StatsApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ReportingApplication.class, args);
+        SpringApplication.run(StatsApplication.class, args);
     }
 
     @PostConstruct

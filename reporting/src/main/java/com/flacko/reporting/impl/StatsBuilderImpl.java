@@ -1,5 +1,4 @@
-package impl;
-
+package com.flacko.reporting.impl;
 
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -10,10 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import service.EntityType;
-import service.Stats;
-import service.StatsBuilder;
-import service.exception.StatsMissingRequiredAttributeException;
+import com.flacko.reporting.service.EntityType;
+import com.flacko.reporting.service.Stats;
+import com.flacko.reporting.service.StatsBuilder;
+import com.flacko.reporting.service.exception.StatsMissingRequiredAttributeException;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -24,30 +23,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class StatsBuilderImpl implements InitializableStatsBuilder {
 
-    private final Instant now = Instant.now();
-
     private final StatsRepository statsRepository;
     private final TraderTeamService traderTeamService;
     private final MerchantService merchantService;
 
-    private StatsPojo pojoBuilder;
-    private BigDecimal todayOutgoingTotal;
-    private BigDecimal todayIncomingTotal;
-    private BigDecimal allTimeOutgoingTotal;
-    private BigDecimal allTimeIncomingTotal;
+    private StatsPojo.StatsPojoBuilder pojoBuilder;
 
     @Override
     public StatsBuilder initializeNew() {
-        todayOutgoingTotal = BigDecimal.ZERO;
-        todayIncomingTotal = BigDecimal.ZERO;
-        allTimeOutgoingTotal = BigDecimal.ZERO;
-        allTimeIncomingTotal = BigDecimal.ZERO;
         pojoBuilder = StatsPojo.builder()
                 .id(new IdGenerator().generateId())
-                .todayOutgoingTotal(todayOutgoingTotal)
-                .todayIncomingTotal(todayIncomingTotal)
-                .allTimeOutgoingTotal(allTimeOutgoingTotal)
-                .allTimeIncomingTotal(allTimeIncomingTotal).build();
+                .todayOutgoingTotal(BigDecimal.ZERO)
+                .todayIncomingTotal(BigDecimal.ZERO)
+                .allTimeOutgoingTotal(BigDecimal.ZERO)
+                .allTimeIncomingTotal(BigDecimal.ZERO);
         return this;
     }
 
@@ -61,48 +50,52 @@ public class StatsBuilderImpl implements InitializableStatsBuilder {
                 .todayOutgoingTotal(existingStats.getTodayOutgoingTotal())
                 .todayIncomingTotal(existingStats.getTodayIncomingTotal())
                 .allTimeOutgoingTotal(existingStats.getAllTimeOutgoingTotal())
-                .allTimeIncomingTotal(existingStats.getAllTimeIncomingTotal()).build();
+                .allTimeIncomingTotal(existingStats.getAllTimeIncomingTotal())
+                .createdDate(existingStats.getCreatedDate())
+                .updatedDate(Instant.now());
         return this;
     }
+
     @Override
     public StatsBuilder withEntityId(String entityId) {
-        pojoBuilder.setEntityId(entityId);
+        pojoBuilder.entityId(entityId);
         return this;
     }
 
     @Override
     public StatsBuilder withEntityType(EntityType entityType) {
-        pojoBuilder.setEntityType(entityType);
-        return this;
-    }
-    @Override
-    public StatsBuilder withTodayOutgoingTotal(BigDecimal amount) {
-        pojoBuilder.setTodayOutgoingTotal(amount);
+        pojoBuilder.entityType(entityType);
         return this;
     }
 
     @Override
-    public StatsBuilder withTodayIncomingTotal(BigDecimal amount) {
-        pojoBuilder.setTodayIncomingTotal(amount);
+    public StatsBuilder withTodayOutgoingTotal(BigDecimal todayOutgoingTotal) {
+        pojoBuilder.todayOutgoingTotal(todayOutgoingTotal);
         return this;
     }
 
     @Override
-    public StatsBuilder withAllTimeOutgoingTotal(BigDecimal amount) {
-        pojoBuilder.setAllTimeOutgoingTotal(amount);
+    public StatsBuilder withTodayIncomingTotal(BigDecimal todayIncomingTotal) {
+        pojoBuilder.todayIncomingTotal(todayIncomingTotal);
         return this;
     }
 
     @Override
-    public StatsBuilder withAllTimeIncomingTotal(BigDecimal amount) {
-        pojoBuilder.setAllTimeIncomingTotal(amount);
+    public StatsBuilder withAllTimeOutgoingTotal(BigDecimal allTimeOutgoingTotal) {
+        pojoBuilder.allTimeOutgoingTotal(allTimeOutgoingTotal);
+        return this;
+    }
+
+    @Override
+    public StatsBuilder withAllTimeIncomingTotal(BigDecimal allTimeIncomingTotal) {
+        pojoBuilder.allTimeIncomingTotal(allTimeIncomingTotal);
         return this;
     }
 
     @Override
     public Stats build() throws StatsMissingRequiredAttributeException, TraderTeamNotFoundException,
             MerchantNotFoundException {
-        StatsPojo stats = pojoBuilder.toBuilder().build();
+        StatsPojo stats = pojoBuilder.build();
         validate(stats);
         statsRepository.save(stats);
         return stats;
@@ -124,10 +117,18 @@ public class StatsBuilderImpl implements InitializableStatsBuilder {
         } else if (pojo.getEntityType() == EntityType.TRADER_TEAM) {
             traderTeamService.get(pojo.getEntityId());
         }
-        if (pojo.getTodayOutgoingTotal() == null || pojo.getTodayIncomingTotal() == null ||
-                pojo.getAllTimeOutgoingTotal() == null || pojo.getAllTimeIncomingTotal() == null) {
-            throw new StatsMissingRequiredAttributeException("payment totals", Optional.of(pojo.getId()));
+        if (pojo.getTodayOutgoingTotal() == null) {
+            throw new StatsMissingRequiredAttributeException("todayOutgoingTotal", Optional.of(pojo.getId()));
+        }
+        if (pojo.getTodayIncomingTotal() == null) {
+            throw new StatsMissingRequiredAttributeException("todayIncomingTotal", Optional.of(pojo.getId()));
+        }
+        if (pojo.getAllTimeOutgoingTotal() == null) {
+            throw new StatsMissingRequiredAttributeException("allTimeOutgoingTotal", Optional.of(pojo.getId()));
+        }
+        if (pojo.getAllTimeIncomingTotal() == null) {
+            throw new StatsMissingRequiredAttributeException("allTimeIncomingTotal", Optional.of(pojo.getId()));
         }
     }
-}
 
+}

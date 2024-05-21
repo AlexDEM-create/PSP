@@ -1,4 +1,4 @@
-package service.exception;
+package com.flacko.reporting.service.exception;
 
 import com.flacko.common.exception.NotFoundException;
 

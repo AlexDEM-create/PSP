@@ -1,6 +1,6 @@
-package service;
+package com.flacko.reporting.service;
 
-import service.exception.StatsNotFoundException;
+import com.flacko.reporting.service.exception.StatsNotFoundException;
 
 public interface StatsService {
 

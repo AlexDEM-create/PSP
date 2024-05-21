@@ -1,8 +1,7 @@
-package webapp.rest;
+package com.flacko.reporting.webapp.rest;
 
 import org.springframework.stereotype.Component;
-import service.Stats;
-import webapp.rest.StatsResponse;
+import com.flacko.reporting.service.Stats;
 
 import java.time.ZoneId;
 

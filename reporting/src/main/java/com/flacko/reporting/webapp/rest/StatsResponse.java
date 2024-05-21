@@ -1,7 +1,7 @@
-package webapp.rest;
+package com.flacko.reporting.webapp.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import service.EntityType;
+import com.flacko.reporting.service.EntityType;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;

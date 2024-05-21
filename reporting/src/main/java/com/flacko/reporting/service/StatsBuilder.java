@@ -1,9 +1,8 @@
-package service;
+package com.flacko.reporting.service;
 
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
-import service.EntityType;
-import service.exception.StatsMissingRequiredAttributeException;
+import com.flacko.reporting.service.exception.StatsMissingRequiredAttributeException;
 
 import java.math.BigDecimal;
 
@@ -13,13 +12,13 @@ public interface StatsBuilder {
 
     StatsBuilder withEntityType(EntityType entityType);
 
-    StatsBuilder withTodayOutgoingTotal(BigDecimal amount);
+    StatsBuilder withTodayOutgoingTotal(BigDecimal todayOutgoingTotal);
 
-    StatsBuilder withTodayIncomingTotal(BigDecimal amount);
+    StatsBuilder withTodayIncomingTotal(BigDecimal todayIncomingTotal);
 
-    StatsBuilder withAllTimeOutgoingTotal(BigDecimal amount);
+    StatsBuilder withAllTimeOutgoingTotal(BigDecimal allTimeOutgoingTotal);
 
-    StatsBuilder withAllTimeIncomingTotal(BigDecimal amount);
+    StatsBuilder withAllTimeIncomingTotal(BigDecimal allTimeIncomingTotal);
 
     Stats build() throws StatsMissingRequiredAttributeException, MerchantNotFoundException,
             TraderTeamNotFoundException;

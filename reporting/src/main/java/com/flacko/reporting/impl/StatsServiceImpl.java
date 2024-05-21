@@ -1,4 +1,4 @@
-package impl;
+package com.flacko.reporting.impl;
 
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -16,12 +16,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import service.EntityType;
-import service.Stats;
-import service.StatsBuilder;
-import service.StatsService;
-import service.exception.StatsMissingRequiredAttributeException;
-import service.exception.StatsNotFoundException;
+import com.flacko.reporting.service.EntityType;
+import com.flacko.reporting.service.Stats;
+import com.flacko.reporting.service.StatsBuilder;
+import com.flacko.reporting.service.StatsService;
+import com.flacko.reporting.service.exception.StatsMissingRequiredAttributeException;
+import com.flacko.reporting.service.exception.StatsNotFoundException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -1,4 +1,4 @@
-package service.exception;
+package com.flacko.reporting.service.exception;
 
 import com.flacko.common.exception.NotFoundException;
 import org.springframework.http.HttpStatus;
@@ -18,4 +18,5 @@ public class StatsExceptionHandler {
     public ResponseEntity<String> handleException(Exception e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
+
 }

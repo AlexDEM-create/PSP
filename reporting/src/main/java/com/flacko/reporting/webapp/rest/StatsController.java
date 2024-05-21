@@ -1,13 +1,13 @@
-package webapp.rest;
+package com.flacko.reporting.webapp.rest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import service.EntityType;
-import service.StatsService;
-import service.exception.StatsNotFoundException;
+import com.flacko.reporting.service.EntityType;
+import com.flacko.reporting.service.StatsService;
+import com.flacko.reporting.service.exception.StatsNotFoundException;
 
 @RestController
 @RequiredArgsConstructor

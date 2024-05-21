@@ -1,50 +1,52 @@
-package com.flacko.stats;
+package com.flacko.reporting.webapp;
 
-import com.flacko.appeal.service.AppealService;
-import com.flacko.bank.service.BankService;
+import com.flacko.common.bank.Bank;
 import com.flacko.common.country.Country;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.role.UserRole;
 import com.flacko.common.state.PaymentState;
+import com.flacko.merchant.service.MerchantService;
 import com.flacko.payment.method.service.PaymentMethodService;
-import com.flacko.payment.method.service.PaymentMethodType;
 import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeamService;
+import com.flacko.user.service.User;
 import com.flacko.user.service.UserService;
+import com.flacko.reporting.impl.StatsServiceImpl;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import impl.StatsServiceImpl;
-import com.flacko.merchant.service.MerchantService;
-import com.flacko.payment.service.incoming.IncomingPayment;
-import com.flacko.payment.service.incoming.IncomingPaymentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
-import service.EntityType;
-import service.Stats;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+import com.flacko.reporting.service.EntityType;
+import com.flacko.reporting.service.Stats;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 public class StatsControllerTests {
 
     @InjectMocks
@@ -52,12 +54,6 @@ public class StatsControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private AppealService appealService;
-
-    @Autowired
-    private IncomingPaymentService incomingPaymentService;
 
     @Autowired
     private OutgoingPaymentService outgoingPaymentService;
@@ -75,12 +71,8 @@ public class StatsControllerTests {
     private UserService userService;
 
     @Autowired
-    private BankService bankService;
-
-    @Autowired
     private TerminalService terminalService;
 
-    private String incomingPaymentId;
     private String outgoingPaymentId;
     private String merchantId;
     private String traderTeamId;
@@ -88,16 +80,15 @@ public class StatsControllerTests {
 
     @BeforeEach
     public void setup() throws Exception {
-        String merchantUserId = userService.create()
+        User merchantUser = userService.create()
                 .withLogin(RandomStringUtils.randomAlphanumeric(10))
                 .withPassword("qwerty123456")
                 .withRole(UserRole.MERCHANT)
-                .build()
-                .getId();
+                .build();
 
         merchantId = merchantService.create()
                 .withName("test_merchant")
-                .withUserId(merchantUserId)
+                .withUserId(merchantUser.getId())
                 .withCountry(Country.RUSSIA)
                 .withIncomingFeeRate(BigDecimal.valueOf(0.02))
                 .withOutgoingFeeRate(BigDecimal.valueOf(0.02))
@@ -129,12 +120,6 @@ public class StatsControllerTests {
                 .build()
                 .getId();
 
-        String bankId = bankService.create()
-                .withName("test_bank")
-                .withCountry(Country.RUSSIA)
-                .build()
-                .getId();
-
         String terminalId = terminalService.create()
                 .withTraderTeamId(traderTeamId)
                 .withVerified()
@@ -144,63 +129,18 @@ public class StatsControllerTests {
                 .getId();
 
         paymentMethodId = paymentMethodService.create()
-                .withType(PaymentMethodType.BANK_CARD)
                 .withNumber("1234567812345678")
-                .withHolderName("John Grey")
+                .withFirstName("John")
+                .withLastName("Grey")
                 .withCurrency(Currency.RUB)
-                .withBankId(bankId)
+                .withBank(Bank.SBER)
                 .withTraderTeamId(traderTeamId)
                 .withTerminalId(terminalId)
                 .build()
                 .getId();
 
-        String incomingPaymentId1 = incomingPaymentService.create()
-                .withMerchantId(merchantId)
-                .withTraderTeamId(traderTeamId)
-                .withPaymentMethodId(paymentMethodId)
-                .withAmount(BigDecimal.valueOf(5000))
-                .withCurrency(Currency.RUB)
-                .withState(PaymentState.VERIFYING)
-                .build()
-                .getId();
-
-        incomingPaymentService.update(incomingPaymentId1)
-                .withState(PaymentState.FAILED_TO_VERIFY)
-                .build();
-
-        String incomingPaymentId2 = incomingPaymentService.create()
-                .withMerchantId(merchantId)
-                .withTraderTeamId(traderTeamId)
-                .withPaymentMethodId(paymentMethodId)
-                .withAmount(BigDecimal.valueOf(6000)) // Измененная сумма
-                .withCurrency(Currency.RUB)
-                .withState(PaymentState.VERIFYING)
-                .build()
-                .getId();
-
-        incomingPaymentService.update(incomingPaymentId2)
-                .withState(PaymentState.VERIFIED) // Измененный статус
-                .build();
-
-
-        String incomingPaymentId3 = incomingPaymentService.create()
-                .withMerchantId(merchantId)
-                .withTraderTeamId(traderTeamId)
-                .withPaymentMethodId(paymentMethodId)
-                .withAmount(BigDecimal.valueOf(7000)) // Измененная сумма
-                .withCurrency(Currency.RUB)
-                .withState(PaymentState.VERIFYING)
-                .build()
-                .getId();
-
-        incomingPaymentService.update(incomingPaymentId3)
-                .withState(PaymentState.VERIFIED) // Измененный статус
-                .build();
-
-
-        outgoingPaymentId = outgoingPaymentService.create()
-                .withMerchantId(merchantId)
-                .withTraderTeamId(traderTeamId)
+        outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
+                .withRandomTraderTeamId()
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(10000))
                 .withCurrency(Currency.RUB)
@@ -211,9 +151,8 @@ public class StatsControllerTests {
         outgoingPaymentService.update(outgoingPaymentId)
                 .withState(PaymentState.FAILED_TO_VERIFY)
                 .build();
-
-
     }
+
     @Test
     public void testGetStatsForTraderTeam() throws Exception {
         Stats stats = statsService.create()
@@ -254,6 +193,17 @@ public class StatsControllerTests {
                 .andExpect((ResultMatcher) jsonPath("$.all_time_incoming_total").value(stats.getAllTimeIncomingTotal()))
                 .andExpect((ResultMatcher) jsonPath("$.created_date").isNotEmpty())
                 .andExpect((ResultMatcher) jsonPath("$.updated_date").isNotEmpty());
+    }
+
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public MockMvc mockMvc(WebApplicationContext webApplicationContext) {
+            return MockMvcBuilders
+                    .webAppContextSetup(webApplicationContext)
+                    .apply(springSecurity())
+                    .build();
+        }
     }
 
 }

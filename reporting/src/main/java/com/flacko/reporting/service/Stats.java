@@ -1,4 +1,4 @@
-package service;
+package com.flacko.reporting.service;
 
 
 import java.math.BigDecimal;

@@ -1,4 +1,4 @@
-package impl;
+package com.flacko.reporting.impl;
 
 
 import jakarta.persistence.*;
@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import service.EntityType;
-import service.Stats;
+import com.flacko.reporting.service.EntityType;
+import com.flacko.reporting.service.Stats;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -22,7 +22,7 @@ public class StatsPojo implements Stats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "stats_id", nullable = false)
+    @Column(name = "primary_key", nullable = false)
     private Long primaryKey;
 
     @Column(nullable = false)
@@ -53,12 +53,10 @@ public class StatsPojo implements Stats {
     @Column(name = "updated_date", nullable = false)
     private Instant updatedDate;
 
-    @Version
-    private int version;
-
-    @SuppressWarnings("unused")
-    @PreUpdate
+    @PrePersist
     public void preUpdate() {
-        this.updatedDate = Instant.now();
+        createdDate = Instant.now();
+        updatedDate = createdDate;
     }
+
 }
