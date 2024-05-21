@@ -57,6 +57,7 @@
     <orderEntry type="module" module-name="payment-service" />
     <orderEntry type="module" module-name="payment-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="user-impl" scope="RUNTIME" />
+    <orderEntry type="module" module-name="balance-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="terminal-service" scope="TEST" />
     <orderEntry type="module" module-name="payment-method-impl" scope="TEST" />
     <orderEntry type="module" module-name="terminal-impl" scope="TEST" />
