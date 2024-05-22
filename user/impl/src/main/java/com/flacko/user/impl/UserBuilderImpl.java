@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @RequiredArgsConstructor
-public abstract class UserBuilderImpl implements InitializableUserBuilder {
+public class UserBuilderImpl implements InitializableUserBuilder {
 
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^.{10,}$");
 

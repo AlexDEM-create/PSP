@@ -4,8 +4,10 @@ import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.*;
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.operation.CrudOperation;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
+import com.flacko.merchant.service.Merchant;
 import com.flacko.merchant.service.MerchantService;
 import com.flacko.payment.method.service.PaymentMethodService;
 import com.flacko.payment.service.outgoing.OutgoingPayment;
@@ -34,11 +36,13 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
     private final PaymentMethodService paymentMethodService;
 
     private OutgoingPaymentPojo.OutgoingPaymentPojoBuilder pojoBuilder;
+    private CrudOperation crudOperation;
     private String id;
     private PaymentState currentState;
 
     @Override
     public OutgoingPaymentBuilder initializeNew(String login) throws UserNotFoundException, MerchantNotFoundException {
+        crudOperation = CrudOperation.CREATE;
         String merchantId = merchantService.getMy(login)
                 .getId();
         id = new IdGenerator().generateId();
@@ -52,6 +56,7 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
 
     @Override
     public OutgoingPaymentBuilder initializeExisting(OutgoingPayment existingOutgoingPayment) {
+        crudOperation = CrudOperation.UPDATE;
         pojoBuilder = OutgoingPaymentPojo.builder()
                 .primaryKey(existingOutgoingPayment.getPrimaryKey())
                 .id(existingOutgoingPayment.getId())
@@ -134,7 +139,7 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
     @Override
     public OutgoingPayment build() throws OutgoingPaymentMissingRequiredAttributeException,
             TraderTeamNotFoundException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException,
-            MerchantNotFoundException {
+            MerchantNotFoundException, MerchantInsufficientOutgoingBalanceException {
         OutgoingPaymentPojo payment = pojoBuilder.build();
         validate(payment);
         outgoingPaymentRepository.save(payment);
@@ -143,14 +148,17 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
 
     private void validate(OutgoingPaymentPojo pojo) throws OutgoingPaymentMissingRequiredAttributeException,
             MerchantNotFoundException, TraderTeamNotFoundException, PaymentMethodNotFoundException,
-            OutgoingPaymentInvalidAmountException {
+            OutgoingPaymentInvalidAmountException, MerchantInsufficientOutgoingBalanceException {
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new OutgoingPaymentMissingRequiredAttributeException("id", Optional.empty());
         }
         if (pojo.getMerchantId() == null || pojo.getMerchantId().isBlank()) {
             throw new OutgoingPaymentMissingRequiredAttributeException("merchantId", Optional.of(pojo.getId()));
         } else {
-            merchantService.get(pojo.getMerchantId());
+            Merchant merchant = merchantService.get(pojo.getMerchantId());
+            if (crudOperation == CrudOperation.CREATE && merchant.isOutgoingTrafficStopped()) {
+                throw new MerchantInsufficientOutgoingBalanceException(merchant.getId(), merchant.getCountry());
+            }
         }
         if (pojo.getTraderTeamId() == null || pojo.getTraderTeamId().isBlank()) {
             throw new OutgoingPaymentMissingRequiredAttributeException("traderTeamId", Optional.of(pojo.getId()));

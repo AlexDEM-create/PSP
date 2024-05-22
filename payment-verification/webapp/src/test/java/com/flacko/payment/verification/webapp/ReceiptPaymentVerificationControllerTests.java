@@ -52,7 +52,8 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 @ActiveProfiles("test")
 class ReceiptPaymentVerificationControllerTests {
 
-    private static final BigDecimal AMOUNT = BigDecimal.valueOf(3000);
+    private static final BigDecimal AMOUNT_1 = BigDecimal.valueOf(3000);
+    private static final BigDecimal AMOUNT_2 = BigDecimal.valueOf(42000);
 
     @Autowired
     private MockMvc mockMvc;
@@ -78,18 +79,18 @@ class ReceiptPaymentVerificationControllerTests {
     @Autowired
     private BalanceService balanceService;
 
-    private String outgoingPaymentId;
     private String merchantId;
     private BigDecimal merchantOutgoingFeeRate;
     private String traderTeamId;
     private String traderTeamLeaderId;
     private BigDecimal traderOutgoingFeeRate;
     private BigDecimal leaderOutgoingFeeRate;
-    private String paymentMethodId;
+    private String terminalId;
+    private User merchantUser;
 
     @BeforeEach
     public void setup() throws Exception {
-        User merchantUser = userService.create()
+         merchantUser = userService.create()
                 .withLogin(RandomStringUtils.randomAlphanumeric(10))
                 .withPassword("qwerty123456")
                 .withRole(UserRole.MERCHANT)
@@ -128,34 +129,50 @@ class ReceiptPaymentVerificationControllerTests {
                 .withTraderOutgoingFeeRate(BigDecimal.valueOf(0.018))
                 .withLeaderIncomingFeeRate(BigDecimal.valueOf(0.002))
                 .withLeaderOutgoingFeeRate(BigDecimal.valueOf(0.002))
+                .withVerified()
+                .withOutgoingOnline(true)
                 .build();
         traderTeamId = traderTeam.getId();
         traderOutgoingFeeRate = traderTeam.getTraderOutgoingFeeRate();
         leaderOutgoingFeeRate = traderTeam.getLeaderOutgoingFeeRate();
 
-        String terminalId = terminalService.create()
+        terminalId = terminalService.create()
                 .withTraderTeamId(traderTeamId)
                 .withVerified()
                 .withModel("Xiaomi")
                 .withOperatingSystem("Android")
                 .build()
                 .getId();
+    }
 
-        paymentMethodId = paymentMethodService.create()
-                .withNumber("1234567812347614")
+    @Test
+    public void testSberBankCardInternalReceiptPaymentVerification() throws Exception {
+        String paymentMethodId = paymentMethodService.create()
+                .withNumber("1234567812345678")
                 .withFirstName("Danil")
                 .withLastName("Grey")
                 .withCurrency(Currency.RUB)
                 .withBank(Bank.SBER)
                 .withTraderTeamId(traderTeamId)
                 .withTerminalId(terminalId)
+                .withEnabled(true)
                 .build()
                 .getId();
 
-        outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
+        BigDecimal deposit = BigDecimal.valueOf(60000);
+        BigDecimal initialMerchantOutgoingBalance =
+                balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.OUTGOING)
+                        .deposit(deposit)
+                        .build()
+                        .getCurrentBalance();
+        assertThat(initialMerchantOutgoingBalance)
+                .isEqualByComparingTo(deposit.subtract(deposit.multiply(merchantOutgoingFeeRate)))
+                .isEqualByComparingTo(BigDecimal.valueOf(57000));
+
+        String outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
                 .withRandomTraderTeamId()
                 .withPaymentMethodId(paymentMethodId)
-                .withAmount(AMOUNT)
+                .withAmount(AMOUNT_1)
                 .withCurrency(Currency.RUB)
                 .withRecipient("1234 5678 1234 9398")
                 .withBank(Bank.SBER)
@@ -164,19 +181,6 @@ class ReceiptPaymentVerificationControllerTests {
                 .withState(PaymentState.VERIFYING)
                 .build()
                 .getId();
-    }
-
-    @Test
-    public void testSberBankCardInternalReceiptPaymentVerification() throws Exception {
-        BigDecimal deposit = BigDecimal.valueOf(5000);
-        BigDecimal initialMerchantOutgoingBalance =
-                balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.OUTGOING)
-                        .deposit(deposit)
-                        .build()
-                        .getCurrentBalance();
-        assertThat(initialMerchantOutgoingBalance)
-                .isEqualByComparingTo(deposit.subtract(deposit.multiply(merchantOutgoingFeeRate)))
-                .isEqualByComparingTo(BigDecimal.valueOf(4750));
 
         BigDecimal initialTraderTeamBalance =
                 balanceService.get(traderTeamId, EntityType.TRADER_TEAM, BalanceType.GENERIC)
@@ -188,8 +192,8 @@ class ReceiptPaymentVerificationControllerTests {
                         .getCurrentBalance();
         assertThat(initialTraderTeamLeaderBalance).isEqualByComparingTo(BigDecimal.ZERO);
 
-        InputStream inputStream = new ClassPathResource("test/sber_receipt_example.pdf").getInputStream();
-        MockMultipartFile file = new MockMultipartFile("file", "sber_receipt_example.pdf",
+        InputStream inputStream = new ClassPathResource("test/sber_receipt_1.pdf").getInputStream();
+        MockMultipartFile file = new MockMultipartFile("file", "sber_receipt_1.pdf",
                 MediaType.APPLICATION_PDF_VALUE, inputStream);
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/payment-verifications/receipts")
@@ -205,24 +209,105 @@ class ReceiptPaymentVerificationControllerTests {
                 balanceService.get(merchantId, EntityType.MERCHANT, BalanceType.OUTGOING)
                         .getCurrentBalance();
         assertThat(merchantOutgoingBalanceAfterPayment)
-                .isEqualByComparingTo(initialMerchantOutgoingBalance.subtract(AMOUNT))
-                .isEqualByComparingTo(BigDecimal.valueOf(1750));
+                .isEqualByComparingTo(initialMerchantOutgoingBalance.subtract(AMOUNT_1))
+                .isEqualByComparingTo(BigDecimal.valueOf(54000));
 
         BigDecimal traderTeamBalanceAfterPayment =
                 balanceService.get(traderTeamId, EntityType.TRADER_TEAM, BalanceType.GENERIC)
                         .getCurrentBalance();
         assertThat(traderTeamBalanceAfterPayment)
-                .isEqualByComparingTo(AMOUNT.add(AMOUNT.multiply(traderOutgoingFeeRate)))
+                .isEqualByComparingTo(AMOUNT_1.add(AMOUNT_1.multiply(traderOutgoingFeeRate)))
                 .isEqualByComparingTo(BigDecimal.valueOf(3054));
 
         BigDecimal traderTeamLeaderBalanceAfterPayment =
                 balanceService.get(traderTeamLeaderId, EntityType.TRADER_TEAM_LEADER, BalanceType.GENERIC)
                         .getCurrentBalance();
         assertThat(traderTeamLeaderBalanceAfterPayment)
-                .isEqualByComparingTo(AMOUNT.multiply(leaderOutgoingFeeRate))
+                .isEqualByComparingTo(AMOUNT_1.multiply(leaderOutgoingFeeRate))
                 .isEqualByComparingTo(BigDecimal.valueOf(6));
     }
 
+    @Test
+    public void testSberPhoneNumberInternalReceiptPaymentVerification() throws Exception {
+        String paymentMethodId = paymentMethodService.create()
+                .withNumber("1234567812347614")
+                .withFirstName("Aminat")
+                .withLastName("Grey")
+                .withCurrency(Currency.RUB)
+                .withBank(Bank.SBER)
+                .withTraderTeamId(traderTeamId)
+                .withTerminalId(terminalId)
+                .withEnabled(true)
+                .build()
+                .getId();
+
+        BigDecimal deposit = BigDecimal.valueOf(60000);
+        BigDecimal initialMerchantOutgoingBalance =
+                balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.OUTGOING)
+                        .deposit(deposit)
+                        .build()
+                        .getCurrentBalance();
+        assertThat(initialMerchantOutgoingBalance)
+                .isEqualByComparingTo(deposit.subtract(deposit.multiply(merchantOutgoingFeeRate)))
+                .isEqualByComparingTo(BigDecimal.valueOf(57000));
+
+        String outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
+                .withRandomTraderTeamId()
+                .withPaymentMethodId(paymentMethodId)
+                .withAmount(AMOUNT_2)
+                .withCurrency(Currency.RUB)
+                .withRecipient("+79999206465")
+                .withBank(Bank.SBER)
+                .withRecipientPaymentMethodType(RecipientPaymentMethodType.PHONE_NUMBER)
+                .withPartnerPaymentId("test_partner_payment_id")
+                .withState(PaymentState.VERIFYING)
+                .build()
+                .getId();
+
+        BigDecimal initialTraderTeamBalance =
+                balanceService.get(traderTeamId, EntityType.TRADER_TEAM, BalanceType.GENERIC)
+                        .getCurrentBalance();
+        assertThat(initialTraderTeamBalance).isEqualByComparingTo(BigDecimal.ZERO);
+
+        BigDecimal initialTraderTeamLeaderBalance =
+                balanceService.get(traderTeamLeaderId, EntityType.TRADER_TEAM_LEADER, BalanceType.GENERIC)
+                        .getCurrentBalance();
+        assertThat(initialTraderTeamLeaderBalance).isEqualByComparingTo(BigDecimal.ZERO);
+
+        InputStream inputStream = new ClassPathResource("test/sber_receipt_11.pdf").getInputStream();
+        MockMultipartFile file = new MockMultipartFile("file", "sber_receipt_11.pdf",
+                MediaType.APPLICATION_PDF_VALUE, inputStream);
+
+        mockMvc.perform(MockMvcRequestBuilders.multipart("/payment-verifications/receipts")
+                .file(file)
+                .param("outgoing_payment_id", outgoingPaymentId)
+                .param("payment_method_id", paymentMethodId))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        assertThat(outgoingPaymentService.get(outgoingPaymentId).getCurrentState())
+                .isEqualTo(PaymentState.VERIFIED);
+
+        BigDecimal merchantOutgoingBalanceAfterPayment =
+                balanceService.get(merchantId, EntityType.MERCHANT, BalanceType.OUTGOING)
+                        .getCurrentBalance();
+        assertThat(merchantOutgoingBalanceAfterPayment)
+                .isEqualByComparingTo(initialMerchantOutgoingBalance.subtract(AMOUNT_2))
+                .isEqualByComparingTo(BigDecimal.valueOf(15000));
+
+        BigDecimal traderTeamBalanceAfterPayment =
+                balanceService.get(traderTeamId, EntityType.TRADER_TEAM, BalanceType.GENERIC)
+                        .getCurrentBalance();
+        assertThat(traderTeamBalanceAfterPayment)
+                .isEqualByComparingTo(AMOUNT_2.add(AMOUNT_2.multiply(traderOutgoingFeeRate)))
+                .isEqualByComparingTo(BigDecimal.valueOf(42756));
+
+        BigDecimal traderTeamLeaderBalanceAfterPayment =
+                balanceService.get(traderTeamLeaderId, EntityType.TRADER_TEAM_LEADER, BalanceType.GENERIC)
+                        .getCurrentBalance();
+        assertThat(traderTeamLeaderBalanceAfterPayment)
+                .isEqualByComparingTo(AMOUNT_2.multiply(leaderOutgoingFeeRate))
+                .isEqualByComparingTo(BigDecimal.valueOf(84));
+    }
 
     @TestConfiguration
     static class TestConfig {

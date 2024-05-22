@@ -80,7 +80,8 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
             OutgoingPaymentNotFoundException, PaymentMethodNotFoundException, TraderTeamNotFoundException,
             BalanceNotFoundException, MerchantNotFoundException, BalanceMissingRequiredAttributeException,
             OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
-            OutgoingPaymentInvalidAmountException {
+            OutgoingPaymentInvalidAmountException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
+            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException, MerchantInsufficientOutgoingBalanceException {
         if (file.isEmpty()) {
             throw new ReceiptPaymentVerificationRequestValidationException("Please upload a file.");
         }

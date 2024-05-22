@@ -23,7 +23,7 @@ public class SberBankCardInternalReceiptValidator implements ReceiptValidator {
     private static final String DATETIME = "datetime";
     private static final String RECIPIENT_CARD_LAST_FOUR_DIGITS = "recipient_card_last_four_digits";
     private static final String SENDER_FULL_NAME = "sender_full_name";
-    private static final String SENDER_CARD_LAST_FOUR_DIGITS = "sender_card_last_four_digits";
+    private static final String SENDER_ACCOUNT_LAST_FOUR_DIGITS = "sender_account_last_four_digits";
     private static final String AMOUNT = "amount";
     private static final String AMOUNT_CURRENCY = "amount_currency";
 
@@ -38,17 +38,6 @@ public class SberBankCardInternalReceiptValidator implements ReceiptValidator {
                 log.warn("Sender first name doesn't match for outgoing payment {}. " +
                                 "Expected first name: {}, actual full name: {}", outgoingPayment.getId(),
                         paymentMethod.getFirstName(), extractedFirstName);
-                throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
-            }
-        }
-        if (extractedData.containsKey(SENDER_CARD_LAST_FOUR_DIGITS)) {
-            String paymentMethodLastFourDigits = paymentMethod.getNumber()
-                    .substring(paymentMethod.getNumber().length() - 4);
-            if (!extractedData.get(SENDER_CARD_LAST_FOUR_DIGITS).equals(paymentMethodLastFourDigits)) {
-                log.warn("Sender card last 4 digits don't match for outgoing payment {}. " +
-                                "Expected card last 4 digits: {}, actual card last 4 digits: {}",
-                        outgoingPayment.getId(), paymentMethodLastFourDigits,
-                        extractedData.get(SENDER_CARD_LAST_FOUR_DIGITS));
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
         }
@@ -80,15 +69,15 @@ public class SberBankCardInternalReceiptValidator implements ReceiptValidator {
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
         }
-//        if (extractedData.containsKey(DATETIME)) {
-//            Instant extractedDatetime = parseDatetime(extractedData.get(DATETIME).toString());
-//            if (!extractedDatetime.isAfter(outgoingPayment.getCreatedDate())) {
-//                log.warn("Datetime is not after outgoing payment created date for outgoing payment {}. " +
-//                                "Expected datetime before: {}, actual datetime: {}",
-//                        outgoingPayment.getId(), outgoingPayment.getCreatedDate(), extractedDatetime);
-//                throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
-//            }
-//        }
+        if (extractedData.containsKey(DATETIME)) {
+            Instant extractedDatetime = parseDatetime(extractedData.get(DATETIME).toString());
+            if (!extractedDatetime.isAfter(outgoingPayment.getCreatedDate())) {
+                log.warn("Datetime is not after outgoing payment created date for outgoing payment {}. " +
+                                "Expected datetime before: {}, actual datetime: {}",
+                        outgoingPayment.getId(), outgoingPayment.getCreatedDate(), extractedDatetime);
+                throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
+            }
+        }
     }
 
     private Instant parseDatetime(String inputDatetime) {

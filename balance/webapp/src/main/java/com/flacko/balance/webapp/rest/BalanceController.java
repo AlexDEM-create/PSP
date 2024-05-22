@@ -2,7 +2,6 @@ package com.flacko.balance.webapp.rest;
 
 import com.auth0.jwt.JWT;
 import com.flacko.balance.service.*;
-import com.flacko.balance.service.EntityType;
 import com.flacko.common.exception.*;
 import com.flacko.security.SecurityConfig;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,8 @@ public class BalanceController {
 
     @GetMapping("/my")
     public List<BalanceResponse> getMyBalances(@RequestHeader("Authorization") String tokenWithPrefix)
-            throws BalanceNotFoundException, UserNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException {
+            throws BalanceNotFoundException, UserNotFoundException, TraderTeamNotFoundException,
+            MerchantNotFoundException {
         String token = tokenWithPrefix.substring(SecurityConfig.TOKEN_PREFIX.length());
         String login = JWT.decode(token).getSubject();
         return balanceService.getMy(login)
@@ -52,7 +52,8 @@ public class BalanceController {
     public BalanceResponse depositTraderTeamBalance(@PathVariable String traderTeamId,
                                                     @RequestBody BalanceUpdateRequest balanceUpdateRequest)
             throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
-            BalanceMissingRequiredAttributeException {
+            BalanceMissingRequiredAttributeException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
+            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException {
         BalanceBuilder builder = balanceService.update(traderTeamId, EntityType.TRADER_TEAM, BalanceType.GENERIC)
                 .deposit(balanceUpdateRequest.amount());
         Balance balance = builder.build();
@@ -63,7 +64,8 @@ public class BalanceController {
     public BalanceResponse withdrawTraderTeamBalance(@PathVariable String traderTeamId,
                                                      @RequestBody BalanceUpdateRequest balanceUpdateRequest)
             throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
-            BalanceMissingRequiredAttributeException {
+            BalanceMissingRequiredAttributeException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
+            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException {
         BalanceBuilder builder = balanceService.update(traderTeamId, EntityType.TRADER_TEAM, BalanceType.GENERIC)
                 .withdraw(balanceUpdateRequest.amount());
         Balance balance = builder.build();
@@ -74,7 +76,8 @@ public class BalanceController {
     public BalanceResponse depositMerchantIncomingBalance(@PathVariable String merchantId,
                                                           @RequestBody BalanceUpdateRequest balanceUpdateRequest)
             throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
-            BalanceMissingRequiredAttributeException {
+            BalanceMissingRequiredAttributeException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
+            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException {
         BalanceBuilder builder = balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.INCOMING)
                 .deposit(balanceUpdateRequest.amount());
         Balance balance = builder.build();
@@ -85,7 +88,8 @@ public class BalanceController {
     public BalanceResponse withdrawMerchantIncomingBalance(@PathVariable String merchantId,
                                                            @RequestBody BalanceUpdateRequest balanceUpdateRequest)
             throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
-            BalanceMissingRequiredAttributeException {
+            BalanceMissingRequiredAttributeException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
+            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException {
         BalanceBuilder builder = balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.INCOMING)
                 .withdraw(balanceUpdateRequest.amount());
         Balance balance = builder.build();
@@ -96,7 +100,8 @@ public class BalanceController {
     public BalanceResponse depositMerchantOutgoingBalance(@PathVariable String merchantId,
                                                           @RequestBody BalanceUpdateRequest balanceUpdateRequest)
             throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
-            BalanceMissingRequiredAttributeException {
+            BalanceMissingRequiredAttributeException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
+            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException {
         BalanceBuilder builder = balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.OUTGOING)
                 .deposit(balanceUpdateRequest.amount());
         Balance balance = builder.build();
@@ -107,7 +112,8 @@ public class BalanceController {
     public BalanceResponse withdrawMerchantOutgoingBalance(@PathVariable String merchantId,
                                                            @RequestBody BalanceUpdateRequest balanceUpdateRequest)
             throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
-            BalanceMissingRequiredAttributeException {
+            BalanceMissingRequiredAttributeException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
+            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException {
         BalanceBuilder builder = balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.OUTGOING)
                 .withdraw(balanceUpdateRequest.amount());
         Balance balance = builder.build();

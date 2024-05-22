@@ -24,13 +24,13 @@ public interface PaymentMethodBuilder {
 
     PaymentMethodBuilder withTerminalId(String terminalId);
 
-    PaymentMethodBuilder withEnabled(boolean busy);
+    PaymentMethodBuilder withEnabled(boolean enabled);
 
     PaymentMethodBuilder withBusy(boolean busy);
 
     PaymentMethodBuilder withArchived();
 
     PaymentMethod build() throws PaymentMethodMissingRequiredAttributeException, TraderTeamNotFoundException,
-            PaymentMethodInvalidBankCardNumberException, BankNotFoundException, TerminalNotFoundException;
+            PaymentMethodInvalidBankCardNumberException, TerminalNotFoundException;
 
 }

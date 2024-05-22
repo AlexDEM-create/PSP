@@ -58,7 +58,8 @@ public class ReceiptPaymentVerificationController {
             OutgoingPaymentNotFoundException, TraderTeamNotFoundException, BalanceNotFoundException,
             PaymentMethodNotFoundException, MerchantNotFoundException, BalanceMissingRequiredAttributeException,
             OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
-            OutgoingPaymentInvalidAmountException {
+            OutgoingPaymentInvalidAmountException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
+            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException, MerchantInsufficientOutgoingBalanceException {
         return receiptPaymentVerificationRestMapper.mapModelToResponse(
                 receiptPaymentVerificationService.verify(file, outgoingPaymentId, paymentMethodId));
     }

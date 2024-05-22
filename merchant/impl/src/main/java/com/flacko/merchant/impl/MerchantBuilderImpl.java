@@ -4,7 +4,7 @@ import com.flacko.balance.service.BalanceService;
 import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
 import com.flacko.common.country.Country;
-import com.flacko.common.currency.Currency;
+import com.flacko.common.currency.CurrencyParser;
 import com.flacko.common.exception.*;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.common.operation.CrudOperation;
@@ -117,14 +117,14 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
                     .withEntityId(merchant.getId())
                     .withEntityType(EntityType.MERCHANT)
                     .withType(BalanceType.INCOMING)
-                    .withCurrency(parseCurrency(merchant.getCountry()))
+                    .withCurrency(CurrencyParser.parseCurrency(merchant.getCountry()))
                     .build();
 
             balanceService.create()
                     .withEntityId(merchant.getId())
                     .withEntityType(EntityType.MERCHANT)
                     .withType(BalanceType.OUTGOING)
-                    .withCurrency(parseCurrency(merchant.getCountry()))
+                    .withCurrency(CurrencyParser.parseCurrency(merchant.getCountry()))
                     .build();
         }
 
@@ -159,11 +159,5 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
         }
     }
 
-    private Currency parseCurrency(Country country) {
-        return switch (country) {
-            case RUSSIA -> Currency.RUB;
-            case UZBEKISTAN -> Currency.UZS;
-        };
-    }
 
 }

@@ -29,6 +29,6 @@ public interface OutgoingPaymentBuilder {
     OutgoingPaymentBuilder withState(PaymentState newState) throws OutgoingPaymentIllegalStateTransitionException;
 
     OutgoingPayment build() throws OutgoingPaymentMissingRequiredAttributeException, TraderTeamNotFoundException,
-            MerchantNotFoundException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException;
+            MerchantNotFoundException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantInsufficientOutgoingBalanceException;
 
 }
