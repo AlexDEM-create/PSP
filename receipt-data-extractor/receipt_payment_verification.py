@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 ALLOWED_EXTENSIONS = {'pdf'}
 
-file_handler = logging.FileHandler('record.log')
+file_handler = logging.FileHandler('record.log', encoding='utf8')
 file_handler.setLevel(logging.DEBUG)
 
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -30,9 +30,9 @@ def extract_data_from_pdf(pdf_file):
 
 
 def verify_data(pattern, text):
-    match = re.match(pattern, text, re.MULTILINE | re.DOTALL)
+    match = re.match(pattern, text, re.MULTILINE)
     if match:
-        return {key: unidecode(value) for key, value in match.groupdict().items()}
+        return match.groupdict()
 
 
 @app.route('/payment-verifications/receipts/extract-data', methods=['POST'])

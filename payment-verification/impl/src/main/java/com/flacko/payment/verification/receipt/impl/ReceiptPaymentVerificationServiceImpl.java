@@ -195,7 +195,7 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
                 && outgoingPayment.getRecipientPaymentMethodType() == RecipientPaymentMethodType.PHONE_NUMBER) {
             return ReceiptPatternType.PHONE_NUMBER_INTERNAL;
         } else if (paymentMethod.getBank() != outgoingPayment.getBank()
-                && outgoingPayment.getRecipientPaymentMethodType() == RecipientPaymentMethodType.BANK_CARD) {
+                && outgoingPayment.getRecipientPaymentMethodType() == RecipientPaymentMethodType.PHONE_NUMBER) {
             return ReceiptPatternType.PHONE_NUMBER_EXTERNAL;
         }
         throw new IllegalArgumentException(String.format(

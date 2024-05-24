@@ -5,6 +5,7 @@ import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 public record PaymentMethodResponse(@JsonProperty(ID) String id,
                                     @JsonProperty(NUMBER) String number,
@@ -13,7 +14,7 @@ public record PaymentMethodResponse(@JsonProperty(ID) String id,
                                     @JsonProperty(CURRENCY) Currency currency,
                                     @JsonProperty(BANK) Bank bank,
                                     @JsonProperty(TRADER_TEAM_ID) String traderTeamId,
-                                    @JsonProperty(TERMINAL_ID) String terminalId,
+                                    @JsonProperty(TERMINAL_ID) Optional<String> terminalId,
                                     @JsonProperty(ENABLED) boolean enabled,
                                     @JsonProperty(BUSY) boolean busy,
                                     @JsonProperty(CREATED_DATE) ZonedDateTime createdDate,

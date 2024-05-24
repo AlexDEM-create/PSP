@@ -17,6 +17,7 @@ public class PaymentRestMapper {
                 paymentMethod.getBank(),
                 paymentMethod.getTraderTeamId(),
                 paymentMethod.getTerminalId(),
+                paymentMethod.isEnabled(),
                 paymentMethod.isBusy(),
                 paymentMethod.getCreatedDate().atZone(ZoneId.systemDefault()),
                 paymentMethod.getUpdatedDate().atZone(ZoneId.systemDefault()));

@@ -57,7 +57,7 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
                 .currency(existingPaymentMethod.getCurrency())
                 .bank(existingPaymentMethod.getBank())
                 .traderTeamId(existingPaymentMethod.getTraderTeamId())
-                .terminalId(existingPaymentMethod.getTerminalId())
+                .terminalId(existingPaymentMethod.getTerminalId().orElse(null))
                 .enabled(existingPaymentMethod.isEnabled())
                 .busy(existingPaymentMethod.isBusy())
                 .createdDate(existingPaymentMethod.getCreatedDate())
@@ -163,10 +163,8 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
         } else {
             traderTeamService.get(pojo.getTraderTeamId());
         }
-        if (pojo.getTerminalId() == null || pojo.getTerminalId().isBlank()) {
-            throw new PaymentMethodMissingRequiredAttributeException("terminalId", Optional.of(pojo.getId()));
-        } else {
-            terminalService.get(pojo.getTerminalId());
+        if (pojo.getTerminalId().isPresent()) {
+            terminalService.get(pojo.getTerminalId().get());
         }
     }
 
