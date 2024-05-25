@@ -24,7 +24,7 @@ public interface PaymentMethod {
 
     String getTraderTeamId();
 
-    String getTerminalId();
+    Optional<String> getTerminalId();
 
     boolean isEnabled();
 

@@ -33,7 +33,7 @@ public interface ReceiptValidator {
     }
 
     default Currency parseCurrency(String currency) throws ReceiptPaymentVerificationCurrencyNotSupportedException {
-        if ("R".equals(currency)) {
+        if ("₽".equals(currency)) {
             return Currency.RUB;
         }
         throw new ReceiptPaymentVerificationCurrencyNotSupportedException(currency);

@@ -12,7 +12,15 @@ import com.flacko.payment.method.service.PaymentMethodService;
 import com.flacko.payment.method.service.exception.PaymentMethodInvalidBankCardNumberException;
 import com.flacko.payment.method.service.exception.PaymentMethodMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -70,15 +78,15 @@ public class PaymentMethodController {
     @PostMapping
     public PaymentMethodResponse create(@RequestBody PaymentMethodCreateRequest paymentMethodCreateRequest)
             throws PaymentMethodMissingRequiredAttributeException, TraderTeamNotFoundException,
-            PaymentMethodInvalidBankCardNumberException, BankNotFoundException, TerminalNotFoundException {
+            PaymentMethodInvalidBankCardNumberException, TerminalNotFoundException {
         PaymentMethodBuilder builder = paymentMethodService.create();
         builder.withNumber(paymentMethodCreateRequest.number())
                 .withFirstName(paymentMethodCreateRequest.firstName())
                 .withLastName(paymentMethodCreateRequest.lastName())
                 .withCurrency(paymentMethodCreateRequest.currency())
                 .withBank(paymentMethodCreateRequest.bank())
-                .withTraderTeamId(paymentMethodCreateRequest.traderTeamId())
-                .withTerminalId(paymentMethodCreateRequest.terminalId());
+                .withTraderTeamId(paymentMethodCreateRequest.traderTeamId());
+        paymentMethodCreateRequest.terminalId().ifPresent(builder::withTerminalId);
         PaymentMethod paymentMethod = builder.build();
         return paymentRestMapper.mapModelToResponse(paymentMethod);
     }
@@ -86,7 +94,7 @@ public class PaymentMethodController {
     @DeleteMapping("/{paymentMethodId}")
     public PaymentMethodResponse archive(@PathVariable String paymentMethodId)
             throws PaymentMethodNotFoundException, PaymentMethodMissingRequiredAttributeException,
-            TraderTeamNotFoundException, PaymentMethodInvalidBankCardNumberException, BankNotFoundException,
+            TraderTeamNotFoundException, PaymentMethodInvalidBankCardNumberException,
             TerminalNotFoundException {
         PaymentMethodBuilder builder = paymentMethodService.update(paymentMethodId);
         builder.withArchived();
@@ -97,7 +105,7 @@ public class PaymentMethodController {
     @PatchMapping("/{paymentMethodId}/enable")
     public PaymentMethodResponse enable(@PathVariable String paymentMethodId) throws PaymentMethodNotFoundException,
             TraderTeamNotFoundException, PaymentMethodMissingRequiredAttributeException, TerminalNotFoundException,
-            PaymentMethodInvalidBankCardNumberException, BankNotFoundException {
+            PaymentMethodInvalidBankCardNumberException {
         PaymentMethodBuilder builder = paymentMethodService.update(paymentMethodId);
         builder.withEnabled(true);
         PaymentMethod paymentMethod = builder.build();
@@ -107,7 +115,7 @@ public class PaymentMethodController {
     @PatchMapping("/{paymentMethodId}/disable")
     public PaymentMethodResponse disable(@PathVariable String paymentMethodId) throws PaymentMethodNotFoundException,
             TraderTeamNotFoundException, PaymentMethodMissingRequiredAttributeException, TerminalNotFoundException,
-            PaymentMethodInvalidBankCardNumberException, BankNotFoundException {
+            PaymentMethodInvalidBankCardNumberException {
         PaymentMethodBuilder builder = paymentMethodService.update(paymentMethodId);
         builder.withEnabled(false);
         PaymentMethod paymentMethod = builder.build();

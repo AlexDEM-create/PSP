@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
@@ -32,25 +33,33 @@ public class SberPhoneNumberInternalReceiptValidator implements ReceiptValidator
         if (extractedData.containsKey(SENDER_FULL_NAME)) {
             String extractedFullName = extractedData.get(SENDER_FULL_NAME).toString();
             String extractedFirstName = extractedFullName.substring(0, extractedFullName.indexOf(' '));
-            if (!extractedFirstName.equals(paymentMethod.getFirstName())) {
+            if (!extractedFirstName.equalsIgnoreCase(paymentMethod.getFirstName())) {
                 log.warn("Sender first name doesn't match for outgoing payment {}. " +
-                                "Expected first name: {}, actual full name: {}", outgoingPayment.getId(),
+                                "Expected sender first name: {}, actual sender first name: {}", outgoingPayment.getId(),
                         paymentMethod.getFirstName(), extractedFirstName);
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
+        } else {
+            log.warn("Sender first name is missing for outgoing payment {}", outgoingPayment.getId());
+            throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
         }
+
         if (extractedData.containsKey(RECIPIENT_PHONE_NUMBER)) {
             String outgoingPaymentRecipient = sanitizePhoneNumber(outgoingPayment.getRecipient());
             String extractedRecipientPhoneNumber =
                     sanitizePhoneNumber(extractedData.get(RECIPIENT_PHONE_NUMBER).toString());
             if (!extractedRecipientPhoneNumber.equals(outgoingPaymentRecipient)) {
                 log.warn("Recipient phone number don't match for outgoing payment {}. " +
-                                "Expected phone number: {}, phone number: {}",
+                                "Expected recipient phone number: {}, actual recipient phone number: {}",
                         outgoingPayment.getId(), outgoingPaymentRecipient,
                         extractedRecipientPhoneNumber);
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
+        } else {
+            log.warn("Recipient phone number is missing for outgoing payment {}", outgoingPayment.getId());
+            throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
         }
+
         if (extractedData.containsKey(AMOUNT)) {
             BigDecimal extractedAmount = parseBigDecimal(extractedData.get(AMOUNT).toString());
             if (extractedAmount.compareTo(outgoingPayment.getAmount()) != 0) {
@@ -58,7 +67,11 @@ public class SberPhoneNumberInternalReceiptValidator implements ReceiptValidator
                         outgoingPayment.getId(), outgoingPayment.getAmount(), extractedAmount);
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
+        } else {
+            log.warn("Amount is missing for outgoing payment {}", outgoingPayment.getId());
+            throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
         }
+
         if (extractedData.containsKey(AMOUNT_CURRENCY)) {
             Currency extractedAmountCurrency = parseCurrency(extractedData.get(AMOUNT_CURRENCY).toString());
             if (extractedAmountCurrency != outgoingPayment.getCurrency()) {
@@ -67,7 +80,11 @@ public class SberPhoneNumberInternalReceiptValidator implements ReceiptValidator
                         outgoingPayment.getId(), outgoingPayment.getCurrency(), extractedAmountCurrency);
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
+        } else {
+            log.warn("Amount currency is missing for outgoing payment {}", outgoingPayment.getId());
+            throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
         }
+
         if (extractedData.containsKey(DATETIME)) {
             Instant extractedDatetime = parseDatetime(extractedData.get(DATETIME).toString());
             if (!extractedDatetime.isAfter(outgoingPayment.getCreatedDate())) {
@@ -76,12 +93,25 @@ public class SberPhoneNumberInternalReceiptValidator implements ReceiptValidator
                         outgoingPayment.getId(), outgoingPayment.getCreatedDate(), extractedDatetime);
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
+        } else {
+            log.warn("Datetime is missing for outgoing payment {}", outgoingPayment.getId());
+            throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
         }
     }
 
     private Instant parseDatetime(String inputDatetime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm:ss (zzz)", Locale.of("ru"));
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(inputDatetime, formatter);
+        Map<String, String> translationMap = new HashMap<>();
+        translationMap.put("(МСК)", "+0300");
+
+        StringBuilder translatedDatetime = new StringBuilder(inputDatetime);
+        for (Map.Entry<String, String> entry : translationMap.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            translatedDatetime = new StringBuilder(translatedDatetime.toString().replace(key, value));
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm:ss Z", Locale.of("ru"));
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(translatedDatetime, formatter);
         return zonedDateTime.withZoneSameInstant(ZoneOffset.UTC).toInstant();
     }
 

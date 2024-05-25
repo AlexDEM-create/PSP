@@ -19,6 +19,7 @@ public class ReceiptValidatorFactory {
                 case PHONE_NUMBER_INTERNAL -> new RaiffeisenPhoneNumberInternalReceiptValidator();
                 case PHONE_NUMBER_EXTERNAL -> new RaiffeisenPhoneNumberExternalReceiptValidator();
             };
+            default -> throw new IllegalArgumentException("Unsupported bank " + bank);
         };
     }
 

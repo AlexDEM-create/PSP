@@ -3,7 +3,15 @@ package com.flacko.payment.method.impl;
 import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
 import com.flacko.payment.method.service.PaymentMethod;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,7 +56,7 @@ public class PaymentMethodPojo implements PaymentMethod {
     @Column(name = "trader_team_id", nullable = false)
     private String traderTeamId;
 
-    @Column(name = "terminal_id", nullable = false)
+    @Column(name = "terminal_id")
     private String terminalId;
 
     @Column(nullable = false)
@@ -65,6 +73,10 @@ public class PaymentMethodPojo implements PaymentMethod {
 
     @Column(name = "deleted_date")
     private Instant deletedDate;
+
+    public Optional<String> getTerminalId() {
+        return Optional.ofNullable(terminalId);
+    }
 
     public Optional<Instant> getDeletedDate() {
         return Optional.ofNullable(deletedDate);

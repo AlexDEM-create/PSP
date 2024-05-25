@@ -23,7 +23,6 @@ public class SberBankCardInternalReceiptValidator implements ReceiptValidator {
     private static final String DATETIME = "datetime";
     private static final String RECIPIENT_CARD_LAST_FOUR_DIGITS = "recipient_card_last_four_digits";
     private static final String SENDER_FULL_NAME = "sender_full_name";
-    private static final String SENDER_ACCOUNT_LAST_FOUR_DIGITS = "sender_account_last_four_digits";
     private static final String AMOUNT = "amount";
     private static final String AMOUNT_CURRENCY = "amount_currency";
 
@@ -34,24 +33,32 @@ public class SberBankCardInternalReceiptValidator implements ReceiptValidator {
         if (extractedData.containsKey(SENDER_FULL_NAME)) {
             String extractedFullName = extractedData.get(SENDER_FULL_NAME).toString();
             String extractedFirstName = extractedFullName.substring(0, extractedFullName.indexOf(' '));
-            if (!extractedFirstName.equals(paymentMethod.getFirstName())) {
+            if (!extractedFirstName.equalsIgnoreCase(paymentMethod.getFirstName())) {
                 log.warn("Sender first name doesn't match for outgoing payment {}. " +
-                                "Expected first name: {}, actual full name: {}", outgoingPayment.getId(),
+                                "Expected sender first name: {}, actual sender first name: {}", outgoingPayment.getId(),
                         paymentMethod.getFirstName(), extractedFirstName);
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
+        } else {
+            log.warn("Sender first name is missing for outgoing payment {}", outgoingPayment.getId());
+            throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
         }
+
         if (extractedData.containsKey(RECIPIENT_CARD_LAST_FOUR_DIGITS)) {
             String outgoingPaymentLastFourDigits = outgoingPayment.getRecipient()
                     .substring(outgoingPayment.getRecipient().length() - 4);
             if (!extractedData.get(RECIPIENT_CARD_LAST_FOUR_DIGITS).equals(outgoingPaymentLastFourDigits)) {
                 log.warn("Recipient card last 4 digits don't match for outgoing payment {}. " +
-                                "Expected card last 4 digits: {}, actual card last 4 digits: {}",
+                                "Expected recipient card last 4 digits: {}, actual recipient card last 4 digits: {}",
                         outgoingPayment.getId(), outgoingPaymentLastFourDigits,
                         extractedData.get(RECIPIENT_CARD_LAST_FOUR_DIGITS));
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
+        } else {
+            log.warn("Recipient card last 4 digits are missing for outgoing payment {}", outgoingPayment.getId());
+            throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
         }
+
         if (extractedData.containsKey(AMOUNT)) {
             BigDecimal extractedAmount = parseBigDecimal(extractedData.get(AMOUNT).toString());
             if (extractedAmount.compareTo(outgoingPayment.getAmount()) != 0) {
@@ -59,7 +66,11 @@ public class SberBankCardInternalReceiptValidator implements ReceiptValidator {
                         outgoingPayment.getId(), outgoingPayment.getAmount(), extractedAmount);
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
+        } else {
+            log.warn("Amount is missing for outgoing payment {}", outgoingPayment.getId());
+            throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
         }
+
         if (extractedData.containsKey(AMOUNT_CURRENCY)) {
             Currency extractedAmountCurrency = parseCurrency(extractedData.get(AMOUNT_CURRENCY).toString());
             if (extractedAmountCurrency != outgoingPayment.getCurrency()) {
@@ -68,7 +79,11 @@ public class SberBankCardInternalReceiptValidator implements ReceiptValidator {
                         outgoingPayment.getId(), outgoingPayment.getCurrency(), extractedAmountCurrency);
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
+        } else {
+            log.warn("Amount currency is missing for outgoing payment {}", outgoingPayment.getId());
+            throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
         }
+
         if (extractedData.containsKey(DATETIME)) {
             Instant extractedDatetime = parseDatetime(extractedData.get(DATETIME).toString());
             if (!extractedDatetime.isAfter(outgoingPayment.getCreatedDate())) {
@@ -77,34 +92,25 @@ public class SberBankCardInternalReceiptValidator implements ReceiptValidator {
                         outgoingPayment.getId(), outgoingPayment.getCreatedDate(), extractedDatetime);
                 throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
             }
+        } else {
+            log.warn("Datetime is missing for outgoing payment {}", outgoingPayment.getId());
+            throw new ReceiptPaymentVerificationFailedException(outgoingPayment.getId());
         }
     }
 
     private Instant parseDatetime(String inputDatetime) {
-        Map<String, String> transliterationMap = new HashMap<>();
-        transliterationMap.put("ianvaria", "января");
-        transliterationMap.put("fevralia", "февраля");
-        transliterationMap.put("marta", "марта");
-        transliterationMap.put("aprelia", "апреля");
-        transliterationMap.put("maia", "мая");
-        transliterationMap.put("iunia", "июня");
-        transliterationMap.put("iulia", "июля");
-        transliterationMap.put("avgusta", "августа");
-        transliterationMap.put("sentiabria", "сентября");
-        transliterationMap.put("oktiabria", "октября");
-        transliterationMap.put("noiabria", "ноября");
-        transliterationMap.put("dekabria", "декабря");
-        transliterationMap.put("(MSK)", "+0300");
+        Map<String, String> translationMap = new HashMap<>();
+        translationMap.put("(МСК)", "+0300");
 
-        StringBuilder transliteratedDatetime = new StringBuilder(inputDatetime);
-        for (Map.Entry<String, String> entry : transliterationMap.entrySet()) {
+        StringBuilder translatedDatetime = new StringBuilder(inputDatetime);
+        for (Map.Entry<String, String> entry : translationMap.entrySet()) {
             String key = entry.getKey();
             String value = entry.getValue();
-            transliteratedDatetime = new StringBuilder(transliteratedDatetime.toString().replace(key, value));
+            translatedDatetime = new StringBuilder(translatedDatetime.toString().replace(key, value));
         }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM yyyy HH:mm:ss Z", Locale.of("ru"));
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(transliteratedDatetime, formatter);
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(translatedDatetime, formatter);
         return zonedDateTime.withZoneSameInstant(ZoneOffset.UTC).toInstant();
     }
 

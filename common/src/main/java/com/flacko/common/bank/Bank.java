@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 public enum Bank {
 
     SBER(Country.RUSSIA),
-    RAIFFEISEN(Country.RUSSIA);
+    RAIFFEISEN(Country.RUSSIA),
+    TINKOFF(Country.RUSSIA),
+    ALFA(Country.RUSSIA),
+    VTB(Country.RUSSIA);
 
     private final Country country;
 
