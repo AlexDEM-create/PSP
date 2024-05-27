@@ -22,12 +22,16 @@
             <artifactId>security</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-
         <dependency>
             <groupId>com.flacko</groupId>
             <artifactId>appeal-impl</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>common-lang3</artifactId>
+            <version>3.12.0</version>
         </dependency>
         <dependency>
             <groupId>com.flacko</groupId>
