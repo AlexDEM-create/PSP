@@ -1,6 +1,7 @@
 package com.flacko.merchant.webapp.rest;
 
 import com.flacko.common.country.Country;
+import com.flacko.common.exception.BalanceInvalidCurrentBalanceException;
 import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -59,7 +60,7 @@ public class MerchantController {
     public MerchantResponse create(@RequestBody MerchantCreateRequest merchantCreateRequest)
             throws MerchantMissingRequiredAttributeException, UserNotFoundException,
             MerchantInvalidFeeRateException, TraderTeamNotFoundException, MerchantNotFoundException,
-            BalanceMissingRequiredAttributeException {
+            BalanceMissingRequiredAttributeException, BalanceInvalidCurrentBalanceException {
         MerchantBuilder builder = merchantService.create();
         builder.withName(merchantCreateRequest.name())
                 .withUserId(merchantCreateRequest.userId())
@@ -74,7 +75,7 @@ public class MerchantController {
     public MerchantResponse archive(@PathVariable String merchantId)
             throws MerchantNotFoundException, MerchantMissingRequiredAttributeException,
             UserNotFoundException, MerchantInvalidFeeRateException, TraderTeamNotFoundException,
-            BalanceMissingRequiredAttributeException {
+            BalanceMissingRequiredAttributeException, BalanceInvalidCurrentBalanceException {
         MerchantBuilder builder = merchantService.update(merchantId);
         builder.withArchived();
         Merchant merchant = builder.build();
