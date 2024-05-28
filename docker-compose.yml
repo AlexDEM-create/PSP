@@ -186,7 +186,7 @@ services:
     container_name: receipt-data-extractor
     build:
       context: ./receipt-data-extractor
-      dockerfile: Dockerfile
+      dockerfile: receipt-data-extractor/webapp/Dockerfile
     ports:
       - "8091:8080"
     networks:

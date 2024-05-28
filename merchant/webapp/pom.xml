@@ -19,14 +19,19 @@
         </dependency>
         <dependency>
             <groupId>com.flacko</groupId>
-            <artifactId>merchant-impl</artifactId>
+            <artifactId>payment-method-service</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.flacko</groupId>
             <artifactId>security</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.flacko</groupId>
+            <artifactId>merchant-impl</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.flacko</groupId>
@@ -46,6 +51,12 @@
             <version>0.0.1-SNAPSHOT</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.flacko</groupId>
+            <artifactId>payment-method-impl</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -58,7 +69,6 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.flacko</groupId>
             <artifactId>payment-service</artifactId>
@@ -71,7 +81,6 @@
             <version>0.0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>com.flacko</groupId>
             <artifactId>appeal-service</artifactId>
@@ -84,23 +93,6 @@
             <version>0.0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
-
-
-
-
-        <dependency>
-            <groupId>com.flacko</groupId>
-            <artifactId>payment-method-impl</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.flacko</groupId>
-            <artifactId>payment-method-service</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>com.flacko</groupId>
             <artifactId>terminal-service</artifactId>
@@ -113,7 +105,6 @@
             <version>0.0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>

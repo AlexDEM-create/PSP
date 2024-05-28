@@ -2,7 +2,15 @@ package com.flacko.merchant.impl;
 
 import com.flacko.common.country.Country;
 import com.flacko.merchant.service.Merchant;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +30,7 @@ public class MerchantPojo implements Merchant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "primary_key", nullable = false)
+    @Column(name = "primary_key", nullable = false, updatable = false)
     private Long primaryKey;
 
     @Column(nullable = false)

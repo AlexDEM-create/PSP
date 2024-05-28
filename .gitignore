@@ -31,4 +31,4 @@ build/
 ### VS Code ###
 .vscode/
 
-receipt-data-extractor/record.log
+receipt-data-extractor/webapp/record.log

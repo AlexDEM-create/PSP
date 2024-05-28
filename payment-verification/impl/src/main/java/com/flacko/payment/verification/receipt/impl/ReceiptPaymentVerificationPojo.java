@@ -2,7 +2,14 @@ package com.flacko.payment.verification.receipt.impl;
 
 import com.flacko.common.converter.HashMapConverter;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerification;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +28,7 @@ public class ReceiptPaymentVerificationPojo implements ReceiptPaymentVerificatio
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "primary_key", nullable = false)
+    @Column(name = "primary_key", nullable = false, updatable = false)
     private Long primaryKey;
 
     @Column(nullable = false)
@@ -36,7 +43,7 @@ public class ReceiptPaymentVerificationPojo implements ReceiptPaymentVerificatio
     @Column(nullable = false, length = 4096)
     private Map<String, Object> data;
 
-//    @Lob
+    //    @Lob
     @Column(name = "uploaded_file", nullable = false, length = MAX_RECEIPT_SIZE)
     private byte[] uploadedFile;
 
