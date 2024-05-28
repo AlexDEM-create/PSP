@@ -14,6 +14,6 @@ public interface AppealBuilder {
     AppealBuilder withState(AppealState newState) throws AppealIllegalStateTransitionException;
 
     Appeal build() throws AppealMissingRequiredAttributeException, IncomingPaymentNotFoundException,
-            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException, NoEligibleTraderTeamsException;
+            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException, NoEligibleTraderTeamsException, MerchantInsufficientOutgoingBalanceException;
 
 }

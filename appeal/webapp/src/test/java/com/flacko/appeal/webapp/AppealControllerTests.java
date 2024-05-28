@@ -19,7 +19,6 @@ import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeamService;
 import com.flacko.user.service.User;
 import com.flacko.user.service.UserService;
-import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,6 +38,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
+import java.util.Random;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -89,8 +89,22 @@ public class AppealControllerTests {
 
     @BeforeEach
     public void setup() throws Exception {
+        class RandomStringGenerator {
+            private static final String ALPHANUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            public String randomAlphanumeric(int count) {
+                StringBuilder builder = new StringBuilder();
+                Random random = new Random();
+                while (count-- != 0) {
+                    int character = random.nextInt(ALPHANUMERIC_STRING.length());
+                    builder.append(ALPHANUMERIC_STRING.charAt(character));
+                }
+                return builder.toString();
+            }
+        }
+
+        RandomStringGenerator generator = new RandomStringGenerator();
         User merchantUser = userService.create()
-                .withLogin(RandomStringUtils.randomAlphanumeric(10))
+                .withLogin(generator.randomAlphanumeric(10))
                 .withPassword("qwerty123456")
                 .withRole(UserRole.MERCHANT)
                 .build();
@@ -106,14 +120,14 @@ public class AppealControllerTests {
                 .getId();
 
         String traderTeamUserId = userService.create()
-                .withLogin(RandomStringUtils.randomAlphanumeric(10))
+                .withLogin(generator.randomAlphanumeric(10))
                 .withPassword("qwerty654321")
                 .withRole(UserRole.TRADER_TEAM)
                 .build()
                 .getId();
 
         String traderTeamLeaderId = userService.create()
-                .withLogin(RandomStringUtils.randomAlphanumeric(10))
+                .withLogin(generator.randomAlphanumeric(10))
                 .withPassword("qwerty0000000")
                 .withRole(UserRole.TRADER_TEAM_LEADER)
                 .build()

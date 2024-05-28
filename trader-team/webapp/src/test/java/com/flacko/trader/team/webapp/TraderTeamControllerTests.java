@@ -63,7 +63,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class TraderTeamControllerTests {
+public class TraderTeamControllerTests {
 
     @Autowired
     private MockMvc mockMvc;

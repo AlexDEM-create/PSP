@@ -4,9 +4,7 @@ import com.flacko.appeal.service.*;
 import com.flacko.appeal.service.exception.AppealIllegalPaymentCurrentStateException;
 import com.flacko.appeal.service.exception.AppealIllegalStateTransitionException;
 import com.flacko.appeal.service.exception.AppealMissingRequiredAttributeException;
-import com.flacko.common.exception.AppealNotFoundException;
-import com.flacko.common.exception.IncomingPaymentNotFoundException;
-import com.flacko.common.exception.OutgoingPaymentNotFoundException;
+import com.flacko.common.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,7 +66,7 @@ public class AppealController {
     @PostMapping
     public AppealResponse create(@RequestBody AppealCreateRequest appealCreateRequest)
             throws AppealMissingRequiredAttributeException, IncomingPaymentNotFoundException,
-            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException {
+            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException, MerchantInsufficientOutgoingBalanceException, TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException, NoEligibleTraderTeamsException {
         AppealBuilder builder = appealService.create();
         builder.withPaymentId(appealCreateRequest.paymentId())
                 .withSource(appealCreateRequest.source());
@@ -80,7 +78,7 @@ public class AppealController {
     public AppealResponse resolve(@PathVariable String appealId)
             throws AppealNotFoundException, AppealMissingRequiredAttributeException,
             AppealIllegalStateTransitionException, IncomingPaymentNotFoundException,
-            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException {
+            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException, MerchantInsufficientOutgoingBalanceException, TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException, NoEligibleTraderTeamsException {
         AppealBuilder builder = appealService.update(appealId);
         builder.withState(AppealState.RESOLVED);
         Appeal appeal = builder.build();
@@ -91,7 +89,7 @@ public class AppealController {
     public AppealResponse reject(@PathVariable String appealId)
             throws AppealNotFoundException, AppealMissingRequiredAttributeException,
             AppealIllegalStateTransitionException, IncomingPaymentNotFoundException,
-            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException {
+            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException, MerchantInsufficientOutgoingBalanceException, TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException, NoEligibleTraderTeamsException {
         AppealBuilder builder = appealService.update(appealId);
         builder.withState(AppealState.REJECTED);
         Appeal appeal = builder.build();
@@ -102,7 +100,7 @@ public class AppealController {
     public AppealResponse review(@PathVariable String appealId)
             throws AppealNotFoundException, AppealMissingRequiredAttributeException,
             AppealIllegalStateTransitionException, IncomingPaymentNotFoundException,
-            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException {
+            AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException, MerchantInsufficientOutgoingBalanceException, TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException, NoEligibleTraderTeamsException {
         AppealBuilder builder = appealService.update(appealId);
         builder.withState(AppealState.UNDER_REVIEW);
         Appeal appeal = builder.build();
