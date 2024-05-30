@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: terminal-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: terminal
+  template:
+    metadata:
+      labels:
+        app: terminal
+    spec:
+      containers:
+        - name: terminal-container
+          image: terminal:latest
+          ports:
+            - containerPort: 8080

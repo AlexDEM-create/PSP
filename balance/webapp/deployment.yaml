@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: balance-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: balance
+  template:
+    metadata:
+      labels:
+        app: balance
+    spec:
+      containers:
+        - name: balance-container
+          image: balance:latest
+          ports:
+            - containerPort: 8080

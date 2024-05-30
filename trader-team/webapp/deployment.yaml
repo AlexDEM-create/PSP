@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trader-team-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trader-team
+  template:
+    metadata:
+      labels:
+        app: trader-team
+    spec:
+      containers:
+        - name: trader-team-container
+          image: trader-team:latest
+          ports:
+            - containerPort: 8080

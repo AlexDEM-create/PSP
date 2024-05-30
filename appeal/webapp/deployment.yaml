@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appeal-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: appeal
+  template:
+    metadata:
+      labels:
+        app: appeal
+    spec:
+      containers:
+        - name: appeal-container
+          image: appeal:latest
+          ports:
+            - containerPort: 8080
