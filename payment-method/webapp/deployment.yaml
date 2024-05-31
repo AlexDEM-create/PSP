@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-method-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-method
+  template:
+    metadata:
+      labels:
+        app: payment-method
+    spec:
+      containers:
+        - name: payment-method-container
+          image: payment-method:latest
+          ports:
+            - containerPort: 8080

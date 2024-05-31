@@ -5,7 +5,15 @@ import com.flacko.common.currency.Currency;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.outgoing.OutgoingPayment;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +33,7 @@ public class OutgoingPaymentPojo implements OutgoingPayment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "primary_key", nullable = false)
+    @Column(name = "primary_key", nullable = false, updatable = false)
     private Long primaryKey;
 
     @Column(nullable = false)

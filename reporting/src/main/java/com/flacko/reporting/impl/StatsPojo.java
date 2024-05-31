@@ -1,13 +1,21 @@
 package com.flacko.reporting.impl;
 
 
-import jakarta.persistence.*;
+import com.flacko.reporting.service.EntityType;
+import com.flacko.reporting.service.Stats;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.flacko.reporting.service.EntityType;
-import com.flacko.reporting.service.Stats;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -22,7 +30,7 @@ public class StatsPojo implements Stats {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "primary_key", nullable = false)
+    @Column(name = "primary_key", nullable = false, updatable = false)
     private Long primaryKey;
 
     @Column(nullable = false)

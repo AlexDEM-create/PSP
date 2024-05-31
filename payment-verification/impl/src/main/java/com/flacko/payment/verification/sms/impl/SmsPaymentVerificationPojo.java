@@ -3,7 +3,14 @@ package com.flacko.payment.verification.sms.impl;
 import com.flacko.common.converter.HashMapConverter;
 import com.flacko.common.currency.Currency;
 import com.flacko.payment.verification.sms.service.SmsPaymentVerification;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +30,7 @@ public class SmsPaymentVerificationPojo implements SmsPaymentVerification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "primary_key", nullable = false)
+    @Column(name = "primary_key", nullable = false, updatable = false)
     private Long primaryKey;
 
     @Column(nullable = false)

@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-verification-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-verification
+  template:
+    metadata:
+      labels:
+        app: payment-verification
+    spec:
+      containers:
+        - name: payment-verification-container
+          image: payment-verification:latest
+          ports:
+            - containerPort: 8080

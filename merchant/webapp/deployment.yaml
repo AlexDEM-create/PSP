@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: merchant-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: merchant
+  template:
+    metadata:
+      labels:
+        app: merchant
+    spec:
+      containers:
+        - name: merchant-container
+          image: merchant:latest
+          ports:
+            - containerPort: 8080

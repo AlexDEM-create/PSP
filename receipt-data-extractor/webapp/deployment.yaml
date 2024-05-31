@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: receipt-data-extractor-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: receipt-data-extractor
+  template:
+    metadata:
+      labels:
+        app: receipt-data-extractor
+    spec:
+      containers:
+        - name: receipt-data-extractor-container
+          image: receipt-data-extractor:latest
+          ports:
+            - containerPort: 8080

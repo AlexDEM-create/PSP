@@ -40,6 +40,18 @@
             <version>0.0.1-SNAPSHOT</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.flacko</groupId>
+            <artifactId>trader-team-impl</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.flacko</groupId>
+            <artifactId>payment-method-impl</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
 
         <dependency>
             <groupId>com.flacko</groupId>
@@ -56,18 +68,6 @@
         <dependency>
             <groupId>com.flacko</groupId>
             <artifactId>merchant-impl</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.flacko</groupId>
-            <artifactId>trader-team-impl</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.flacko</groupId>
-            <artifactId>payment-method-impl</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
