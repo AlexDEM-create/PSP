@@ -72,7 +72,7 @@ public class TraderTeamServiceImpl implements TraderTeamService {
                 .build()
                 .stream()
                 .filter(this::hasEnabledPaymentMethods)
-                .collect(Collectors.toList());
+                .toList();
 
         if (eligibleTeams.isEmpty()) {
             throw new NoEligibleTraderTeamsException();
