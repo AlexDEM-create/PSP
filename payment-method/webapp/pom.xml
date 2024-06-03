@@ -72,7 +72,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.flacko.card.webapp.CardApplication</mainClass>
+                            <mainClass>com.flacko.payment.method.webapp.PaymentMethodApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

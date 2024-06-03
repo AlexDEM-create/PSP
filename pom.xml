@@ -48,7 +48,6 @@
         <module>notification</module>
         <module>security</module>
         <module>common</module>
-        <module>migration</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

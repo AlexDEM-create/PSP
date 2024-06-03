@@ -97,8 +97,8 @@ CREATE TABLE IF NOT EXISTS payment_methods (
 );
 
 CREATE TABLE IF NOT EXISTS outgoing_payments (
-                                                 primary_key BIGSERIAL PRIMARY KEY,
-                                                 id VARCHAR(20) NOT NULL,
+    primary_key BIGSERIAL PRIMARY KEY,
+    id VARCHAR(20) NOT NULL,
     merchant_id VARCHAR(20) NOT NULL,
     trader_team_id VARCHAR(20) NOT NULL,
     payment_method_id VARCHAR(20) NOT NULL,
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS outgoing_payments (
     current_state VARCHAR(50) NOT NULL,
     created_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     updated_date TIMESTAMP WITHOUT TIME ZONE NOT NULL
-    );
+);
 
 CREATE TABLE IF NOT EXISTS merchants (
     primary_key BIGSERIAL PRIMARY KEY,
