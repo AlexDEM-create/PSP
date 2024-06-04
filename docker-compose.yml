@@ -16,6 +16,11 @@ services:
       - postgres
     ports:
       - "7432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U myuser -d fp" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
     container_name: pgadmin
@@ -32,6 +37,18 @@ services:
       - postgres
     restart: unless-stopped
 
+  flyway:
+    container_name: flyway
+    image: flyway/flyway:latest
+    command: -url=jdbc:postgresql://postgres:5432/fp -user=myuser -password=mypassword -locations=filesystem:/flyway/sql migrate
+    volumes:
+      - ./migration:/flyway/sql
+    networks:
+      - postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   appeal:
     container_name: appeal
     build:
@@ -46,6 +63,7 @@ services:
       - postgres
     depends_on:
       - postgres
+      - flyway
 
   balance:
     container_name: balance
@@ -61,8 +79,9 @@ services:
       - postgres
     depends_on:
       - postgres
+      - flyway
 
-  card:
+  payment-method:
     container_name: payment-method
     build:
       context: .
@@ -76,6 +95,7 @@ services:
       - postgres
     depends_on:
       - postgres
+      - flyway
 
   currency:
     container_name: currency
@@ -91,6 +111,7 @@ services:
       - postgres
     depends_on:
       - postgres
+      - flyway
 
   merchant:
     container_name: merchant
@@ -106,6 +127,7 @@ services:
       - postgres
     depends_on:
       - postgres
+      - flyway
 
   payment:
     container_name: payment
@@ -121,6 +143,7 @@ services:
       - postgres
     depends_on:
       - postgres
+      - flyway
 
   payment-verification:
     container_name: payment-verification
@@ -136,6 +159,7 @@ services:
       - postgres
     depends_on:
       - postgres
+      - flyway
 
   terminal:
     container_name: terminal
@@ -151,6 +175,7 @@ services:
       - postgres
     depends_on:
       - postgres
+      - flyway
 
   trader-team:
     container_name: trader-team
@@ -166,6 +191,7 @@ services:
       - postgres
     depends_on:
       - postgres
+      - flyway
 
   user:
     container_name: user
@@ -181,6 +207,7 @@ services:
       - postgres
     depends_on:
       - postgres
+      - flyway
 
   receipt-data-extractor:
     container_name: receipt-data-extractor
