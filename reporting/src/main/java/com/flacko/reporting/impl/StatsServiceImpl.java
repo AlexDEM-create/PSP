@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -65,7 +66,7 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @SuppressWarnings("unused")
-    @Scheduled(fixedRate = 600000)
+    @Scheduled(fixedRate = 6000)
     public void updateStats() throws StatsNotFoundException, TraderTeamNotFoundException, StatsMissingRequiredAttributeException, MerchantNotFoundException {
         // Получить список всех существующих EntityType
         List<EntityType> entityTypes = List.of(EntityType.values());
@@ -87,10 +88,10 @@ public class StatsServiceImpl implements StatsService {
                 }
 
                 // Вычислить новую статистику
-                BigDecimal newOutgoingTotal = calculateOutgoingTotal(entityId);
-                BigDecimal newIncomingTotal = calculateIncomingTotal(entityId);
-                BigDecimal newAllTimeOutgoingTotal = calculateAllTimeOutgoingTotal(entityId);
-                BigDecimal newAllTimeIncomingTotal = calculateAllTimeIncomingTotal(entityId);
+                BigDecimal newOutgoingTotal = calculateOutgoingTotal(entityId, entityType);
+                BigDecimal newIncomingTotal = calculateIncomingTotal(entityId, entityType);
+                BigDecimal newAllTimeOutgoingTotal = calculateAllTimeOutgoingTotal(entityId, entityType);
+                BigDecimal newAllTimeIncomingTotal = calculateAllTimeIncomingTotal(entityId, entityType);
 
                 // Обновить статистику
                 update(entityId, entityType)
@@ -102,7 +103,6 @@ public class StatsServiceImpl implements StatsService {
             }
         }
     }
-
     private List<String> getEntityIds(EntityType entityType) {
         switch (entityType) {
             case MERCHANT:
@@ -115,52 +115,57 @@ public class StatsServiceImpl implements StatsService {
                 throw new IllegalArgumentException("Unsupported entity type: " + entityType);
         }
     }
-    private BigDecimal calculateOutgoingTotal(String entityId) {
+    private BigDecimal calculateOutgoingTotal(String entityId, EntityType entityType) {
         List<OutgoingPayment> outgoingPayments = outgoingPaymentService.list().build();
         LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime now = LocalDateTime.now();
         BigDecimal total = outgoingPayments.stream()
-                .filter(payment -> payment.getId().equals(entityId))
+                .filter(payment -> (entityType == EntityType.MERCHANT && payment.getMerchantId().equals(entityId))
+                        || (entityType == EntityType.TRADER_TEAM && payment.getTraderTeamId().equals(entityId)))
                 .filter(payment -> payment.getCurrentState().equals(PaymentState.VERIFIED))
-                .filter(payment -> LocalDateTime.from(payment.getCreatedDate()).isAfter(startOfDay)
-                        && LocalDateTime.from(payment.getCreatedDate()).isBefore(now))
+                .filter(payment -> payment.getCreatedDate().atZone(ZoneId.systemDefault()).toLocalDateTime().isAfter(startOfDay)
+                        && payment.getCreatedDate().atZone(ZoneId.systemDefault()).toLocalDateTime().isBefore(now))
                 .map(OutgoingPayment::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         return total;
     }
-    private BigDecimal calculateIncomingTotal(String entityId) {
-        List<IncomingPayment> incomingPayments =  incomingPaymentService.list().build();
+    private BigDecimal calculateIncomingTotal(String entityId, EntityType entityType) {
+        List<IncomingPayment> incomingPayments = incomingPaymentService.list().build();
         LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime now = LocalDateTime.now();
         BigDecimal total = incomingPayments.stream()
-                .filter(payment -> payment.getId().equals(entityId))
+                .filter(payment -> (entityType == EntityType.MERCHANT && payment.getMerchantId().equals(entityId))
+                        || (entityType == EntityType.TRADER_TEAM && payment.getTraderTeamId().equals(entityId)))
                 .filter(payment -> payment.getCurrentState().equals(PaymentState.VERIFIED))
-                .filter(payment -> LocalDateTime.from(payment.getCreatedDate()).isAfter(startOfDay)
-                        && LocalDateTime.from(payment.getCreatedDate()).isBefore(now))
+                .filter(payment -> payment.getCreatedDate().atZone(ZoneId.systemDefault()).toLocalDateTime().isAfter(startOfDay)
+                        && payment.getCreatedDate().atZone(ZoneId.systemDefault()).toLocalDateTime().isBefore(now))
                 .map(IncomingPayment::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         return total;
     }
 
-    private BigDecimal calculateAllTimeOutgoingTotal(String entityId) {
+    private BigDecimal calculateAllTimeOutgoingTotal(String entityId, EntityType entityType) {
         List<OutgoingPayment> allTimeOutgoingPayments = outgoingPaymentService.list().build();
         BigDecimal total = allTimeOutgoingPayments.stream()
-                .filter(payment -> payment.getId().equals(entityId))
+                .filter(payment -> (entityType == EntityType.MERCHANT && payment.getMerchantId().equals(entityId))
+                        || (entityType == EntityType.TRADER_TEAM && payment.getTraderTeamId().equals(entityId)))
                 .filter(payment -> payment.getCurrentState().equals(PaymentState.VERIFIED))
                 .map(OutgoingPayment::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         return total;
     }
 
-    private BigDecimal calculateAllTimeIncomingTotal(String entityId) {
+    private BigDecimal calculateAllTimeIncomingTotal(String entityId, EntityType entityType) {
         List<IncomingPayment> allTimeIncomingPayments = incomingPaymentService.list().build();
         BigDecimal total = allTimeIncomingPayments.stream()
-                .filter(payment -> payment.getId().equals(entityId))
+                .filter(payment -> (entityType == EntityType.MERCHANT && payment.getMerchantId().equals(entityId))
+                        || (entityType == EntityType.TRADER_TEAM && payment.getTraderTeamId().equals(entityId)))
                 .filter(payment -> payment.getCurrentState().equals(PaymentState.VERIFIED))
                 .map(IncomingPayment::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         return total;
     }
+
 
 
 
