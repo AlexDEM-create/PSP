@@ -15,5 +15,6 @@ spec:
       containers:
         - name: appeal-container
           image: appeal:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080

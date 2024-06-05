@@ -15,5 +15,6 @@ spec:
       containers:
         - name: balance-container
           image: balance:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080

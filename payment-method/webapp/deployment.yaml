@@ -15,5 +15,6 @@ spec:
       containers:
         - name: payment-method-container
           image: payment-method:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080

@@ -15,5 +15,6 @@ spec:
       containers:
         - name: terminal-container
           image: terminal:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080

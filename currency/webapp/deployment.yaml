@@ -15,5 +15,6 @@ spec:
       containers:
         - name: currency-container
           image: currency:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080

@@ -15,5 +15,6 @@ spec:
       containers:
         - name: user-container
           image: user:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080

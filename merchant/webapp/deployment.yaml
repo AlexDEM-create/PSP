@@ -15,5 +15,6 @@ spec:
       containers:
         - name: merchant-container
           image: merchant:latest
+          imagePullPolicy: Never
           ports:
             - containerPort: 8080
