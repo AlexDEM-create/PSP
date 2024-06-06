@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: receipt-data-extractor-container
-          image: receipt-data-extractor:latest
-          imagePullPolicy: Never
+          image: localhost:5000/receipt-data-extractor:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

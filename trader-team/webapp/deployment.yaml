@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: trader-team-container
-          image: trader-team:latest
-          imagePullPolicy: Never
+          image: localhost:5000/trader-team:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
