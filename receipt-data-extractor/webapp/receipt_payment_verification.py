@@ -1,5 +1,5 @@
-import PyPDF2
 print(sys.path)
+import PyPDF2
 import logging
 import re
 from flask import Flask, request, jsonify
