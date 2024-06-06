@@ -6,12 +6,6 @@ COPY receipt-data-extractor/webapp /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip list
-
-RUN ls -l /usr/local/lib/python3.12/site-packages
-
 EXPOSE 8080
 
-ENV PYTHONPATH=/usr/local/lib/python3.12/site-packages
-
-CMD ["python", "receipt_payment_verification.py"]
+CMD ["sh", "-c", "PYTHONPATH=/usr/local/lib/python3.12/site-packages python receipt_payment_verification.py"]
