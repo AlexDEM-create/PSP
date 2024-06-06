@@ -2,8 +2,8 @@ FROM python:3.11-alpine3.20
 
 WORKDIR /app
 
-apk update
-apk add py3-pypdf2
+RUN apk update
+RUN apk add py3-pypdf2
 
 COPY receipt-data-extractor/webapp /app
 
