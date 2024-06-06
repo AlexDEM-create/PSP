@@ -1,15 +1,13 @@
-FROM python:3.12.3-alpine3.19
+FROM python:3.11-alpine3.20
 
 WORKDIR /app
 
+apk update
+apk add py3-pypdf2
+
 COPY receipt-data-extractor/webapp /app
 
-RUN python3 -m pip cache purge
-
-RUN python3 -m pip install --no-cache-dir PyPDF2
 RUN python3 -m pip install --no-cache-dir flask unidecode
-
-ENV PYTHONPATH=/usr/local/lib/python3.12/site-packages
 
 EXPOSE 8080
 
