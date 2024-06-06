@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY receipt-data-extractor/webapp /app
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python3 -m install --no-cache-dir -r requirements.txt
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "PYTHONPATH=/usr/local/lib/python3.12/site-packages python receipt_payment_verification.py"]
+CMD ["python3", "receipt_payment_verification.py"]
