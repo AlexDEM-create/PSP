@@ -4,11 +4,10 @@ WORKDIR /app
 
 COPY receipt-data-extractor/webapp /app
 
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
 RUN pip install --no-cache-dir -r requirements.txt
-
-RUN pip list
-
-ENV PYTHONPATH=/usr/local/lib/python3.12/site-packages
 
 EXPOSE 8080
 
