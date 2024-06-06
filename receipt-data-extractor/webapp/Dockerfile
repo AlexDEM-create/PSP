@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY receipt-data-extractor/webapp /app
 
+RUN python3 -m pip cache purge
+
 RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8080
