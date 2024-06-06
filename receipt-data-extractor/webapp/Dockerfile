@@ -6,6 +6,8 @@ COPY receipt-data-extractor/webapp /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN pip list
+
 EXPOSE 8080
 
 CMD ["python", "receipt_payment_verification.py"]
