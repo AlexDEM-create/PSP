@@ -1,6 +1,6 @@
 FROM python:3.12.3-alpine3.19
 
-RUN pip3 install -r requirements.txt
+RUN pip3 install PyPDF2 flask unidecode
 
 WORKDIR /app
 
