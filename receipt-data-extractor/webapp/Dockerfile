@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY receipt-data-extractor/webapp /app
 
-RUN python3 -m pip install --no-cache-dir -r requirements.txt
+RUN pip install pipenv && pipenv requirements >> requirements.txt && pip install -r requirements.txt
 
 EXPOSE 8080
 
-CMD ["python3", "receipt_payment_verification.py"]
+CMD ["sh", "-c", "python", "receipt_payment_verification.py"]
