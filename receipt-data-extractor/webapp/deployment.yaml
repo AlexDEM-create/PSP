@@ -18,3 +18,5 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
+          workingDir: /app
+          command: ["python3", "receipt_payment_verification.py"]
