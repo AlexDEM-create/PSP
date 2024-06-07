@@ -79,3 +79,10 @@ spec:
                 name: trader-team-service
                 port:
                   number: 8080
+          - path: /payment-verifications/receipts/extract-data
+            pathType: Prefix
+            backend:
+              service:
+                name: receipt-data-extractor-service
+                port:
+                  number: 8080
