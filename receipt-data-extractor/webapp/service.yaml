@@ -3,10 +3,9 @@ kind: Service
 metadata:
   name: receipt-data-extractor-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-    - name: http
-      port: 80
+    - port: 8080
       targetPort: 8080
   selector:
     app: receipt-data-extractor

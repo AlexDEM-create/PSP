@@ -1,0 +1,81 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: spring-boot-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: yourdomain.com
+      http:
+        paths:
+          - path: /users
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 8080
+          - path: /balances
+            pathType: Prefix
+            backend:
+              service:
+                name: balance-service
+                port:
+                  number: 8080
+          - path: /outgoing-payments
+            pathType: Prefix
+            backend:
+              service:
+                name: payment-service
+                port:
+                  number: 8080
+          - path: /incoming-payments
+            pathType: Prefix
+            backend:
+              service:
+                name: payment-service
+                port:
+                  number: 8080
+          - path: /appeals
+            pathType: Prefix
+            backend:
+              service:
+                name: appeal-service
+                port:
+                  number: 8080
+          - path: /merchants
+            pathType: Prefix
+            backend:
+              service:
+                name: merchant-service
+                port:
+                  number: 8080
+          - path: /payment-methods
+            pathType: Prefix
+            backend:
+              service:
+                name: payment-method-service
+                port:
+                  number: 8080
+          - path: /payment-verifications
+            pathType: Prefix
+            backend:
+              service:
+                name: payment-verification-service
+                port:
+                  number: 8080
+          - path: /terminals
+            pathType: Prefix
+            backend:
+              service:
+                name: terminal-service
+                port:
+                  number: 8080
+          - path: /trader-teams
+            pathType: Prefix
+            backend:
+              service:
+                name: trader-team-service
+                port:
+                  number: 8080

@@ -3,9 +3,9 @@ kind: Service
 metadata:
   name: payment-method-service
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
-    - port: 80
+    - port: 8080
       targetPort: 8080
   selector:
     app: payment-method
