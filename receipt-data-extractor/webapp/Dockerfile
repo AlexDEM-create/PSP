@@ -1,6 +1,6 @@
-FROM python:3.12.3-alpine3.19
+FROM python:3.8-slim
 
-RUN pip3 install PyPDF2 flask unidecode
+RUN pip install PyPDF2 flask unidecode
 
 WORKDIR /app
 
