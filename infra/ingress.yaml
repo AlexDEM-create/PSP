@@ -6,8 +6,7 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
-    - host: 93.123.72.69
-      http:
+    - http:
         paths:
           - path: /users
             pathType: Prefix
