@@ -1,10 +1,7 @@
-import sys
-sys.path.append('/usr/local/lib/python3.12/site-packages')
-
+from flask import Flask, request, jsonify
 import PyPDF2
 import logging
 import re
-from flask import Flask, request, jsonify
 from unidecode import unidecode
 
 app = Flask(__name__)
