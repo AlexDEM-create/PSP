@@ -15,6 +15,6 @@ spec:
       containers:
         - name: user-container
           image: localhost:5000/user:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080

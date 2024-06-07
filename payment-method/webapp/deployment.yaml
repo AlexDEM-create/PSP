@@ -15,6 +15,6 @@ spec:
       containers:
         - name: payment-method-container
           image: localhost:5000/payment-method:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080

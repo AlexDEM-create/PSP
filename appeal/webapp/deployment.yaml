@@ -15,6 +15,6 @@ spec:
       containers:
         - name: appeal-container
           image: localhost:5000/appeal:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080

@@ -15,6 +15,6 @@ spec:
       containers:
         - name: balance-container
           image: localhost:5000/balance:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080

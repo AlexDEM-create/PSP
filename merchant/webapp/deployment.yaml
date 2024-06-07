@@ -15,6 +15,6 @@ spec:
       containers:
         - name: merchant-container
           image: localhost:5000/merchant:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
