@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
-import PyPDF2
-import logging
-import re
 from unidecode import unidecode
+import re
+import logging
+import PyPDF2
 
 app = Flask(__name__)
 
