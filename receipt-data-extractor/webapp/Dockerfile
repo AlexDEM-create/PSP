@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY receipt-data-extractor/webapp /app
 
-RUN unset -v PYTHONPATH
-
 RUN python3 -m pip install --no-cache-dir -r requirements.txt -t /app
+
+ENV PYTHONPATH=/app
 
 EXPOSE 8080
 
