@@ -3,82 +3,84 @@ kind: Ingress
 metadata:
   name: spring-boot-ingress
   annotations:
-    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: nginx
   rules:
-    - http:
+    - host: flackopay.com
+      http:
         paths:
-          - path: /users
+          - path: /api/users
             pathType: Prefix
             backend:
               service:
                 name: user-service
                 port:
                   number: 8080
-          - path: /balances
+          - path: /api/balances
             pathType: Prefix
             backend:
               service:
                 name: balance-service
                 port:
                   number: 8080
-          - path: /outgoing-payments
+          - path: /api/outgoing-payments
             pathType: Prefix
             backend:
               service:
                 name: payment-service
                 port:
                   number: 8080
-          - path: /incoming-payments
+          - path: /api/incoming-payments
             pathType: Prefix
             backend:
               service:
                 name: payment-service
                 port:
                   number: 8080
-          - path: /appeals
+          - path: /api/appeals
             pathType: Prefix
             backend:
               service:
                 name: appeal-service
                 port:
                   number: 8080
-          - path: /merchants
+          - path: /api/merchants
             pathType: Prefix
             backend:
               service:
                 name: merchant-service
                 port:
                   number: 8080
-          - path: /payment-methods
+          - path: /api/payment-methods
             pathType: Prefix
             backend:
               service:
                 name: payment-method-service
                 port:
                   number: 8080
-          - path: /payment-verifications
+          - path: /api/payment-verifications
             pathType: Prefix
             backend:
               service:
                 name: payment-verification-service
                 port:
                   number: 8080
-          - path: /terminals
+          - path: /api/terminals
             pathType: Prefix
             backend:
               service:
                 name: terminal-service
                 port:
                   number: 8080
-          - path: /trader-teams
+          - path: /api/trader-teams
             pathType: Prefix
             backend:
               service:
                 name: trader-team-service
                 port:
                   number: 8080
-          - path: /payment-verifications/receipts/extract-data
+          - path: /api/payment-verifications/receipts/extract-data
             pathType: Prefix
             backend:
               service:
