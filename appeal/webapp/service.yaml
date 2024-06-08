@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: appeal-service
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 8080
       targetPort: 8080
+      nodePort: 30082
   selector:
     app: appeal

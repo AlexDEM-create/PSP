@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: terminal-service
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 8080
       targetPort: 8080
+      nodePort: 30090
   selector:
     app: terminal

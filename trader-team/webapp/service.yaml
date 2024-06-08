@@ -3,9 +3,10 @@ kind: Service
 metadata:
   name: trader-team-service
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 8080
       targetPort: 8080
+      nodePort: 30091
   selector:
     app: trader-team
