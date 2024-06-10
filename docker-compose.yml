@@ -226,7 +226,7 @@ services:
     container_name: frontend
     build:
       context: flacko-ui
-      dockerfile: flacko-ui/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "80:80"
     networks:
