@@ -5,7 +5,6 @@ import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.incoming.IncomingPaymentListBuilder;
 import com.flacko.payment.service.incoming.IncomingPaymentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin
 @RequestMapping("/incoming-payments")
 public class IncomingPaymentController {
 

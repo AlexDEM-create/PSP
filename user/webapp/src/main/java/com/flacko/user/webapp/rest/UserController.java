@@ -12,7 +12,6 @@ import com.flacko.user.service.exception.UserLoginAlreadyInUseException;
 import com.flacko.user.service.exception.UserMissingRequiredAttributeException;
 import com.flacko.user.service.exception.UserWeakPasswordException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin
 @RequestMapping("/users")
 public class UserController {
 

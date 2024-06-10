@@ -22,7 +22,6 @@ import com.flacko.payment.service.outgoing.OutgoingPaymentListBuilder;
 import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.security.SecurityConfig;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -39,7 +38,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin
 @RequestMapping("/outgoing-payments")
 public class OutgoingPaymentController {
 

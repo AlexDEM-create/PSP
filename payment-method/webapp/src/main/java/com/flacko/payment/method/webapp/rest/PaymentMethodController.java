@@ -12,7 +12,6 @@ import com.flacko.payment.method.service.PaymentMethodService;
 import com.flacko.payment.method.service.exception.PaymentMethodInvalidBankCardNumberException;
 import com.flacko.payment.method.service.exception.PaymentMethodMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin
 @RequestMapping("/payment-methods")
 public class PaymentMethodController {
 

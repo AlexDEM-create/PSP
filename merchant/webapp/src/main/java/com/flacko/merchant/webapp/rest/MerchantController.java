@@ -13,7 +13,6 @@ import com.flacko.merchant.service.MerchantBuilder;
 import com.flacko.merchant.service.MerchantListBuilder;
 import com.flacko.merchant.service.MerchantService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,7 +28,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin
 @RequestMapping("/merchants")
 public class MerchantController {
 

@@ -25,7 +25,6 @@ import com.flacko.trader.team.service.exception.TraderTeamIllegalLeaderException
 import com.flacko.trader.team.service.exception.TraderTeamInvalidFeeRateException;
 import com.flacko.trader.team.service.exception.TraderTeamMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -42,7 +41,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin
 @RequestMapping("/trader-teams")
 public class TraderTeamController {
 
