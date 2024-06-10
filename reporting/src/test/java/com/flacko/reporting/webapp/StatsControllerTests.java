@@ -105,8 +105,8 @@ public class StatsControllerTests {
 
     @BeforeEach
     public void setup() throws Exception {
-
-
+        ((StatsServiceImpl) statsService).updateStats();
+        Thread.sleep(11000);
 
         User merchantUser = userService.create()
                 .withLogin(RandomStringUtils.randomAlphanumeric(10))
@@ -297,14 +297,14 @@ public class StatsControllerTests {
                 .build();
 
 
-        ((StatsServiceImpl) statsService).updateStats();
     }
 
     @Test
     public void testGetStatsForTraderTeam() throws Exception {
 
 
-        mockMvc.perform(get("/stats/trader-teams/{traderTeamId}", traderTeamId1))
+
+    mockMvc.perform(get("/stats/trader-teams/{traderTeamId}", traderTeamId1))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").exists())

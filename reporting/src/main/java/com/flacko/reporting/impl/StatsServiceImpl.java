@@ -12,6 +12,8 @@ import com.flacko.payment.service.outgoing.OutgoingPayment;
 import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,6 +44,7 @@ public class StatsServiceImpl implements StatsService {
     private final TraderTeamService traderTeamService;
     private final OutgoingPaymentService outgoingPaymentService;
     private final IncomingPaymentService incomingPaymentService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(StatsServiceImpl.class);
 
 
     @Override
@@ -66,8 +69,9 @@ public class StatsServiceImpl implements StatsService {
     }
 
     @SuppressWarnings("unused")
-    @Scheduled(fixedRate = 6000)
+    @Scheduled(fixedRate = 10000)
     public void updateStats() throws StatsNotFoundException, TraderTeamNotFoundException, StatsMissingRequiredAttributeException, MerchantNotFoundException {
+        LOGGER.info("updateStats: begin");
         // Получить список всех существующих EntityType
         List<EntityType> entityTypes = List.of(EntityType.values());
 
@@ -86,9 +90,8 @@ public class StatsServiceImpl implements StatsService {
                     // Если статистики не существует, создать новую
                     existingStats = create().withEntityId(entityId).withEntityType(entityType).build();
                 }
-
                 // Вычислить новую статистику
-                BigDecimal newOutgoingTotal = calculateOutgoingTotal(entityId, entityType);
+                BigDecimal newOutgoingTotal = calculateTodayOutgoingTotal(entityId, entityType);
                 BigDecimal newIncomingTotal = calculateIncomingTotal(entityId, entityType);
                 BigDecimal newAllTimeOutgoingTotal = calculateAllTimeOutgoingTotal(entityId, entityType);
                 BigDecimal newAllTimeIncomingTotal = calculateAllTimeIncomingTotal(entityId, entityType);
@@ -102,6 +105,7 @@ public class StatsServiceImpl implements StatsService {
                         .build();
             }
         }
+        LOGGER.info("updateStats: end");
     }
     private List<String> getEntityIds(EntityType entityType) {
         switch (entityType) {
@@ -115,7 +119,7 @@ public class StatsServiceImpl implements StatsService {
                 throw new IllegalArgumentException("Unsupported entity type: " + entityType);
         }
     }
-    private BigDecimal calculateOutgoingTotal(String entityId, EntityType entityType) {
+    private BigDecimal calculateTodayOutgoingTotal(String entityId, EntityType entityType) {
         List<OutgoingPayment> outgoingPayments = outgoingPaymentService.list().build();
         LocalDateTime startOfDay = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime now = LocalDateTime.now();
@@ -165,8 +169,4 @@ public class StatsServiceImpl implements StatsService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         return total;
     }
-
-
-
-
 }
