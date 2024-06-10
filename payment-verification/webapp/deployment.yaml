@@ -14,6 +14,7 @@ spec:
     spec:
       containers:
         - name: payment-verification-container
-          image: payment-verification:latest
+          image: localhost:5000/payment-verification:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080

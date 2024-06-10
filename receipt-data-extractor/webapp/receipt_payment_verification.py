@@ -1,8 +1,8 @@
-import PyPDF2
-import logging
-import re
 from flask import Flask, request, jsonify
 from unidecode import unidecode
+import re
+import logging
+import PyPDF2
 
 app = Flask(__name__)
 
@@ -67,4 +67,4 @@ def upload_receipt():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8091)
+    app.run(debug=True, port=8080)

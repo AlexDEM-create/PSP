@@ -1,7 +1,5 @@
 FROM python:3.12.3-alpine3.19
 WORKDIR /app
-COPY .. /app
-RUN pip install PyPDF2 flask unidecode
-COPY receipt-data-extractor/webapp/receipt_payment_verification.py receipt_payment_verification.py
-EXPOSE 8080
+RUN pip install --no-cache-dir install PyPDF2 flask unidecode
+COPY receipt-data-extractor/webapp/receipt_payment_verification.py /app/receipt_payment_verification.py
 CMD ["python", "receipt_payment_verification.py"]

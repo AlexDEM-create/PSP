@@ -1,0 +1,1 @@
+insert into users (banned, created_date, updated_date, id, login, password, role) values (false, '2024-06-09 23:59:53.036239+03', '2024-06-09 23:59:53.036239+03', 'setzns67f0zg32z839dd', 'johann', '$2a$10$/aQCAaVBYOx2/WfaSib8HeOeRx0s8M3T7axRYfQGL8rI3lU76yrEe', 'USER_ADMIN');
