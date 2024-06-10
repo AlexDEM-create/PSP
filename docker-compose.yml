@@ -228,7 +228,7 @@ services:
       context: ./flacko-ui
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "9000:9000"
     networks:
       - backend
       - postgres
