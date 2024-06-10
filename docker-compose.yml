@@ -40,7 +40,7 @@ services:
   flyway:
     container_name: flyway
     image: flyway/flyway:latest
-    command: -url=jdbc:postgresql://185.191.127.194:5432/fp -user=myuser -password=mypassword -locations=filesystem:/flyway/sql migrate
+    command: -url=jdbc:postgresql://185.191.127.194:5432/fp -user=postgres -password=GFmyjF3eN6d5 -locations=filesystem:/flyway/sql migrate
     volumes:
       - ./migration:/flyway/sql
     networks:
