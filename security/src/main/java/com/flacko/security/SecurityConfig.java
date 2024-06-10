@@ -36,6 +36,7 @@ public class SecurityConfig {
         authenticationFilter.setFilterProcessesUrl(LOGIN_PATH);
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(LOGIN_PATH).permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS).permitAll())
