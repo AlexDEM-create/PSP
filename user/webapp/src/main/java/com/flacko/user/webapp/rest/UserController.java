@@ -1,15 +1,28 @@
 package com.flacko.user.webapp.rest;
 
 import com.auth0.jwt.JWT;
-import com.flacko.common.role.UserRole;
 import com.flacko.common.exception.UserNotFoundException;
+import com.flacko.common.role.UserRole;
 import com.flacko.security.SecurityConfig;
-import com.flacko.user.service.*;
+import com.flacko.user.service.User;
+import com.flacko.user.service.UserBuilder;
+import com.flacko.user.service.UserListBuilder;
+import com.flacko.user.service.UserService;
 import com.flacko.user.service.exception.UserLoginAlreadyInUseException;
 import com.flacko.user.service.exception.UserMissingRequiredAttributeException;
 import com.flacko.user.service.exception.UserWeakPasswordException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +30,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 @RequestMapping("/users")
 public class UserController {
 

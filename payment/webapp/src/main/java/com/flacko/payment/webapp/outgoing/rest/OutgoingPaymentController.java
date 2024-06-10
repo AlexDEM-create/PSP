@@ -3,7 +3,17 @@ package com.flacko.payment.webapp.outgoing.rest;
 import com.auth0.jwt.JWT;
 import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.*;
+import com.flacko.common.exception.MerchantInsufficientOutgoingBalanceException;
+import com.flacko.common.exception.MerchantNotFoundException;
+import com.flacko.common.exception.NoEligibleTraderTeamsException;
+import com.flacko.common.exception.OutgoingPaymentIllegalStateTransitionException;
+import com.flacko.common.exception.OutgoingPaymentInvalidAmountException;
+import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
+import com.flacko.common.exception.PaymentMethodNotFoundException;
+import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UnauthorizedAccessException;
+import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.outgoing.OutgoingPayment;
@@ -12,7 +22,16 @@ import com.flacko.payment.service.outgoing.OutgoingPaymentListBuilder;
 import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.security.SecurityConfig;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +39,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 @RequestMapping("/outgoing-payments")
 public class OutgoingPaymentController {
 

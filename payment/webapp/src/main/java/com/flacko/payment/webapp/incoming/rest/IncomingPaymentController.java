@@ -5,7 +5,12 @@ import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.incoming.IncomingPaymentListBuilder;
 import com.flacko.payment.service.incoming.IncomingPaymentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +18,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 @RequestMapping("/incoming-payments")
 public class IncomingPaymentController {
 
@@ -52,7 +58,8 @@ public class IncomingPaymentController {
     }
 
 //    @PostMapping("/initiate/incoming")
-//    public IncomingPaymentInitiateResponse initiateIncoming(@RequestBody IncomingPaymentInitiateRequest paymentInitiateRequest) {
+//    public IncomingPaymentInitiateResponse initiateIncoming(@RequestBody IncomingPaymentInitiateRequest
+//    paymentInitiateRequest) {
 //        return incomingPaymentRestMapper.mapToInitiateResponse(
 //                paymentService.create(incomingPaymentRestMapper.mapToModel(paymentInitiateRequest)));
 //    }

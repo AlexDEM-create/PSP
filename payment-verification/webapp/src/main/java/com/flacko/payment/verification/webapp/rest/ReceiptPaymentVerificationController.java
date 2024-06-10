@@ -1,12 +1,38 @@
 package com.flacko.payment.verification.webapp.rest;
 
-import com.flacko.common.exception.*;
+import com.flacko.common.exception.BalanceInvalidCurrentBalanceException;
+import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
+import com.flacko.common.exception.BalanceNotFoundException;
+import com.flacko.common.exception.IncomingPaymentNotFoundException;
+import com.flacko.common.exception.MerchantInsufficientOutgoingBalanceException;
+import com.flacko.common.exception.MerchantInvalidFeeRateException;
+import com.flacko.common.exception.MerchantMissingRequiredAttributeException;
+import com.flacko.common.exception.MerchantNotFoundException;
+import com.flacko.common.exception.OutgoingPaymentIllegalStateTransitionException;
+import com.flacko.common.exception.OutgoingPaymentInvalidAmountException;
+import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
+import com.flacko.common.exception.PaymentMethodNotFoundException;
+import com.flacko.common.exception.ReceiptPaymentVerificationNotFoundException;
+import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationListBuilder;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationService;
-import com.flacko.payment.verification.receipt.service.exception.*;
+import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationCurrencyNotSupportedException;
+import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationFailedException;
+import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationInvalidAmountException;
+import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationMissingRequiredAttributeException;
+import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationRequestValidationException;
+import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationUnexpectedAmountException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -15,6 +41,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin
 @RequestMapping("/payment-verifications/receipts")
 public class ReceiptPaymentVerificationController {
 
@@ -59,7 +86,8 @@ public class ReceiptPaymentVerificationController {
             PaymentMethodNotFoundException, MerchantNotFoundException, BalanceMissingRequiredAttributeException,
             OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
             OutgoingPaymentInvalidAmountException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
-            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException, MerchantInsufficientOutgoingBalanceException {
+            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException,
+            MerchantInsufficientOutgoingBalanceException {
         return receiptPaymentVerificationRestMapper.mapModelToResponse(
                 receiptPaymentVerificationService.verify(file, outgoingPaymentId, paymentMethodId));
     }
