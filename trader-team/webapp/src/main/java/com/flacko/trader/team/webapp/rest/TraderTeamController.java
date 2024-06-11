@@ -106,10 +106,10 @@ public class TraderTeamController {
                 .withUserId(traderTeamCreateRequest.userId())
                 .withCountry(traderTeamCreateRequest.country())
                 .withLeaderId(traderTeamCreateRequest.leaderId())
-                .withTraderIncomingFeeRate(traderTeamCreateRequest.traderIncomingFeeRate())
-                .withTraderOutgoingFeeRate(traderTeamCreateRequest.traderOutgoingFeeRate())
-                .withLeaderIncomingFeeRate(traderTeamCreateRequest.leaderIncomingFeeRate())
-                .withLeaderOutgoingFeeRate(traderTeamCreateRequest.leaderOutgoingFeeRate());
+                .withTraderIncomingFeeRate(traderTeamCreateRequest.traderIncomingFeeRate().movePointLeft(2))
+                .withTraderOutgoingFeeRate(traderTeamCreateRequest.traderOutgoingFeeRate().movePointLeft(2))
+                .withLeaderIncomingFeeRate(traderTeamCreateRequest.leaderIncomingFeeRate().movePointLeft(2))
+                .withLeaderOutgoingFeeRate(traderTeamCreateRequest.leaderOutgoingFeeRate().movePointLeft(2));
         TraderTeam traderTeam = builder.build();
         return traderTeamRestMapper.mapModelToResponse(traderTeam);
     }

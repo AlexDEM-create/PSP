@@ -75,8 +75,8 @@ public class MerchantController {
         builder.withName(merchantCreateRequest.name())
                 .withUserId(merchantCreateRequest.userId())
                 .withCountry(merchantCreateRequest.country())
-                .withIncomingFeeRate(merchantCreateRequest.incomingFeeRate())
-                .withOutgoingFeeRate(merchantCreateRequest.outgoingFeeRate());
+                .withIncomingFeeRate(merchantCreateRequest.incomingFeeRate().movePointLeft(2))
+                .withOutgoingFeeRate(merchantCreateRequest.outgoingFeeRate().movePointLeft(2));
         if (merchantCreateRequest.webhook().isPresent()) {
             builder.withWebhook(merchantCreateRequest.webhook().get());
         }

@@ -16,7 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,17 +41,12 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 String username = decodedJWT.getSubject();
                 String[] roles = decodedJWT.getClaim(JWT_CLAIM_ROLES).asArray(String.class);
 
-                log.error("Decoded JWT: username={}, roles={}", username, Arrays.toString(roles));
-
                 Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 stream(roles).forEach(role -> {
                     authorities.add(new SimpleGrantedAuthority(role));
                 });
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(username, null, authorities);
-
-                log.error("Authorities set in context: {} for username={}, authenticationToken={}", authorities,
-                        username, authenticationToken);
 
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 filterChain.doFilter(request, response);
