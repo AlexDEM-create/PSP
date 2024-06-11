@@ -79,13 +79,13 @@ public class SecurityConfig {
                         "/trader-teams/*/kick-out", "/trader-teams/*/get-back")
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
 
+                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET, "/users/me")
+                        .permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/users")
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET,
                         "/users", "/users/*")
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
-                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET, "/users/me")
-                        .permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.DELETE, "/users/*")
                         .hasAnyAuthority(UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.PATCH,
