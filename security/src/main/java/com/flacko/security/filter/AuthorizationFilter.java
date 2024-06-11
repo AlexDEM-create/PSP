@@ -50,6 +50,10 @@ public class AuthorizationFilter extends OncePerRequestFilter {
                 });
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(username, null, authorities);
+
+                log.error("Authorities set in context: {} for username={}, authenticationToken={}", authorities,
+                        username, authenticationToken);
+
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 filterChain.doFilter(request, response);
             } catch (Exception e) {
