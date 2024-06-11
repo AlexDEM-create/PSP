@@ -17,6 +17,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -52,6 +53,9 @@ public class MerchantPojo implements Merchant {
     @Column(name = "outgoing_fee_rate", nullable = false, precision = 6, scale = 5)
     private BigDecimal outgoingFeeRate;
 
+    @Column(name = "webhook")
+    private URL webhook;
+
     @Column(name = "outgoing_traffic_stopped", nullable = false)
     private boolean outgoingTrafficStopped;
 
@@ -63,6 +67,10 @@ public class MerchantPojo implements Merchant {
 
     @Column(name = "deleted_date")
     private Instant deletedDate;
+
+    public Optional<URL> getWebhook() {
+        return Optional.ofNullable(webhook);
+    }
 
     public Optional<Instant> getDeletedDate() {
         return Optional.ofNullable(deletedDate);

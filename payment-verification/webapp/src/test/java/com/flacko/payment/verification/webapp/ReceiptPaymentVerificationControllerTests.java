@@ -41,6 +41,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URL;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -104,6 +105,7 @@ class ReceiptPaymentVerificationControllerTests {
                 .withCountry(Country.RUSSIA)
                 .withIncomingFeeRate(BigDecimal.valueOf(0.05))
                 .withOutgoingFeeRate(BigDecimal.valueOf(0.05))
+                .withWebhook(new URL("https://httpbin.org/post"))
                 .build();
         merchantId = merchant.getId();
         merchantOutgoingFeeRate = merchant.getOutgoingFeeRate();

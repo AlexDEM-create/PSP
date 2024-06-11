@@ -2,7 +2,15 @@ package com.flacko.payment.impl.outgoing;
 
 import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.*;
+import com.flacko.common.exception.MerchantInsufficientOutgoingBalanceException;
+import com.flacko.common.exception.MerchantNotFoundException;
+import com.flacko.common.exception.NoEligibleTraderTeamsException;
+import com.flacko.common.exception.OutgoingPaymentIllegalStateTransitionException;
+import com.flacko.common.exception.OutgoingPaymentInvalidAmountException;
+import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
+import com.flacko.common.exception.PaymentMethodNotFoundException;
+import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.common.operation.CrudOperation;
 import com.flacko.common.payment.RecipientPaymentMethodType;
@@ -15,18 +23,27 @@ import com.flacko.payment.service.outgoing.OutgoingPaymentBuilder;
 import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Optional;
+import java.util.Set;
 
 @Component
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @RequiredArgsConstructor
+@Slf4j
 public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentBuilder {
+
+    private static final Set<PaymentState> STATES_TO_NOTIFY = Set.of(PaymentState.VERIFIED);
 
     private final Instant now = Instant.now();
 
@@ -34,6 +51,7 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
     private final MerchantService merchantService;
     private final TraderTeamService traderTeamService;
     private final PaymentMethodService paymentMethodService;
+    private final RestTemplate restTemplate;
 
     private OutgoingPaymentPojo.OutgoingPaymentPojoBuilder pojoBuilder;
     private CrudOperation crudOperation;
@@ -140,10 +158,13 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
     public OutgoingPayment build() throws OutgoingPaymentMissingRequiredAttributeException,
             TraderTeamNotFoundException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException,
             MerchantNotFoundException, MerchantInsufficientOutgoingBalanceException {
-        OutgoingPaymentPojo payment = pojoBuilder.build();
-        validate(payment);
-        outgoingPaymentRepository.save(payment);
-        return payment;
+        OutgoingPaymentPojo outgoingPayment = pojoBuilder.build();
+        validate(outgoingPayment);
+        outgoingPaymentRepository.save(outgoingPayment);
+
+        notifyMerchant(outgoingPayment);
+
+        return outgoingPayment;
     }
 
     private void validate(OutgoingPaymentPojo pojo) throws OutgoingPaymentMissingRequiredAttributeException,
@@ -193,6 +214,27 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
         }
         if (pojo.getCurrentState() == null) {
             throw new OutgoingPaymentMissingRequiredAttributeException("currentState", Optional.of(pojo.getId()));
+        }
+    }
+
+    private void notifyMerchant(OutgoingPayment outgoingPayment) throws MerchantNotFoundException {
+        Merchant merchant = merchantService.get(outgoingPayment.getMerchantId());
+        if (merchant.getWebhook().isPresent() && STATES_TO_NOTIFY.contains(outgoingPayment.getCurrentState())) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            String jsonPayload = String.format("{\"id\":\"%s\",\"state\":\"%s\"}", outgoingPayment.getId(),
+                    outgoingPayment.getCurrentState());
+
+            HttpEntity<String> requestEntity = new HttpEntity<>(jsonPayload, headers);
+
+            try {
+                restTemplate.postForEntity(merchant.getWebhook().get().toString(), requestEntity, String.class);
+            } catch (Exception e) {
+                log.error("Failed to notify merchant {} via webhook {} about outgoing payment {} state change {}",
+                        outgoingPayment.getMerchantId(), merchant.getWebhook(), outgoingPayment.getId(),
+                        outgoingPayment.getCurrentState(), e);
+            }
         }
     }
 

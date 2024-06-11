@@ -77,6 +77,9 @@ public class MerchantController {
                 .withCountry(merchantCreateRequest.country())
                 .withIncomingFeeRate(merchantCreateRequest.incomingFeeRate())
                 .withOutgoingFeeRate(merchantCreateRequest.outgoingFeeRate());
+        if (merchantCreateRequest.webhook().isPresent()) {
+            builder.withWebhook(merchantCreateRequest.webhook().get());
+        }
         Merchant merchant = builder.build();
         return merchantRestMapper.mapModelToResponse(merchant);
     }

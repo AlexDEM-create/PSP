@@ -110,6 +110,18 @@ public class OutgoingPaymentController {
         return outgoingPaymentRestMapper.mapModelToCreateResponse(outgoingPayment);
     }
 
+    @PatchMapping("/{outgoingPaymentId}/verify")
+    public OutgoingPaymentCreateResponse verify(@PathVariable String outgoingPaymentId)
+            throws OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException,
+            MerchantInsufficientOutgoingBalanceException, TraderTeamNotFoundException,
+            OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
+            OutgoingPaymentInvalidAmountException, MerchantNotFoundException {
+        OutgoingPaymentBuilder builder = outgoingPaymentService.update(outgoingPaymentId);
+        builder.withState(PaymentState.VERIFYING);
+        OutgoingPayment outgoingPayment = builder.build();
+        return outgoingPaymentRestMapper.mapModelToCreateResponse(outgoingPayment);
+    }
+
     @PatchMapping("/{outgoingPaymentId}/reassign")
     public OutgoingPaymentResponse reassign(@RequestHeader("Authorization") String tokenWithPrefix,
                                             @PathVariable String outgoingPaymentId) throws UserNotFoundException,

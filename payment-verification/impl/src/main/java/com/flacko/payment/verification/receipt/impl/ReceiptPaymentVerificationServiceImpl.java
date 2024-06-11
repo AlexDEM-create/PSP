@@ -3,7 +3,22 @@ package com.flacko.payment.verification.receipt.impl;
 import com.flacko.balance.service.BalanceService;
 import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
-import com.flacko.common.exception.*;
+import com.flacko.common.exception.BalanceInvalidCurrentBalanceException;
+import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
+import com.flacko.common.exception.BalanceNotFoundException;
+import com.flacko.common.exception.IncomingPaymentNotFoundException;
+import com.flacko.common.exception.MerchantInsufficientOutgoingBalanceException;
+import com.flacko.common.exception.MerchantInvalidFeeRateException;
+import com.flacko.common.exception.MerchantMissingRequiredAttributeException;
+import com.flacko.common.exception.MerchantNotFoundException;
+import com.flacko.common.exception.OutgoingPaymentIllegalStateTransitionException;
+import com.flacko.common.exception.OutgoingPaymentInvalidAmountException;
+import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
+import com.flacko.common.exception.PaymentMethodNotFoundException;
+import com.flacko.common.exception.ReceiptPaymentVerificationNotFoundException;
+import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.receipt.ReceiptPattern;
 import com.flacko.common.receipt.ReceiptPatternType;
@@ -19,14 +34,23 @@ import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificatio
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationBuilder;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationListBuilder;
 import com.flacko.payment.verification.receipt.service.ReceiptPaymentVerificationService;
-import com.flacko.payment.verification.receipt.service.exception.*;
+import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationCurrencyNotSupportedException;
+import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationFailedException;
+import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationInvalidAmountException;
+import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationMissingRequiredAttributeException;
+import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationRequestValidationException;
+import com.flacko.payment.verification.receipt.service.exception.ReceiptPaymentVerificationUnexpectedAmountException;
 import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -81,7 +105,8 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
             BalanceNotFoundException, MerchantNotFoundException, BalanceMissingRequiredAttributeException,
             OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
             OutgoingPaymentInvalidAmountException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
-            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException, MerchantInsufficientOutgoingBalanceException {
+            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException,
+            MerchantInsufficientOutgoingBalanceException {
         if (file.isEmpty()) {
             throw new ReceiptPaymentVerificationRequestValidationException("Please upload a file.");
         }
@@ -122,10 +147,11 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
             // Клиент указывает, что хочет получить 5000 рублей на сбер по номеру телефона.
             // Трейдер может отправить деньги с любой зарегистрированной карты, просто указывая с какой именно
             // На основе этого мы можем подобрать паттерн для валидации чека
-            // Если клиент указывает номер карты, и банк клиента совпадает с банком выбранной трейдером карты, то подгружаем паттерн внутренних платежей
+            // Если клиент указывает номер карты, и банк клиента совпадает с банком выбранной трейдером карты, то
+            // подгружаем паттерн внутренних платежей
             // Если клиент указывает номер телефона, то выбираем паттерн банка для переводов по СБП
-            // Если клиент указывает номер карты, но банки не совпадают, то выбираем паттерн банка трейдера для внешних платежей
-
+            // Если клиент указывает номер карты, но банки не совпадают, то выбираем паттерн банка трейдера для
+            // внешних платежей
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 ReceiptExtractedData receiptExtractedData = response.getBody();

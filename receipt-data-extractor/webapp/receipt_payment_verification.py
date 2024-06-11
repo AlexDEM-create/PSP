@@ -35,7 +35,7 @@ def verify_data(pattern, text):
         return match.groupdict()
 
 
-@app.route('/payment-verifications/receipts/extract-data', methods=['POST'])
+@app.route('/api/payment-verifications/receipts/extract-data', methods=['POST'])
 def upload_receipt():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 403
