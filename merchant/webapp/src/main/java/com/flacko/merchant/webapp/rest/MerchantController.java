@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/merchants")
 public class MerchantController {
 
+    private static final String USER_ID = "user_id";
     private static final String COUNTRY = "country";
     private static final String OUTGOING_TRAFFIC_STOPPED = "outgoing_traffic_stopped";
     private static final String ARCHIVED = "archived";
@@ -41,12 +42,14 @@ public class MerchantController {
     private final MerchantRestMapper merchantRestMapper;
 
     @GetMapping
-    public List<MerchantResponse> list(@RequestParam(COUNTRY) Optional<Country> country,
+    public List<MerchantResponse> list(@RequestParam(USER_ID) Optional<String> userId,
+                                       @RequestParam(COUNTRY) Optional<Country> country,
                                        @RequestParam(OUTGOING_TRAFFIC_STOPPED) Optional<Boolean> outgoingTrafficStopped,
                                        @RequestParam(ARCHIVED) Optional<Boolean> archived,
                                        @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
                                        @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
         MerchantListBuilder builder = merchantService.list();
+        userId.ifPresent(builder::withUserId);
         country.ifPresent(builder::withCountry);
         outgoingTrafficStopped.ifPresent(builder::withOutgoingTrafficStopped);
         archived.ifPresent(builder::withArchived);

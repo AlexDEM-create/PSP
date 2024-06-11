@@ -2,6 +2,7 @@ package com.flacko.terminal.impl;
 
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.operation.CrudOperation;
 import com.flacko.terminal.service.Terminal;
 import com.flacko.terminal.service.TerminalBuilder;
 import com.flacko.terminal.service.exception.TerminalMissingRequiredAttributeException;
@@ -25,9 +26,11 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
     private final TraderTeamService traderTeamService;
 
     private TerminalPojo.TerminalPojoBuilder pojoBuilder;
+    private CrudOperation crudOperation;
 
     @Override
     public TerminalBuilder initializeNew() {
+        crudOperation = CrudOperation.CREATE;
         pojoBuilder = TerminalPojo.builder()
                 .id(new IdGenerator().generateId())
                 .verified(false)
@@ -38,6 +41,7 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
 
     @Override
     public TerminalBuilder initializeExisting(Terminal existingTerminal) {
+        crudOperation = CrudOperation.UPDATE;
         pojoBuilder = TerminalPojo.builder()
                 .primaryKey(existingTerminal.getPrimaryKey())
                 .id(existingTerminal.getId())
@@ -91,6 +95,7 @@ public class TerminalBuilderImpl implements InitializableTerminalBuilder {
 
     @Override
     public TerminalBuilder withArchived() {
+        crudOperation = CrudOperation.DELETE;
         pojoBuilder.deletedDate(now);
         return this;
     }

@@ -5,6 +5,7 @@ import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.TerminalNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.operation.CrudOperation;
 import com.flacko.payment.method.service.PaymentMethod;
 import com.flacko.payment.method.service.PaymentMethodBuilder;
 import com.flacko.payment.method.service.exception.PaymentMethodInvalidBankCardNumberException;
@@ -36,9 +37,11 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
     private final TerminalService terminalService;
 
     private PaymentMethodPojo.PaymentMethodPojoBuilder pojoBuilder;
+    private CrudOperation crudOperation;
 
     @Override
     public PaymentMethodBuilder initializeNew() {
+        crudOperation = CrudOperation.CREATE;
         pojoBuilder = PaymentMethodPojo.builder()
                 .id(new IdGenerator().generateId())
                 .enabled(false)
@@ -48,6 +51,7 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
 
     @Override
     public PaymentMethodBuilder initializeExisting(PaymentMethod existingPaymentMethod) {
+        crudOperation = CrudOperation.UPDATE;
         pojoBuilder = PaymentMethodPojo.builder()
                 .primaryKey(existingPaymentMethod.getPrimaryKey())
                 .id(existingPaymentMethod.getId())
@@ -122,6 +126,7 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
 
     @Override
     public PaymentMethodBuilder withArchived() {
+        crudOperation = CrudOperation.DELETE;
         pojoBuilder.deletedDate(now);
         return this;
     }

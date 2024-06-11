@@ -125,6 +125,7 @@ public class BalanceBuilderImpl implements InitializableBalanceBuilder {
 
     @Override
     public BalanceBuilder withArchived() {
+        crudOperation = CrudOperation.DELETE;
         pojoBuilder.deletedDate(now);
         return this;
     }

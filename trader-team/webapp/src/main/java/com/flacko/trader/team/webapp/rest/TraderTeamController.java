@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/trader-teams")
 public class TraderTeamController {
 
+    private static final String USER_ID = "user_id";
     private static final String VERIFIED = "verified";
     private static final String INCOMING_ONLINE = "incoming_online";
     private static final String OUTGOING_ONLINE = "outgoing_online";
@@ -58,7 +59,8 @@ public class TraderTeamController {
     private final TraderTeamRestMapper traderTeamRestMapper;
 
     @GetMapping
-    public List<TraderTeamResponse> list(@RequestParam(VERIFIED) Optional<Boolean> verified,
+    public List<TraderTeamResponse> list(@RequestParam(USER_ID) Optional<String> userId,
+                                         @RequestParam(VERIFIED) Optional<Boolean> verified,
                                          @RequestParam(INCOMING_ONLINE) Optional<Boolean> incomingOnline,
                                          @RequestParam(OUTGOING_ONLINE) Optional<Boolean> outgoingOnline,
                                          @RequestParam(KICKED_OUT) Optional<Boolean> kickedOut,
@@ -68,6 +70,7 @@ public class TraderTeamController {
                                          @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
                                          @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
         TraderTeamListBuilder builder = traderTeamService.list();
+        userId.ifPresent(builder::withUserId);
         verified.ifPresent(builder::withVerified);
         incomingOnline.ifPresent(builder::withIncomingOnline);
         outgoingOnline.ifPresent(builder::withOutgoingOnline);

@@ -70,12 +70,6 @@ public class TerminalController {
             throws TerminalMissingRequiredAttributeException, TraderTeamNotFoundException {
         TerminalBuilder builder = terminalService.create();
         builder.withTraderTeamId(terminalCreateRequest.traderTeamId());
-        if (terminalCreateRequest.model().isPresent()) {
-            builder.withModel(terminalCreateRequest.model().get());
-        }
-        if (terminalCreateRequest.operatingSystem().isPresent()) {
-            builder.withOperatingSystem(terminalCreateRequest.operatingSystem().get());
-        }
         Terminal terminal = builder.build();
         return terminalRestMapper.mapModelToResponse(terminal);
     }
@@ -90,10 +84,16 @@ public class TerminalController {
     }
 
     @PatchMapping("/{terminalId}/verify")
-    public TerminalResponse verify(@PathVariable String terminalId)
+    public TerminalResponse verify(@PathVariable String terminalId, TerminalVerifyRequest terminalVerifyRequest)
             throws TerminalNotFoundException, TerminalMissingRequiredAttributeException, TraderTeamNotFoundException {
         TerminalBuilder builder = terminalService.update(terminalId);
         builder.withVerified();
+        if (terminalVerifyRequest.model().isPresent()) {
+            builder.withModel(terminalVerifyRequest.model().get());
+        }
+        if (terminalVerifyRequest.operatingSystem().isPresent()) {
+            builder.withOperatingSystem(terminalVerifyRequest.operatingSystem().get());
+        }
         Terminal terminal = builder.build();
         return terminalRestMapper.mapModelToResponse(terminal);
     }

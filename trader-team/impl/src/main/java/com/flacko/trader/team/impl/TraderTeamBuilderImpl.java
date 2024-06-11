@@ -163,6 +163,7 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
 
     @Override
     public TraderTeamBuilder withArchived() {
+        crudOperation = CrudOperation.DELETE;
         pojoBuilder.deletedDate(now);
         return this;
     }

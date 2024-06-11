@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface MerchantListBuilder {
 
+    MerchantListBuilder withUserId(String userId);
+
     MerchantListBuilder withCountry(Country country);
 
     MerchantListBuilder withOutgoingTrafficStopped(boolean outgoingTrafficStopped);

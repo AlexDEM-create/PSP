@@ -19,9 +19,16 @@ public class MerchantListBuilderImpl implements MerchantListBuilder {
 
     private final MerchantRepository merchantRepository;
 
+    private Optional<String> userId = Optional.empty();
     private Optional<Country> country = Optional.empty();
     private Optional<Boolean> outgoingTrafficStopped = Optional.empty();
     private Optional<Boolean> archived = Optional.empty();
+
+    @Override
+    public MerchantListBuilder withUserId(String userId) {
+        this.userId = Optional.of(userId);
+        return this;
+    }
 
     @Override
     public MerchantListBuilder withCountry(Country country) {
@@ -48,6 +55,10 @@ public class MerchantListBuilderImpl implements MerchantListBuilder {
 
     private Specification<Merchant> createSpecification() {
         Specification<Merchant> spec = Specification.where(null);
+        if (userId.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("userId"), userId.get()));
+        }
         if (country.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("country"), country.get()));

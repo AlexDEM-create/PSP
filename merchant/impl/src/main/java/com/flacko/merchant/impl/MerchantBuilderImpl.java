@@ -100,6 +100,7 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
 
     @Override
     public MerchantBuilder withArchived() {
+        crudOperation = CrudOperation.DELETE;
         pojoBuilder.deletedDate(now);
         return this;
     }

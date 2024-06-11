@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface TraderTeamListBuilder {
 
+    TraderTeamListBuilder withUserId(String userId);
+
     TraderTeamListBuilder withVerified(Boolean verified);
 
     TraderTeamListBuilder withIncomingOnline(Boolean incomingOnline);
