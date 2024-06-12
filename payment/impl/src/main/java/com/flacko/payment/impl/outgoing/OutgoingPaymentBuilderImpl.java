@@ -188,7 +188,7 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
         }
         if (pojo.getCurrentState() == PaymentState.VERIFIED && pojo.getPaymentMethodId().isEmpty()) {
             throw new OutgoingPaymentMissingRequiredAttributeException("paymentMethodId", Optional.of(pojo.getId()));
-        } else {
+        } else if (pojo.getPaymentMethodId().isPresent()) {
             paymentMethodService.get(pojo.getPaymentMethodId().get());
         }
         if (pojo.getAmount() == null) {
