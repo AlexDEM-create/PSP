@@ -14,7 +14,9 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="payment-verification-webapp" />
+        </datasource-mapping>
         <naming-strategy-map />
       </configuration>
     </facet>
@@ -33,6 +35,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="balance-impl" scope="RUNTIME" />
+    <orderEntry type="module" module-name="balance-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="payment-verification-service" />
     <orderEntry type="module" module-name="common" />
     <orderEntry type="module" module-name="security" />
@@ -52,8 +56,8 @@
     <orderEntry type="module" module-name="balance-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="payment-method-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="trader-team-service" scope="RUNTIME" />
-    <orderEntry type="module" module-name="payment-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="merchant-service" scope="RUNTIME" />
+    <orderEntry type="module" module-name="payment-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="user-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="balance-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="payment-method-impl" scope="RUNTIME" />

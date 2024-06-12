@@ -31,7 +31,7 @@ public interface OutgoingPayment {
 
     RecipientPaymentMethodType getRecipientPaymentMethodType();
 
-    String getPartnerPaymentId();
+    Optional<String> getPartnerPaymentId();
 
     PaymentState getCurrentState();
 

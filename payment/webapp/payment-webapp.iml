@@ -35,6 +35,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="appeal-impl" scope="TEST" />
     <orderEntry type="module" module-name="payment-service" />
     <orderEntry type="module" module-name="common" />
     <orderEntry type="module" module-name="security" />

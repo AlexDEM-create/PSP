@@ -86,7 +86,7 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
                 .recipient(existingOutgoingPayment.getRecipient())
                 .bank(existingOutgoingPayment.getBank())
                 .recipientPaymentMethodType(existingOutgoingPayment.getRecipientPaymentMethodType())
-                .partnerPaymentId(existingOutgoingPayment.getPartnerPaymentId())
+                .partnerPaymentId(existingOutgoingPayment.getPartnerPaymentId().orElse(null))
                 .currentState(existingOutgoingPayment.getCurrentState())
                 .createdDate(existingOutgoingPayment.getCreatedDate())
                 .updatedDate(now);
@@ -208,9 +208,6 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
         if (pojo.getRecipientPaymentMethodType() == null) {
             throw new OutgoingPaymentMissingRequiredAttributeException("recipientPaymentMethodType",
                     Optional.of(pojo.getId()));
-        }
-        if (pojo.getPartnerPaymentId() == null || pojo.getPartnerPaymentId().isBlank()) {
-            throw new OutgoingPaymentMissingRequiredAttributeException("partnerPaymentId", Optional.of(pojo.getId()));
         }
         if (pojo.getCurrentState() == null) {
             throw new OutgoingPaymentMissingRequiredAttributeException("currentState", Optional.of(pojo.getId()));

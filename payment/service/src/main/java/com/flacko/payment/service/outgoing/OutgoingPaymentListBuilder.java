@@ -5,6 +5,7 @@ import com.flacko.common.currency.Currency;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
 
+import java.time.Instant;
 import java.util.List;
 
 public interface OutgoingPaymentListBuilder {
@@ -24,6 +25,10 @@ public interface OutgoingPaymentListBuilder {
     OutgoingPaymentListBuilder withRecipientPaymentMethodType(RecipientPaymentMethodType recipientPaymentMethodType);
 
     OutgoingPaymentListBuilder withCurrentState(PaymentState currentState);
+
+    OutgoingPaymentListBuilder withStartDate(Instant startDate);
+
+    OutgoingPaymentListBuilder withEndDate(Instant endDate);
 
     List<OutgoingPayment> build();
 

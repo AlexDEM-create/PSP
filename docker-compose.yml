@@ -233,6 +233,22 @@ services:
       - backend
       - postgres
 
+  stats:
+    container_name: stats
+    build:
+      context: .
+      dockerfile: stats/webapp/Dockerfile
+    ports:
+      - "8092:8080"
+    #    environment:
+    #      - SPRING_PROFILES_ACTIVE=staging
+    networks:
+      - backend
+      - postgres
+    depends_on:
+      #      - postgres
+      - flyway
+
 networks:
   postgres:
     driver: bridge

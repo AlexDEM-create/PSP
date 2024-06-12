@@ -68,7 +68,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET,
                         "/trader-teams", "/trader-teams/*")
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name(),
-                                UserRole.TRADER_TEAM_LEADER.name()))
+                                UserRole.TRADER_TEAM_LEADER.name(), UserRole.TRADER_TEAM.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.DELETE, "/trader-teams/*")
                         .hasAnyAuthority(UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.PATCH,

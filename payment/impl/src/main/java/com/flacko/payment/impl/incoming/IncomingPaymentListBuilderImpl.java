@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,8 @@ public class IncomingPaymentListBuilderImpl implements IncomingPaymentListBuilde
     private Optional<String> traderTeamId = Optional.empty();
     private Optional<String> paymentMethodId = Optional.empty();
     private Optional<PaymentState> currentState = Optional.empty();
+    private Optional<Instant> startDate = Optional.empty();
+    private Optional<Instant> endDate = Optional.empty();
 
     @Override
     public IncomingPaymentListBuilder withMerchantId(String merchantId) {
@@ -36,6 +39,7 @@ public class IncomingPaymentListBuilderImpl implements IncomingPaymentListBuilde
         return this;
     }
 
+    @Override
     public IncomingPaymentListBuilder withPaymentMethodId(String paymentMethodId) {
         this.paymentMethodId = Optional.of(paymentMethodId);
         return this;
@@ -44,6 +48,18 @@ public class IncomingPaymentListBuilderImpl implements IncomingPaymentListBuilde
     @Override
     public IncomingPaymentListBuilder withCurrentState(PaymentState currentState) {
         this.currentState = Optional.of(currentState);
+        return this;
+    }
+
+    @Override
+    public IncomingPaymentListBuilder withStartDate(Instant startDate) {
+        this.startDate = Optional.of(startDate);
+        return this;
+    }
+
+    @Override
+    public IncomingPaymentListBuilder withEndDate(Instant endDate) {
+        this.endDate = Optional.of(endDate);
         return this;
     }
 
@@ -69,6 +85,14 @@ public class IncomingPaymentListBuilderImpl implements IncomingPaymentListBuilde
         if (currentState.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("currentState"), currentState.get()));
+        }
+        if (startDate.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), startDate.get()));
+        }
+        if (endDate.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), endDate.get()));
         }
         return spec;
     }

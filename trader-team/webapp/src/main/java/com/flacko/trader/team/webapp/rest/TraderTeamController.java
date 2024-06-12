@@ -226,4 +226,20 @@ public class TraderTeamController {
         return traderTeamRestMapper.mapModelToResponse(traderTeam);
     }
 
+    @PatchMapping("/{traderTeamId}/verify")
+    public TraderTeamResponse verify(@PathVariable String traderTeamId)
+            throws TraderTeamNotFoundException, TraderTeamMissingRequiredAttributeException, UserNotFoundException,
+            TraderTeamIllegalLeaderException, TraderTeamInvalidFeeRateException, MerchantNotFoundException,
+            BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
+            BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
+            MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
+            UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
+            NoEligibleTraderTeamsException, MerchantInsufficientOutgoingBalanceException {
+        TraderTeamBuilder builder = traderTeamService.update(traderTeamId);
+        builder.withVerified();
+        TraderTeam traderTeam = builder.build();
+        return traderTeamRestMapper.mapModelToResponse(traderTeam);
+    }
+
 }

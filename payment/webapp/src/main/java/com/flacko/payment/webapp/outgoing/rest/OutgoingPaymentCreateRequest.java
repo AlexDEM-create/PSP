@@ -6,6 +6,7 @@ import com.flacko.common.currency.Currency;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 public record OutgoingPaymentCreateRequest(@JsonProperty(AMOUNT) BigDecimal amount,
                                            @JsonProperty(CURRENCY) Currency currency,
@@ -13,7 +14,7 @@ public record OutgoingPaymentCreateRequest(@JsonProperty(AMOUNT) BigDecimal amou
                                            @JsonProperty(BANK) Bank bank,
                                            @JsonProperty(PAYMENT_METHOD)
                                            RecipientPaymentMethodType recipientPaymentMethodType,
-                                           @JsonProperty(PARTNER_PAYMENT_ID) String partnerPaymentId) {
+                                           @JsonProperty(PARTNER_PAYMENT_ID) Optional<String> partnerPaymentId) {
 
     private static final String AMOUNT = "amount";
     private static final String CURRENCY = "currency";

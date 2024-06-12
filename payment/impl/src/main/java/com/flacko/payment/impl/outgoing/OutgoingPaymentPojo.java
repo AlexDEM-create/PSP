@@ -68,7 +68,7 @@ public class OutgoingPaymentPojo implements OutgoingPayment {
     @Column(name = "recipient_payment_method_type", nullable = false)
     private RecipientPaymentMethodType recipientPaymentMethodType;
 
-    @Column(name = "partner_payment_id", nullable = false)
+    @Column(name = "partner_payment_id")
     private String partnerPaymentId;
 
     @Enumerated(EnumType.STRING)
@@ -83,6 +83,10 @@ public class OutgoingPaymentPojo implements OutgoingPayment {
 
     public Optional<String> getPaymentMethodId() {
         return Optional.ofNullable(paymentMethodId);
+    }
+
+    public Optional<String> getPartnerPaymentId() {
+        return Optional.ofNullable(partnerPaymentId);
     }
 
     @PrePersist

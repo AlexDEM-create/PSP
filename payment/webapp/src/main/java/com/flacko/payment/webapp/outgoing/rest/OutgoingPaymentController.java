@@ -104,7 +104,11 @@ public class OutgoingPaymentController {
         builder.withRecipient(outgoingPaymentCreateRequest.recipient());
         builder.withBank(outgoingPaymentCreateRequest.bank());
         builder.withRecipientPaymentMethodType(outgoingPaymentCreateRequest.recipientPaymentMethodType());
-        builder.withPartnerPaymentId(outgoingPaymentCreateRequest.partnerPaymentId());
+
+        if (outgoingPaymentCreateRequest.partnerPaymentId().isPresent()) {
+            builder.withPartnerPaymentId(outgoingPaymentCreateRequest.partnerPaymentId().get());
+        }
+
         builder.withRandomTraderTeamId();
         OutgoingPayment outgoingPayment = builder.build();
         return outgoingPaymentRestMapper.mapModelToCreateResponse(outgoingPayment);
