@@ -18,7 +18,7 @@ public class ReceiptPaymentVerificationExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
-        log.error("Unexpected error", e);
+        log.error("Unexpected error occurred", e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
