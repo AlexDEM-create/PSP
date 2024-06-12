@@ -1,5 +1,6 @@
 FROM openjdk:22 AS build
 WORKDIR /app
+RUN rm -rf /app/*
 COPY . .
 RUN ./mvnw clean install -DskipTests
 
