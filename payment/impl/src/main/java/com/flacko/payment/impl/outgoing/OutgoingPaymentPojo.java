@@ -48,7 +48,7 @@ public class OutgoingPaymentPojo implements OutgoingPayment {
     private String traderTeamId;
 
     // make foreign key to payment_methods table
-    @Column(name = "payment_method_id", nullable = false)
+    @Column(name = "payment_method_id")
     private String paymentMethodId;
 
     @Column(nullable = false, precision = 11, scale = 2)
