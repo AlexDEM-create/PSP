@@ -50,7 +50,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/appeals")
                         .hasAnyAuthority(UserRole.MERCHANT.name(), UserRole.TRADER_TEAM.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET, "/appeals", "/appeals/*")
-                        .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
+                        .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name(),
+                                UserRole.TRADER_TEAM.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.PATCH,
                         "/appeals/*/review", "/appeals/*/reject", "/appeals/*/resolve")
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
@@ -145,7 +146,8 @@ public class SecurityConfig {
                                 UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.PATCH,
                         "/outgoing-payments/*/reassign")
-                        .hasAnyAuthority(UserRole.TRADER_TEAM.name()))
+                        .hasAnyAuthority(UserRole.TRADER_TEAM.name(), UserRole.USER_SUPPORT.name(),
+                                UserRole.USER_ADMIN.name()))
 
                 // incoming payments
                 // stats
