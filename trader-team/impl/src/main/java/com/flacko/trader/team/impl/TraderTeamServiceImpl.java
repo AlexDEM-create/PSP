@@ -81,7 +81,7 @@ public class TraderTeamServiceImpl implements TraderTeamService {
         }
         Random random = new Random();
         int randomIndex = random.nextInt(eligibleTeams.size());
-        log.error("eligible teams " + eligibleTeams + ", random index");
+        log.error("eligible teams " + eligibleTeams + ", random index " + randomIndex);
         return eligibleTeams.get(randomIndex);
     }
 
