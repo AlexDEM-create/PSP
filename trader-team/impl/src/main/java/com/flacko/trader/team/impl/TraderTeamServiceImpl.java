@@ -9,6 +9,7 @@ import com.flacko.trader.team.service.TraderTeamBuilder;
 import com.flacko.trader.team.service.TraderTeamListBuilder;
 import com.flacko.trader.team.service.TraderTeamService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TraderTeamServiceImpl implements TraderTeamService {
 
     private final TraderTeamRepository traderTeamRepository;
@@ -78,7 +80,9 @@ public class TraderTeamServiceImpl implements TraderTeamService {
             throw new NoEligibleTraderTeamsException();
         }
         Random random = new Random();
-        return eligibleTeams.get(random.nextInt(eligibleTeams.size()));
+        int randomIndex = random.nextInt(eligibleTeams.size());
+        log.error("eligible teams " + eligibleTeams + ", random index");
+        return eligibleTeams.get(randomIndex);
     }
 
     private boolean hasEnabledPaymentMethods(TraderTeam traderTeam) {
