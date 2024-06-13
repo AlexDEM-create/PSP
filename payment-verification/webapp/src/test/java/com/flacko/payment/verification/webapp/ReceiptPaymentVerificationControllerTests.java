@@ -42,6 +42,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
@@ -420,7 +421,7 @@ class ReceiptPaymentVerificationControllerTests {
                 .isEqualByComparingTo(BigDecimal.valueOf(142500));
 
         String outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.empty())
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(AMOUNT_4)
                 .withCurrency(Currency.RUB)

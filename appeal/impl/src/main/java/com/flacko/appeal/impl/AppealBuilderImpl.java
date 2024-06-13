@@ -162,7 +162,7 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
             MerchantInsufficientOutgoingBalanceException {
         outgoingPaymentService.update(outgoingPayment.getId())
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.of(outgoingPayment.getTraderTeamId()))
                 .withState(PaymentState.INITIATED)
                 .build();
     }

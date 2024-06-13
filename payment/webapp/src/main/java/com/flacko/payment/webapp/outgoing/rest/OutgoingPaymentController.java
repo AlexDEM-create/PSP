@@ -109,7 +109,7 @@ public class OutgoingPaymentController {
             builder.withPartnerPaymentId(outgoingPaymentCreateRequest.partnerPaymentId().get());
         }
 
-        builder.withRandomTraderTeamId();
+        builder.withRandomTraderTeamId(Optional.empty());
         OutgoingPayment outgoingPayment = builder.build();
         return outgoingPaymentRestMapper.mapModelToCreateResponse(outgoingPayment);
     }

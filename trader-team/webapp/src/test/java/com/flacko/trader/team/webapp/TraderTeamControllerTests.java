@@ -41,6 +41,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -208,7 +209,7 @@ public class TraderTeamControllerTests {
                 .build();
 
         outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.empty())
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(10000))
                 .withCurrency(Currency.RUB)

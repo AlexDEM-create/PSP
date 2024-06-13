@@ -36,6 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -191,7 +192,7 @@ public class StatsControllerTests {
                 .getId();
 
         outgoingPaymentId1 = outgoingPaymentService.create(merchantUser.getLogin())
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.empty())
                 .withPaymentMethodId(paymentMethodId1)
                 .withAmount(BigDecimal.valueOf(5000))
                 .withCurrency(Currency.RUB)
@@ -208,7 +209,7 @@ public class StatsControllerTests {
                 .build();
 
         outgoingPaymentId2 = outgoingPaymentService.create(merchantUser.getLogin())
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.empty())
                 .withPaymentMethodId(paymentMethodId2)
                 .withAmount(BigDecimal.valueOf(3000))
                 .withCurrency(Currency.RUB)

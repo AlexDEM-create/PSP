@@ -15,8 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -66,7 +65,8 @@ public class TraderTeamServiceImpl implements TraderTeamService {
     }
 
     @Override
-    public TraderTeam getRandomEligibleTraderTeamForOutgoingPayment() throws NoEligibleTraderTeamsException {
+    public TraderTeam getRandomEligibleTraderTeamForOutgoingPayment(Optional<String> currentTraderTeamId)
+            throws NoEligibleTraderTeamsException, TraderTeamNotFoundException {
         List<TraderTeam> eligibleTeams = list()
                 .withVerified(true)
                 .withOutgoingOnline(true)
@@ -75,9 +75,15 @@ public class TraderTeamServiceImpl implements TraderTeamService {
                 .build()
                 .stream()
                 .filter(this::hasEnabledPaymentMethods)
+                .filter(traderTeam -> currentTraderTeamId.isEmpty()
+                        || !traderTeam.getId().equals(currentTraderTeamId.get()))
                 .toList();
 
         if (eligibleTeams.isEmpty()) {
+            if (currentTraderTeamId.isPresent()) {
+                log.error("random eligible team didn't change " + currentTraderTeamId.get());
+                return get(currentTraderTeamId.get());
+            }
             throw new NoEligibleTraderTeamsException();
         }
         SecureRandom random = new SecureRandom();

@@ -38,6 +38,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -178,7 +179,7 @@ public class AppealControllerTests {
                 .build();
 
         outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.empty())
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(10000))
                 .withCurrency(Currency.RUB)
@@ -194,7 +195,7 @@ public class AppealControllerTests {
     @Test
     public void testListAppeals() throws Exception {
         String outgoingPaymentId = outgoingPaymentService.create(merchantLogin)
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.empty())
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(10000))
                 .withCurrency(Currency.RUB)

@@ -1,6 +1,16 @@
 package com.flacko.payment.impl.outgoing;
 
-import com.flacko.common.exception.*;
+import com.flacko.common.exception.MerchantInsufficientOutgoingBalanceException;
+import com.flacko.common.exception.MerchantNotFoundException;
+import com.flacko.common.exception.NoEligibleTraderTeamsException;
+import com.flacko.common.exception.OutgoingPaymentIllegalStateTransitionException;
+import com.flacko.common.exception.OutgoingPaymentInvalidAmountException;
+import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
+import com.flacko.common.exception.PaymentMethodNotFoundException;
+import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UnauthorizedAccessException;
+import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
 import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.outgoing.OutgoingPayment;
@@ -13,6 +23,8 @@ import com.flacko.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -65,7 +77,7 @@ public class OutgoingPaymentServiceImpl implements OutgoingPaymentService {
                     login, id));
         }
         return update(id)
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.of(outgoingPayment.getTraderTeamId()))
                 .withState(PaymentState.INITIATED)
                 .build();
     }

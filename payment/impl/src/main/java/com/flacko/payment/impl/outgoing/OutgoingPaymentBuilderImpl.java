@@ -96,8 +96,10 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
     }
 
     @Override
-    public OutgoingPaymentBuilder withRandomTraderTeamId() throws NoEligibleTraderTeamsException {
-        TraderTeam randomTraderTeam = traderTeamService.getRandomEligibleTraderTeamForOutgoingPayment();
+    public OutgoingPaymentBuilder withRandomTraderTeamId(Optional<String> currentTraderTeamId)
+            throws NoEligibleTraderTeamsException, TraderTeamNotFoundException {
+        TraderTeam randomTraderTeam =
+                traderTeamService.getRandomEligibleTraderTeamForOutgoingPayment(currentTraderTeamId);
         pojoBuilder.traderTeamId(randomTraderTeam.getId());
         return this;
     }
