@@ -35,8 +35,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="balance-impl" scope="RUNTIME" />
-    <orderEntry type="module" module-name="balance-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="payment-verification-service" />
     <orderEntry type="module" module-name="common" />
     <orderEntry type="module" module-name="security" />

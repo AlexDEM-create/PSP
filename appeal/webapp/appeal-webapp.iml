@@ -35,8 +35,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="appeal-impl" scope="RUNTIME" />
-    <orderEntry type="module" module-name="balance-impl" scope="TEST" />
     <orderEntry type="module" module-name="appeal-service" />
     <orderEntry type="module" module-name="common" />
     <orderEntry type="module" module-name="security" />
@@ -58,8 +56,8 @@
     <orderEntry type="module" module-name="trader-team-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="payment-method-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="user-impl" scope="RUNTIME" />
-    <orderEntry type="module" module-name="trader-team-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="balance-service" scope="RUNTIME" />
+    <orderEntry type="module" module-name="trader-team-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="payment-method-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="terminal-service" scope="TEST" />
     <orderEntry type="module" module-name="terminal-impl" scope="TEST" />

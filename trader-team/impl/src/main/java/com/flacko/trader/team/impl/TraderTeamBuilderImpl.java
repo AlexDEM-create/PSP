@@ -5,7 +5,23 @@ import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
 import com.flacko.common.country.Country;
 import com.flacko.common.currency.CurrencyParser;
-import com.flacko.common.exception.*;
+import com.flacko.common.exception.BalanceInvalidCurrentBalanceException;
+import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
+import com.flacko.common.exception.BalanceNotFoundException;
+import com.flacko.common.exception.MerchantInsufficientOutgoingBalanceException;
+import com.flacko.common.exception.MerchantInvalidFeeRateException;
+import com.flacko.common.exception.MerchantMissingRequiredAttributeException;
+import com.flacko.common.exception.MerchantNotFoundException;
+import com.flacko.common.exception.NoEligibleTraderTeamsException;
+import com.flacko.common.exception.OutgoingPaymentIllegalStateTransitionException;
+import com.flacko.common.exception.OutgoingPaymentInvalidAmountException;
+import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
+import com.flacko.common.exception.PaymentMethodNotFoundException;
+import com.flacko.common.exception.TraderTeamNotAllowedOnlineException;
+import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UnauthorizedAccessException;
+import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.common.operation.CrudOperation;
 import com.flacko.common.role.UserRole;
@@ -200,12 +216,16 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
                     .withCurrency(CurrencyParser.parseCurrency(traderTeam.getCountry()))
                     .build();
 
-            balanceService.create()
-                    .withEntityId(traderTeam.getLeaderId())
-                    .withEntityType(EntityType.TRADER_TEAM_LEADER)
-                    .withType(BalanceType.GENERIC)
-                    .withCurrency(CurrencyParser.parseCurrency(traderTeam.getCountry()))
-                    .build();
+            try {
+                balanceService.get(traderTeam.getLeaderId(), EntityType.TRADER_TEAM_LEADER, BalanceType.GENERIC);
+            } catch (BalanceNotFoundException e) {
+                balanceService.create()
+                        .withEntityId(traderTeam.getLeaderId())
+                        .withEntityType(EntityType.TRADER_TEAM_LEADER)
+                        .withType(BalanceType.GENERIC)
+                        .withCurrency(CurrencyParser.parseCurrency(traderTeam.getCountry()))
+                        .build();
+            }
         }
 
         return traderTeam;
