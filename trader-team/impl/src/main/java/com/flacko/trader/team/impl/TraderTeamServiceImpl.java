@@ -9,7 +9,6 @@ import com.flacko.trader.team.service.TraderTeamBuilder;
 import com.flacko.trader.team.service.TraderTeamListBuilder;
 import com.flacko.trader.team.service.TraderTeamService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +18,6 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TraderTeamServiceImpl implements TraderTeamService {
 
     private final TraderTeamRepository traderTeamRepository;
@@ -81,14 +79,12 @@ public class TraderTeamServiceImpl implements TraderTeamService {
 
         if (eligibleTeams.isEmpty()) {
             if (currentTraderTeamId.isPresent()) {
-                log.error("random eligible team didn't change " + currentTraderTeamId.get());
                 return get(currentTraderTeamId.get());
             }
             throw new NoEligibleTraderTeamsException();
         }
         SecureRandom random = new SecureRandom();
         int randomIndex = random.nextInt(eligibleTeams.size());
-        log.error("eligible teams " + eligibleTeams + ", random index " + randomIndex);
         return eligibleTeams.get(randomIndex);
     }
 

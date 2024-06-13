@@ -60,7 +60,8 @@ public class SecurityConfig {
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET,
                         "/merchants", "/merchants/*")
-                        .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
+                        .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name(),
+                                UserRole.MERCHANT.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.DELETE, "/merchants/*")
                         .hasAnyAuthority(UserRole.USER_ADMIN.name()))
 
