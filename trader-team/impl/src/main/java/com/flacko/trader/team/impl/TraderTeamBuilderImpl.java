@@ -75,7 +75,7 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
                 .kickedOut(existingTraderTeam.isKickedOut())
                 .createdDate(existingTraderTeam.getCreatedDate())
                 .updatedDate(now)
-                .deletedDate(existingTraderTeam.getDeletedDate().orElse(now));
+                .deletedDate(existingTraderTeam.getDeletedDate().orElse(null));
         return this;
     }
 
