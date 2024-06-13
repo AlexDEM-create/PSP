@@ -175,7 +175,7 @@ class ReceiptPaymentVerificationControllerTests {
                 .isEqualByComparingTo(BigDecimal.valueOf(57000));
 
         String outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.empty())
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(AMOUNT_1)
                 .withCurrency(Currency.RUB)
@@ -257,7 +257,7 @@ class ReceiptPaymentVerificationControllerTests {
                 .isEqualByComparingTo(BigDecimal.valueOf(57000));
 
         String outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.empty())
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(AMOUNT_2)
                 .withCurrency(Currency.RUB)
@@ -339,7 +339,7 @@ class ReceiptPaymentVerificationControllerTests {
                 .isEqualByComparingTo(BigDecimal.valueOf(57000));
 
         String outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.empty())
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(AMOUNT_3)
                 .withCurrency(Currency.RUB)
