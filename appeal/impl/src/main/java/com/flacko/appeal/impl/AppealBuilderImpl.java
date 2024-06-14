@@ -18,6 +18,7 @@ import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.operation.CrudOperation;
 import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.incoming.IncomingPayment;
 import com.flacko.payment.service.incoming.IncomingPaymentService;
@@ -46,11 +47,13 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
     private final OutgoingPaymentService outgoingPaymentService;
 
     private AppealPojo.AppealPojoBuilder pojoBuilder;
+    private CrudOperation crudOperation;
     private String id;
     private AppealState currentState;
 
     @Override
     public AppealBuilder initializeNew() {
+        crudOperation = CrudOperation.CREATE;
         id = new IdGenerator().generateId();
         currentState = AppealState.INITIATED;
         pojoBuilder = AppealPojo.builder()
@@ -61,6 +64,7 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
 
     @Override
     public AppealBuilder initializeExisting(Appeal existingAppeal) {
+        crudOperation = CrudOperation.UPDATE;
         pojoBuilder = AppealPojo.builder()
                 .primaryKey(existingAppeal.getPrimaryKey())
                 .id(existingAppeal.getId())
@@ -122,16 +126,25 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
         if (pojo.getSource() == null) {
             throw new AppealMissingRequiredAttributeException("source", Optional.of(pojo.getId()));
         }
-        if (pojo.getSource() == AppealSource.MERCHANT) {
+        try {
+            OutgoingPayment outgoingPayment = outgoingPaymentService.get(pojo.getPaymentId());
+            if (crudOperation == CrudOperation.CREATE
+                    && !ALLOWED_PAYMENT_STATES.contains(outgoingPayment.getCurrentState())) {
+                throw new AppealIllegalPaymentCurrentStateException(pojo.getId(), pojo.getPaymentId(),
+                        outgoingPayment.getCurrentState());
+            }
+        } catch (OutgoingPaymentNotFoundException e) {
             IncomingPayment incomingPayment = incomingPaymentService.get(pojo.getPaymentId());
-            if (!ALLOWED_PAYMENT_STATES.contains(incomingPayment.getCurrentState())) {
+            if (crudOperation == CrudOperation.CREATE
+                    && !ALLOWED_PAYMENT_STATES.contains(incomingPayment.getCurrentState())) {
                 throw new AppealIllegalPaymentCurrentStateException(pojo.getId(), pojo.getPaymentId(),
                         incomingPayment.getCurrentState());
             }
         }
         if (pojo.getSource() == AppealSource.TRADER_TEAM) {
             OutgoingPayment outgoingPayment = outgoingPaymentService.get(pojo.getPaymentId());
-            if (!ALLOWED_PAYMENT_STATES.contains(outgoingPayment.getCurrentState())) {
+            if (crudOperation == CrudOperation.CREATE
+                    && !ALLOWED_PAYMENT_STATES.contains(outgoingPayment.getCurrentState())) {
                 throw new AppealIllegalPaymentCurrentStateException(pojo.getId(), pojo.getPaymentId(),
                         outgoingPayment.getCurrentState());
             }
