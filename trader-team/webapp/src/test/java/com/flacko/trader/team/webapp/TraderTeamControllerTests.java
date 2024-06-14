@@ -16,9 +16,9 @@ import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeam;
 
 import com.flacko.trader.team.service.TraderTeamService;
-import com.flacko.trader.team.service.exception.TraderTeamIllegalLeaderException;
-import com.flacko.trader.team.service.exception.TraderTeamInvalidFeeRateException;
-import com.flacko.trader.team.service.exception.TraderTeamMissingRequiredAttributeException;
+import com.flacko.common.exception.TraderTeamIllegalLeaderException;
+import com.flacko.common.exception.TraderTeamInvalidFeeRateException;
+import com.flacko.common.exception.TraderTeamMissingRequiredAttributeException;
 import com.flacko.trader.team.webapp.rest.TraderTeamCreateRequest;
 import com.flacko.user.service.User;
 import com.flacko.user.service.UserService;
@@ -46,7 +46,6 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 import static net.bytebuddy.matcher.ElementMatchers.is;

@@ -39,6 +39,9 @@ public class PaymentMethodPojo implements PaymentMethod {
     @Column(nullable = false)
     private String number;
 
+    @Column(name = "account_last_four_digits", nullable = false)
+    private String accountLastFourDigits;
+
     @Column(name = "first_name", nullable = false)
     private String firstName;
 

@@ -8,6 +8,7 @@ import com.flacko.common.id.IdGenerator;
 import com.flacko.common.operation.CrudOperation;
 import com.flacko.payment.method.service.PaymentMethod;
 import com.flacko.payment.method.service.PaymentMethodBuilder;
+import com.flacko.payment.method.service.exception.PaymentMethodInvalidBankAccountLastFourDigitsException;
 import com.flacko.payment.method.service.exception.PaymentMethodInvalidBankCardNumberException;
 import com.flacko.payment.method.service.exception.PaymentMethodMissingRequiredAttributeException;
 import com.flacko.terminal.service.TerminalService;
@@ -27,6 +28,7 @@ import java.util.regex.Pattern;
 public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuilder {
 
     private static final Pattern CARD_NUMBER_PATTERN = Pattern.compile("^\\d{16}$");
+    private static final Pattern FOUR_DIGITS_PATTERN = Pattern.compile("^\\d{4}$");
     private static final Pattern PHONE_NUMBER_PATTERN =
             Pattern.compile("^(^8|7|\\+7)((\\d{10})|(\\s\\(\\d{3}\\)\\s\\d{3}\\s\\d{2}\\s\\d{2}))$");
 
@@ -56,6 +58,7 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
                 .primaryKey(existingPaymentMethod.getPrimaryKey())
                 .id(existingPaymentMethod.getId())
                 .number(existingPaymentMethod.getNumber())
+                .accountLastFourDigits(existingPaymentMethod.getAccountLastFourDigits())
                 .firstName(existingPaymentMethod.getFirstName())
                 .lastName(existingPaymentMethod.getLastName())
                 .currency(existingPaymentMethod.getCurrency())
@@ -73,6 +76,12 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
     @Override
     public PaymentMethodBuilder withNumber(String number) {
         pojoBuilder.number(number);
+        return this;
+    }
+
+    @Override
+    public PaymentMethodBuilder withAccountLastFourDigits(String accountLastFourDigits) {
+        pojoBuilder.accountLastFourDigits(accountLastFourDigits);
         return this;
     }
 
@@ -133,7 +142,8 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
 
     @Override
     public PaymentMethod build() throws PaymentMethodMissingRequiredAttributeException, TraderTeamNotFoundException,
-            PaymentMethodInvalidBankCardNumberException, TerminalNotFoundException {
+            PaymentMethodInvalidBankCardNumberException, TerminalNotFoundException,
+            PaymentMethodInvalidBankAccountLastFourDigitsException {
         PaymentMethodPojo card = pojoBuilder.build();
         validate(card);
         paymentMethodRepository.save(card);
@@ -141,7 +151,8 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
     }
 
     private void validate(PaymentMethodPojo pojo) throws PaymentMethodMissingRequiredAttributeException,
-            TraderTeamNotFoundException, PaymentMethodInvalidBankCardNumberException, TerminalNotFoundException {
+            TraderTeamNotFoundException, PaymentMethodInvalidBankCardNumberException, TerminalNotFoundException,
+            PaymentMethodInvalidBankAccountLastFourDigitsException {
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new PaymentMethodMissingRequiredAttributeException("id", Optional.empty());
         }
@@ -150,6 +161,14 @@ public class PaymentMethodBuilderImpl implements InitializablePaymentMethodBuild
         }
         if (!CARD_NUMBER_PATTERN.matcher(pojo.getNumber()).matches()) {
             throw new PaymentMethodInvalidBankCardNumberException(pojo.getId(), pojo.getNumber());
+        }
+        if (pojo.getAccountLastFourDigits() == null || pojo.getAccountLastFourDigits().isBlank()) {
+            throw new PaymentMethodMissingRequiredAttributeException("account_last_four_digits",
+                    Optional.of(pojo.getId()));
+        }
+        if (!FOUR_DIGITS_PATTERN.matcher(pojo.getAccountLastFourDigits()).matches()) {
+            throw new PaymentMethodInvalidBankAccountLastFourDigitsException(pojo.getId(),
+                    pojo.getAccountLastFourDigits());
         }
         if (pojo.getFirstName() == null || pojo.getFirstName().isBlank()) {
             throw new PaymentMethodMissingRequiredAttributeException("firstName", Optional.of(pojo.getId()));

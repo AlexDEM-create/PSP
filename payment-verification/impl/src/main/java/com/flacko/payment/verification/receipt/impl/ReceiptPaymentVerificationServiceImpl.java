@@ -11,13 +11,19 @@ import com.flacko.common.exception.MerchantInsufficientOutgoingBalanceException;
 import com.flacko.common.exception.MerchantInvalidFeeRateException;
 import com.flacko.common.exception.MerchantMissingRequiredAttributeException;
 import com.flacko.common.exception.MerchantNotFoundException;
+import com.flacko.common.exception.NoEligibleTraderTeamsException;
 import com.flacko.common.exception.OutgoingPaymentIllegalStateTransitionException;
 import com.flacko.common.exception.OutgoingPaymentInvalidAmountException;
 import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
 import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.ReceiptPaymentVerificationNotFoundException;
+import com.flacko.common.exception.TraderTeamIllegalLeaderException;
+import com.flacko.common.exception.TraderTeamInvalidFeeRateException;
+import com.flacko.common.exception.TraderTeamMissingRequiredAttributeException;
+import com.flacko.common.exception.TraderTeamNotAllowedOnlineException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UnauthorizedAccessException;
 import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.receipt.ReceiptPattern;
@@ -106,7 +112,9 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
             OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
             OutgoingPaymentInvalidAmountException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
             MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException,
-            MerchantInsufficientOutgoingBalanceException {
+            MerchantInsufficientOutgoingBalanceException, TraderTeamMissingRequiredAttributeException,
+            TraderTeamNotAllowedOnlineException, UnauthorizedAccessException, TraderTeamInvalidFeeRateException,
+            NoEligibleTraderTeamsException, TraderTeamIllegalLeaderException {
         if (file.isEmpty()) {
             throw new ReceiptPaymentVerificationRequestValidationException("Please upload a file.");
         }
@@ -191,6 +199,10 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
         } catch (ReceiptPaymentVerificationFailedException e) {
             outgoingPaymentService.update(outgoingPaymentId)
                     .withState(PaymentState.FAILED_TO_VERIFY)
+                    .build();
+
+            traderTeamService.update(outgoingPayment.getTraderTeamId())
+                    .withKickedOut(true)
                     .build();
             throw e;
         }

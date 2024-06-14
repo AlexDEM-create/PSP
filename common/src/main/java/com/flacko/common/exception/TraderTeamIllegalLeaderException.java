@@ -1,4 +1,4 @@
-package com.flacko.trader.team.service.exception;
+package com.flacko.common.exception;
 
 public class TraderTeamIllegalLeaderException extends Exception {
 

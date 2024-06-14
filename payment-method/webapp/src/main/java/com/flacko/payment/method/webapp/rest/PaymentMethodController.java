@@ -9,6 +9,7 @@ import com.flacko.payment.method.service.PaymentMethod;
 import com.flacko.payment.method.service.PaymentMethodBuilder;
 import com.flacko.payment.method.service.PaymentMethodListBuilder;
 import com.flacko.payment.method.service.PaymentMethodService;
+import com.flacko.payment.method.service.exception.PaymentMethodInvalidBankAccountLastFourDigitsException;
 import com.flacko.payment.method.service.exception.PaymentMethodInvalidBankCardNumberException;
 import com.flacko.payment.method.service.exception.PaymentMethodMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
@@ -78,9 +79,11 @@ public class PaymentMethodController {
     @PostMapping
     public PaymentMethodResponse create(@RequestBody PaymentMethodCreateRequest paymentMethodCreateRequest)
             throws PaymentMethodMissingRequiredAttributeException, TraderTeamNotFoundException,
-            PaymentMethodInvalidBankCardNumberException, TerminalNotFoundException {
+            PaymentMethodInvalidBankCardNumberException, TerminalNotFoundException,
+            PaymentMethodInvalidBankAccountLastFourDigitsException {
         PaymentMethodBuilder builder = paymentMethodService.create();
         builder.withNumber(paymentMethodCreateRequest.number())
+                .withAccountLastFourDigits(paymentMethodCreateRequest.accountLastFourDigits())
                 .withFirstName(paymentMethodCreateRequest.firstName())
                 .withLastName(paymentMethodCreateRequest.lastName())
                 .withCurrency(paymentMethodCreateRequest.currency())
@@ -95,7 +98,7 @@ public class PaymentMethodController {
     public PaymentMethodResponse archive(@PathVariable String paymentMethodId)
             throws PaymentMethodNotFoundException, PaymentMethodMissingRequiredAttributeException,
             TraderTeamNotFoundException, PaymentMethodInvalidBankCardNumberException,
-            TerminalNotFoundException {
+            TerminalNotFoundException, PaymentMethodInvalidBankAccountLastFourDigitsException {
         PaymentMethodBuilder builder = paymentMethodService.update(paymentMethodId);
         builder.withArchived();
         PaymentMethod paymentMethod = builder.build();
@@ -105,7 +108,7 @@ public class PaymentMethodController {
     @PatchMapping("/{paymentMethodId}/enable")
     public PaymentMethodResponse enable(@PathVariable String paymentMethodId) throws PaymentMethodNotFoundException,
             TraderTeamNotFoundException, PaymentMethodMissingRequiredAttributeException, TerminalNotFoundException,
-            PaymentMethodInvalidBankCardNumberException {
+            PaymentMethodInvalidBankCardNumberException, PaymentMethodInvalidBankAccountLastFourDigitsException {
         PaymentMethodBuilder builder = paymentMethodService.update(paymentMethodId);
         builder.withEnabled(true);
         PaymentMethod paymentMethod = builder.build();
@@ -115,7 +118,7 @@ public class PaymentMethodController {
     @PatchMapping("/{paymentMethodId}/disable")
     public PaymentMethodResponse disable(@PathVariable String paymentMethodId) throws PaymentMethodNotFoundException,
             TraderTeamNotFoundException, PaymentMethodMissingRequiredAttributeException, TerminalNotFoundException,
-            PaymentMethodInvalidBankCardNumberException {
+            PaymentMethodInvalidBankCardNumberException, PaymentMethodInvalidBankAccountLastFourDigitsException {
         PaymentMethodBuilder builder = paymentMethodService.update(paymentMethodId);
         builder.withEnabled(false);
         PaymentMethod paymentMethod = builder.build();
