@@ -148,8 +148,8 @@ public class SberBankCardExternalReceiptValidator implements ReceiptValidator {
 
     private Bank parseBank(String inputBank) {
         Map<String, String> translationMap = new HashMap<>();
-        translationMap.put("Тинькофф Банк", "TINKOFF"); // no information about the actual name
-        translationMap.put("Альфа Банк", "ALFA"); // no information about the actual name
+        translationMap.put("Тинькофф-Банк", "TINKOFF"); // no information about the actual name
+        translationMap.put("Альфа-Банк", "ALFA");
         translationMap.put("Райффайзенбанк", "RAIFFEISEN");
         translationMap.put("VTB BANK", "VTB");
         StringBuilder transliteratedBank = new StringBuilder(inputBank);
