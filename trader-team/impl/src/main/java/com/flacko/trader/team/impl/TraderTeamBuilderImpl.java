@@ -18,9 +18,11 @@ import com.flacko.common.exception.OutgoingPaymentInvalidAmountException;
 import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
 import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
+import com.flacko.common.exception.TraderTeamIllegalLeaderException;
+import com.flacko.common.exception.TraderTeamInvalidFeeRateException;
+import com.flacko.common.exception.TraderTeamMissingRequiredAttributeException;
 import com.flacko.common.exception.TraderTeamNotAllowedOnlineException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
-import com.flacko.common.exception.UnauthorizedAccessException;
 import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.common.operation.CrudOperation;
@@ -29,9 +31,6 @@ import com.flacko.payment.service.outgoing.OutgoingPayment;
 import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.trader.team.service.TraderTeam;
 import com.flacko.trader.team.service.TraderTeamBuilder;
-import com.flacko.common.exception.TraderTeamIllegalLeaderException;
-import com.flacko.common.exception.TraderTeamInvalidFeeRateException;
-import com.flacko.common.exception.TraderTeamMissingRequiredAttributeException;
 import com.flacko.user.service.User;
 import com.flacko.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -190,9 +189,9 @@ public class TraderTeamBuilderImpl implements InitializableTraderTeamBuilder {
             MerchantNotFoundException, BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
             BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
             MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
-            UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
-            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
-            NoEligibleTraderTeamsException, MerchantInsufficientOutgoingBalanceException {
+            OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
+            OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException, NoEligibleTraderTeamsException,
+            MerchantInsufficientOutgoingBalanceException {
         TraderTeamPojo traderTeam = pojoBuilder.build();
         validate(traderTeam);
         traderTeamRepository.save(traderTeam);

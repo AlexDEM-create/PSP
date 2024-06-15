@@ -9,7 +9,6 @@ import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeExcept
 import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
-import com.flacko.common.exception.UnauthorizedAccessException;
 import com.flacko.common.exception.UserNotFoundException;
 
 public interface OutgoingPaymentService {
@@ -23,9 +22,9 @@ public interface OutgoingPaymentService {
     OutgoingPayment get(String id) throws OutgoingPaymentNotFoundException;
 
     OutgoingPayment reassignRandomTraderTeam(String id, String login) throws TraderTeamNotFoundException,
-            OutgoingPaymentNotFoundException, UnauthorizedAccessException, NoEligibleTraderTeamsException,
+            OutgoingPaymentNotFoundException, NoEligibleTraderTeamsException,
             OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
             PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
-            UserNotFoundException, MerchantInsufficientOutgoingBalanceException;
+            MerchantInsufficientOutgoingBalanceException;
 
 }

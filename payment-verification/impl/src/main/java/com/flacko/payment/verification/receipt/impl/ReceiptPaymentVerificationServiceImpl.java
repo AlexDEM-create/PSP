@@ -23,7 +23,6 @@ import com.flacko.common.exception.TraderTeamInvalidFeeRateException;
 import com.flacko.common.exception.TraderTeamMissingRequiredAttributeException;
 import com.flacko.common.exception.TraderTeamNotAllowedOnlineException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
-import com.flacko.common.exception.UnauthorizedAccessException;
 import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.receipt.ReceiptPattern;
@@ -113,8 +112,8 @@ public class ReceiptPaymentVerificationServiceImpl implements ReceiptPaymentVeri
             OutgoingPaymentInvalidAmountException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
             MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException,
             MerchantInsufficientOutgoingBalanceException, TraderTeamMissingRequiredAttributeException,
-            TraderTeamNotAllowedOnlineException, UnauthorizedAccessException, TraderTeamInvalidFeeRateException,
-            NoEligibleTraderTeamsException, TraderTeamIllegalLeaderException {
+            TraderTeamNotAllowedOnlineException, TraderTeamInvalidFeeRateException, NoEligibleTraderTeamsException,
+            TraderTeamIllegalLeaderException {
         if (file.isEmpty()) {
             throw new ReceiptPaymentVerificationRequestValidationException("Please upload a file.");
         }

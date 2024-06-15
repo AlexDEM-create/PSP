@@ -18,7 +18,6 @@ import com.flacko.common.exception.TraderTeamInvalidFeeRateException;
 import com.flacko.common.exception.TraderTeamMissingRequiredAttributeException;
 import com.flacko.common.exception.TraderTeamNotAllowedOnlineException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
-import com.flacko.common.exception.UnauthorizedAccessException;
 import com.flacko.common.exception.UserNotFoundException;
 
 import java.math.BigDecimal;
@@ -56,8 +55,8 @@ public interface TraderTeamBuilder {
             MerchantNotFoundException, BalanceMissingRequiredAttributeException, TraderTeamNotAllowedOnlineException,
             BalanceInvalidCurrentBalanceException, MerchantInvalidFeeRateException,
             MerchantMissingRequiredAttributeException, OutgoingPaymentIllegalStateTransitionException,
-            UnauthorizedAccessException, OutgoingPaymentMissingRequiredAttributeException,
-            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException,
-            NoEligibleTraderTeamsException, MerchantInsufficientOutgoingBalanceException;
+            OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
+            OutgoingPaymentInvalidAmountException, OutgoingPaymentNotFoundException, NoEligibleTraderTeamsException,
+            MerchantInsufficientOutgoingBalanceException;
 
 }

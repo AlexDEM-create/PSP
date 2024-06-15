@@ -9,7 +9,6 @@ import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeExcept
 import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
-import com.flacko.common.exception.UnauthorizedAccessException;
 import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.spring.ServiceLocator;
 import com.flacko.common.state.PaymentState;
@@ -17,9 +16,6 @@ import com.flacko.payment.service.outgoing.OutgoingPayment;
 import com.flacko.payment.service.outgoing.OutgoingPaymentBuilder;
 import com.flacko.payment.service.outgoing.OutgoingPaymentListBuilder;
 import com.flacko.payment.service.outgoing.OutgoingPaymentService;
-import com.flacko.trader.team.service.TraderTeam;
-import com.flacko.trader.team.service.TraderTeamService;
-import com.flacko.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,8 +28,6 @@ public class OutgoingPaymentServiceImpl implements OutgoingPaymentService {
 
     private final OutgoingPaymentRepository outgoingPaymentRepository;
     private final ServiceLocator serviceLocator;
-    private final TraderTeamService traderTeamService;
-    private final UserService userService;
 
     @Transactional
     @Override
@@ -64,18 +58,11 @@ public class OutgoingPaymentServiceImpl implements OutgoingPaymentService {
     @Transactional
     @Override
     public OutgoingPayment reassignRandomTraderTeam(String id, String login) throws TraderTeamNotFoundException,
-            OutgoingPaymentNotFoundException, UnauthorizedAccessException, NoEligibleTraderTeamsException,
+            OutgoingPaymentNotFoundException, NoEligibleTraderTeamsException,
             OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
             PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
-            UserNotFoundException, MerchantInsufficientOutgoingBalanceException {
-        String userId = userService.getByLogin(login)
-                .getId();
-        TraderTeam currentTraderTeam = traderTeamService.getByUserId(userId);
+            MerchantInsufficientOutgoingBalanceException {
         OutgoingPayment outgoingPayment = get(id);
-        if (!outgoingPayment.getTraderTeamId().equals(currentTraderTeam.getId())) {
-            throw new UnauthorizedAccessException(String.format("User %s is not allowed to refuse outgoing payment %s",
-                    login, id));
-        }
         return update(id)
                 .withRandomTraderTeamId(Optional.of(outgoingPayment.getTraderTeamId()))
                 .withState(PaymentState.INITIATED)

@@ -12,7 +12,6 @@ import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeExcept
 import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
-import com.flacko.common.exception.UnauthorizedAccessException;
 import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
@@ -128,8 +127,8 @@ public class OutgoingPaymentController {
 
     @PatchMapping("/{outgoingPaymentId}/reassign")
     public OutgoingPaymentResponse reassign(@RequestHeader("Authorization") String tokenWithPrefix,
-                                            @PathVariable String outgoingPaymentId) throws UserNotFoundException,
-            OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException, UnauthorizedAccessException,
+                                            @PathVariable String outgoingPaymentId)
+            throws OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException,
             OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
             OutgoingPaymentInvalidAmountException, MerchantNotFoundException, OutgoingPaymentNotFoundException,
             NoEligibleTraderTeamsException, MerchantInsufficientOutgoingBalanceException {
