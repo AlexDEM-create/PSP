@@ -139,6 +139,8 @@ public class SecurityConfig {
                         "/balances/merchants/*/outgoing/deposit", "/balances/merchants/*/outgoing/withdraw")
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
 
+                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/outgoing-payments/test")
+                        .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/outgoing-payments")
                         .hasAnyAuthority(UserRole.MERCHANT.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET,

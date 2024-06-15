@@ -105,6 +105,12 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
     }
 
     @Override
+    public OutgoingPaymentBuilder withTraderTeamId(String traderTeamId) {
+        pojoBuilder.traderTeamId(traderTeamId);
+        return this;
+    }
+
+    @Override
     public OutgoingPaymentBuilder withPaymentMethodId(String paymentMethodId) {
         pojoBuilder.paymentMethodId(paymentMethodId);
         return this;

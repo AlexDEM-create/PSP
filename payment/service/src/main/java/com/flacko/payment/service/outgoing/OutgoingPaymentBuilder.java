@@ -21,6 +21,8 @@ public interface OutgoingPaymentBuilder {
     OutgoingPaymentBuilder withRandomTraderTeamId(Optional<String> currentTraderTeamId)
             throws NoEligibleTraderTeamsException, TraderTeamNotFoundException;
 
+    OutgoingPaymentBuilder withTraderTeamId(String traderTeamId);
+
     OutgoingPaymentBuilder withPaymentMethodId(String paymentMethodId);
 
     OutgoingPaymentBuilder withAmount(BigDecimal amount);

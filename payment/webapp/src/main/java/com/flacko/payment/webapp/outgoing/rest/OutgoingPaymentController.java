@@ -113,6 +113,31 @@ public class OutgoingPaymentController {
         return outgoingPaymentRestMapper.mapModelToCreateResponse(outgoingPayment);
     }
 
+    @PostMapping("/test")
+    public OutgoingPaymentCreateResponse create(@RequestHeader("Authorization") String tokenWithPrefix,
+                                                @RequestBody TestOutgoingPaymentCreateRequest testOutgoingPaymentCreateRequest)
+            throws TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
+            UserNotFoundException, NoEligibleTraderTeamsException, MerchantInsufficientOutgoingBalanceException {
+        String token = tokenWithPrefix.substring(SecurityConfig.TOKEN_PREFIX.length());
+        String login = JWT.decode(token).getSubject();
+
+        OutgoingPaymentBuilder builder = outgoingPaymentService.create(login);
+        builder.withAmount(testOutgoingPaymentCreateRequest.amount());
+        builder.withCurrency(testOutgoingPaymentCreateRequest.currency());
+        builder.withRecipient(testOutgoingPaymentCreateRequest.recipient());
+        builder.withBank(testOutgoingPaymentCreateRequest.bank());
+        builder.withRecipientPaymentMethodType(testOutgoingPaymentCreateRequest.recipientPaymentMethodType());
+        builder.withTraderTeamId(testOutgoingPaymentCreateRequest.traderTeamId());
+
+        if (testOutgoingPaymentCreateRequest.partnerPaymentId().isPresent()) {
+            builder.withPartnerPaymentId(testOutgoingPaymentCreateRequest.partnerPaymentId().get());
+        }
+
+        OutgoingPayment outgoingPayment = builder.build();
+        return outgoingPaymentRestMapper.mapModelToCreateResponse(outgoingPayment);
+    }
+
     @PatchMapping("/{outgoingPaymentId}/verify")
     public OutgoingPaymentCreateResponse verify(@PathVariable String outgoingPaymentId)
             throws OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException,
