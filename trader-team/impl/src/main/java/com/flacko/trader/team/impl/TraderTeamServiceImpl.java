@@ -79,7 +79,10 @@ public class TraderTeamServiceImpl implements TraderTeamService {
 
         if (eligibleTeams.isEmpty()) {
             if (currentTraderTeamId.isPresent()) {
-                return get(currentTraderTeamId.get());
+                TraderTeam traderTeam = get(currentTraderTeamId.get());
+                if (isEligibleForOutgoingPayment(traderTeam)) {
+                    return traderTeam;
+                }
             }
             throw new NoEligibleTraderTeamsException();
         }
@@ -94,6 +97,13 @@ public class TraderTeamServiceImpl implements TraderTeamService {
                 .withEnabled(true)
                 .build()
                 .isEmpty();
+    }
+
+    private boolean isEligibleForOutgoingPayment(TraderTeam traderTeam) {
+        return traderTeam.isVerified()
+                && traderTeam.isOutgoingOnline()
+                && !traderTeam.isKickedOut()
+                && traderTeam.getDeletedDate().isEmpty();
     }
 
 }
