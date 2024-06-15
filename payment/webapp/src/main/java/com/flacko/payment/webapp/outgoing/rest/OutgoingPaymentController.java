@@ -129,6 +129,7 @@ public class OutgoingPaymentController {
         builder.withBank(testOutgoingPaymentCreateRequest.bank());
         builder.withRecipientPaymentMethodType(testOutgoingPaymentCreateRequest.recipientPaymentMethodType());
         builder.withTraderTeamId(testOutgoingPaymentCreateRequest.traderTeamId());
+        builder.withMerchantId(testOutgoingPaymentCreateRequest.merchantId());
 
         if (testOutgoingPaymentCreateRequest.partnerPaymentId().isPresent()) {
             builder.withPartnerPaymentId(testOutgoingPaymentCreateRequest.partnerPaymentId().get());

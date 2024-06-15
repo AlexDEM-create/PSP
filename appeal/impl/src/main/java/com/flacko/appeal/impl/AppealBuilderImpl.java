@@ -4,6 +4,7 @@ import com.flacko.appeal.service.Appeal;
 import com.flacko.appeal.service.AppealBuilder;
 import com.flacko.appeal.service.AppealSource;
 import com.flacko.appeal.service.AppealState;
+import com.flacko.appeal.service.PaymentDirection;
 import com.flacko.appeal.service.exception.AppealIllegalPaymentCurrentStateException;
 import com.flacko.appeal.service.exception.AppealIllegalStateTransitionException;
 import com.flacko.appeal.service.exception.AppealMissingRequiredAttributeException;
@@ -69,8 +70,10 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
                 .primaryKey(existingAppeal.getPrimaryKey())
                 .id(existingAppeal.getId())
                 .paymentId(existingAppeal.getPaymentId())
+                .paymentDirection(existingAppeal.getPaymentDirection())
                 .source(existingAppeal.getSource())
                 .currentState(existingAppeal.getCurrentState())
+                .message(existingAppeal.getMessage().orElse(null))
                 .createdDate(existingAppeal.getCreatedDate())
                 .updatedDate(Instant.now());
         id = existingAppeal.getId();
@@ -81,6 +84,12 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
     @Override
     public AppealBuilder withPaymentId(String paymentId) {
         pojoBuilder.paymentId(paymentId);
+        return this;
+    }
+
+    @Override
+    public AppealBuilder withPaymentDirection(PaymentDirection paymentDirection) {
+        pojoBuilder.paymentDirection(paymentDirection);
         return this;
     }
 
@@ -96,6 +105,12 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             throw new AppealIllegalStateTransitionException(id, currentState, newState);
         }
         pojoBuilder.currentState(newState);
+        return this;
+    }
+
+    @Override
+    public AppealBuilder withMessage(String message) {
+        pojoBuilder.message(message);
         return this;
     }
 
@@ -122,6 +137,9 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
         }
         if (pojo.getPaymentId() == null || pojo.getPaymentId().isBlank()) {
             throw new AppealMissingRequiredAttributeException("paymentId", Optional.of(pojo.getId()));
+        }
+        if (pojo.getPaymentDirection() == null) {
+            throw new AppealMissingRequiredAttributeException("paymentDirection", Optional.of(pojo.getId()));
         }
         if (pojo.getSource() == null) {
             throw new AppealMissingRequiredAttributeException("source", Optional.of(pojo.getId()));

@@ -1,5 +1,6 @@
 package com.flacko.appeal.webapp.rest;
 
+import com.auth0.jwt.JWT;
 import com.flacko.appeal.service.Appeal;
 import com.flacko.appeal.service.AppealBuilder;
 import com.flacko.appeal.service.AppealListBuilder;
@@ -20,12 +21,18 @@ import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeExcept
 import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UserNotFoundException;
+import com.flacko.common.role.UserRole;
+import com.flacko.security.SecurityConfig;
+import com.flacko.user.service.User;
+import com.flacko.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,6 +55,7 @@ public class AppealController {
 
     private final AppealService appealService;
     private final AppealRestMapper appealRestMapper;
+    private final UserService userService;
 
     @GetMapping
     public List<AppealResponse> list(@RequestParam(PAYMENT_ID) Optional<String> paymentId,
@@ -86,16 +94,27 @@ public class AppealController {
     }
 
     @PostMapping
-    public AppealResponse create(@RequestBody AppealCreateRequest appealCreateRequest)
+    public AppealResponse create(@RequestHeader("Authorization") String tokenWithPrefix,
+                                 @RequestBody AppealCreateRequest appealCreateRequest)
             throws AppealMissingRequiredAttributeException, IncomingPaymentNotFoundException,
             AppealIllegalPaymentCurrentStateException, OutgoingPaymentNotFoundException,
             OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException,
             OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
             OutgoingPaymentInvalidAmountException, MerchantNotFoundException, NoEligibleTraderTeamsException,
-            MerchantInsufficientOutgoingBalanceException {
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
+        String token = tokenWithPrefix.substring(SecurityConfig.TOKEN_PREFIX.length());
+        String login = JWT.decode(token).getSubject();
+        User user = userService.getByLogin(login);
+
         AppealBuilder builder = appealService.create();
-        builder.withPaymentId(appealCreateRequest.paymentId())
-                .withSource(appealCreateRequest.source());
+        builder.withPaymentId(appealCreateRequest.paymentId());
+
+        if (user.getRole() == UserRole.TRADER_TEAM) {
+            builder.withSource(AppealSource.TRADER_TEAM);
+        } else if (user.getRole() == UserRole.MERCHANT) {
+            builder.withSource(AppealSource.MERCHANT);
+        }
+
         Appeal appeal = builder.build();
         return appealRestMapper.mapModelToResponse(appeal);
     }

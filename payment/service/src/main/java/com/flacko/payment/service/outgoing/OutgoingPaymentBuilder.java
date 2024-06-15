@@ -23,6 +23,8 @@ public interface OutgoingPaymentBuilder {
 
     OutgoingPaymentBuilder withTraderTeamId(String traderTeamId);
 
+    OutgoingPaymentBuilder withMerchantId(String merchantId);
+
     OutgoingPaymentBuilder withPaymentMethodId(String paymentMethodId);
 
     OutgoingPaymentBuilder withAmount(BigDecimal amount);

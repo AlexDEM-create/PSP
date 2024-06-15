@@ -4,6 +4,7 @@ import com.flacko.appeal.service.Appeal;
 import com.flacko.appeal.service.AppealListBuilder;
 import com.flacko.appeal.service.AppealSource;
 import com.flacko.appeal.service.AppealState;
+import com.flacko.appeal.service.PaymentDirection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
@@ -21,12 +22,19 @@ public class AppealListBuilderImpl implements AppealListBuilder {
     private final AppealRepository appealRepository;
 
     private Optional<String> paymentId = Optional.empty();
+    private Optional<PaymentDirection> paymentDirection = Optional.empty();
     private Optional<AppealSource> source = Optional.empty();
     private Optional<AppealState> currentState = Optional.empty();
 
     @Override
     public AppealListBuilder withPaymentId(String paymentId) {
         this.paymentId = Optional.of(paymentId);
+        return this;
+    }
+
+    @Override
+    public AppealListBuilder withPaymentDirection(PaymentDirection paymentDirection) {
+        this.paymentDirection = Optional.of(paymentDirection);
         return this;
     }
 
@@ -52,6 +60,10 @@ public class AppealListBuilderImpl implements AppealListBuilder {
         if (paymentId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("paymentId"), paymentId.get()));
+        }
+        if (paymentDirection.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("paymentDirection"), paymentDirection.get()));
         }
         if (source.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
