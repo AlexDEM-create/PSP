@@ -92,6 +92,7 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
                 .updatedDate(now);
         id = existingOutgoingPayment.getId();
         currentState = existingOutgoingPayment.getCurrentState();
+        merchantId = existingOutgoingPayment.getMerchantId();
         return this;
     }
 
