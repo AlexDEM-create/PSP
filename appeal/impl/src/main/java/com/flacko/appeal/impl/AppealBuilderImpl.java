@@ -52,6 +52,7 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
     private CrudOperation crudOperation;
     private String id;
     private AppealState currentState;
+    private String paymentId;
 
     @Override
     public AppealBuilder initializeNew() {
@@ -79,18 +80,14 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
                 .updatedDate(Instant.now());
         id = existingAppeal.getId();
         currentState = existingAppeal.getCurrentState();
+        paymentId = existingAppeal.getPaymentId();
         return this;
     }
 
     @Override
     public AppealBuilder withPaymentId(String paymentId) {
+        this.paymentId = paymentId;
         pojoBuilder.paymentId(paymentId);
-        return this;
-    }
-
-    @Override
-    public AppealBuilder withPaymentDirection(PaymentDirection paymentDirection) {
-        pojoBuilder.paymentDirection(paymentDirection);
         return this;
     }
 
@@ -123,6 +120,8 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
             OutgoingPaymentInvalidAmountException, MerchantNotFoundException, NoEligibleTraderTeamsException,
             MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
+        setPaymentDirection();
+
         AppealPojo appeal = pojoBuilder.build();
         validate(appeal);
         handlePaymentStateChanges(appeal);
@@ -160,14 +159,6 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
                         incomingPayment.getCurrentState());
             }
         }
-        if (pojo.getSource() == AppealSource.TRADER_TEAM) {
-            OutgoingPayment outgoingPayment = outgoingPaymentService.get(pojo.getPaymentId());
-            if (crudOperation == CrudOperation.CREATE
-                    && !ALLOWED_PAYMENT_STATES.contains(outgoingPayment.getCurrentState())) {
-                throw new AppealIllegalPaymentCurrentStateException(pojo.getId(), pojo.getPaymentId(),
-                        outgoingPayment.getCurrentState());
-            }
-        }
         if (pojo.getCurrentState() == null) {
             throw new AppealMissingRequiredAttributeException("currentState", Optional.of(pojo.getId()));
         }
@@ -178,7 +169,7 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
             OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
             MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
-        if (appeal.getSource() == AppealSource.TRADER_TEAM) {
+        if (appeal.getPaymentDirection() == PaymentDirection.OUTGOING) {
             OutgoingPayment outgoingPayment = outgoingPaymentService.get(appeal.getPaymentId());
             switch (appeal.getCurrentState()) {
                 case REJECTED -> assignNewTraderTeam(outgoingPayment);
@@ -209,5 +200,14 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
                 .build();
     }
 
+    private void setPaymentDirection() throws IncomingPaymentNotFoundException {
+        try {
+            outgoingPaymentService.get(paymentId);
+            pojoBuilder.paymentDirection(PaymentDirection.OUTGOING);
+        } catch (OutgoingPaymentNotFoundException e) {
+            incomingPaymentService.get(paymentId);
+            pojoBuilder.paymentDirection(PaymentDirection.INCOMING);
+        }
+    }
 
 }

@@ -19,8 +19,6 @@ public interface AppealBuilder {
 
     AppealBuilder withPaymentId(String paymentId);
 
-    AppealBuilder withPaymentDirection(PaymentDirection paymentDirection);
-
     AppealBuilder withSource(AppealSource source);
 
     AppealBuilder withState(AppealState newState) throws AppealIllegalStateTransitionException;
