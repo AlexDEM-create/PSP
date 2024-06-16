@@ -13,6 +13,7 @@ import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeExcept
 import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UserNotFoundException;
 
 public interface AppealBuilder {
 
@@ -31,6 +32,6 @@ public interface AppealBuilder {
             OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException,
             OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
             OutgoingPaymentInvalidAmountException, MerchantNotFoundException, NoEligibleTraderTeamsException,
-            MerchantInsufficientOutgoingBalanceException;
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException;
 
 }

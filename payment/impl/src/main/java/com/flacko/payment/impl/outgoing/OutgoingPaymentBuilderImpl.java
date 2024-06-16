@@ -57,18 +57,18 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
     private CrudOperation crudOperation;
     private String id;
     private PaymentState currentState;
+    private String login;
+    private String merchantId;
 
     @Override
-    public OutgoingPaymentBuilder initializeNew(String login) throws UserNotFoundException, MerchantNotFoundException {
+    public OutgoingPaymentBuilder initializeNew(String login) {
         crudOperation = CrudOperation.CREATE;
-        String merchantId = merchantService.getMy(login)
-                .getId();
+        this.login = login;
         id = new IdGenerator().generateId();
         currentState = PaymentState.INITIATED;
         pojoBuilder = OutgoingPaymentPojo.builder()
                 .id(id)
-                .currentState(currentState)
-                .merchantId(merchantId);
+                .currentState(currentState);
         return this;
     }
 
@@ -112,6 +112,7 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
 
     @Override
     public OutgoingPaymentBuilder withMerchantId(String merchantId) {
+        this.merchantId = merchantId;
         pojoBuilder.merchantId(merchantId);
         return this;
     }
@@ -171,7 +172,13 @@ public class OutgoingPaymentBuilderImpl implements InitializableOutgoingPaymentB
     @Override
     public OutgoingPayment build() throws OutgoingPaymentMissingRequiredAttributeException,
             TraderTeamNotFoundException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException,
-            MerchantNotFoundException, MerchantInsufficientOutgoingBalanceException {
+            MerchantNotFoundException, MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
+        if (merchantId == null) {
+            String merchantId = merchantService.getMy(login)
+                    .getId();
+            pojoBuilder.merchantId(merchantId);
+        }
+
         OutgoingPaymentPojo outgoingPayment = pojoBuilder.build();
         validate(outgoingPayment);
         outgoingPaymentRepository.save(outgoingPayment);

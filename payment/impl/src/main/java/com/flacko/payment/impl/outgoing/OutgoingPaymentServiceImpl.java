@@ -61,7 +61,7 @@ public class OutgoingPaymentServiceImpl implements OutgoingPaymentService {
             OutgoingPaymentNotFoundException, NoEligibleTraderTeamsException,
             OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
             PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
-            MerchantInsufficientOutgoingBalanceException {
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
         OutgoingPayment outgoingPayment = get(id);
         return update(id)
                 .withRandomTraderTeamId(Optional.of(outgoingPayment.getTraderTeamId()))

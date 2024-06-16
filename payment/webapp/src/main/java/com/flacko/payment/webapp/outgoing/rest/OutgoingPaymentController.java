@@ -144,7 +144,7 @@ public class OutgoingPaymentController {
             throws OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException,
             MerchantInsufficientOutgoingBalanceException, TraderTeamNotFoundException,
             OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
-            OutgoingPaymentInvalidAmountException, MerchantNotFoundException {
+            OutgoingPaymentInvalidAmountException, MerchantNotFoundException, UserNotFoundException {
         OutgoingPaymentBuilder builder = outgoingPaymentService.update(outgoingPaymentId);
         builder.withState(PaymentState.VERIFYING);
         OutgoingPayment outgoingPayment = builder.build();
@@ -157,7 +157,7 @@ public class OutgoingPaymentController {
             throws OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException,
             OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
             OutgoingPaymentInvalidAmountException, MerchantNotFoundException, OutgoingPaymentNotFoundException,
-            NoEligibleTraderTeamsException, MerchantInsufficientOutgoingBalanceException {
+            NoEligibleTraderTeamsException, MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
         String token = tokenWithPrefix.substring(SecurityConfig.TOKEN_PREFIX.length());
         String login = JWT.decode(token).getSubject();
 

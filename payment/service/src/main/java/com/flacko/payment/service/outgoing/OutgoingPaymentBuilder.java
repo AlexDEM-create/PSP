@@ -10,6 +10,7 @@ import com.flacko.common.exception.OutgoingPaymentInvalidAmountException;
 import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
 
@@ -43,6 +44,6 @@ public interface OutgoingPaymentBuilder {
 
     OutgoingPayment build() throws OutgoingPaymentMissingRequiredAttributeException, TraderTeamNotFoundException,
             MerchantNotFoundException, PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException,
-            MerchantInsufficientOutgoingBalanceException;
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException;
 
 }

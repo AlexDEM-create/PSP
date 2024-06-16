@@ -25,6 +25,6 @@ public interface OutgoingPaymentService {
             OutgoingPaymentNotFoundException, NoEligibleTraderTeamsException,
             OutgoingPaymentIllegalStateTransitionException, OutgoingPaymentMissingRequiredAttributeException,
             PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
-            MerchantInsufficientOutgoingBalanceException;
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException;
 
 }

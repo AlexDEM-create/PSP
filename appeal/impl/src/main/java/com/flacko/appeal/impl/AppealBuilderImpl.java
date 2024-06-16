@@ -18,6 +18,7 @@ import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeExcept
 import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.common.operation.CrudOperation;
 import com.flacko.common.state.PaymentState;
@@ -121,7 +122,7 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException,
             OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
             OutgoingPaymentInvalidAmountException, MerchantNotFoundException, NoEligibleTraderTeamsException,
-            MerchantInsufficientOutgoingBalanceException {
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
         AppealPojo appeal = pojoBuilder.build();
         validate(appeal);
         handlePaymentStateChanges(appeal);
@@ -176,7 +177,7 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             NoEligibleTraderTeamsException, OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException,
             OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
             OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
-            MerchantInsufficientOutgoingBalanceException {
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
         if (appeal.getSource() == AppealSource.TRADER_TEAM) {
             OutgoingPayment outgoingPayment = outgoingPaymentService.get(appeal.getPaymentId());
             switch (appeal.getCurrentState()) {
@@ -191,7 +192,7 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException,
             TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException,
             PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
-            MerchantInsufficientOutgoingBalanceException {
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
         outgoingPaymentService.update(outgoingPayment.getId())
                 .withRandomTraderTeamId(Optional.of(outgoingPayment.getTraderTeamId()))
                 .withState(PaymentState.INITIATED)
@@ -202,7 +203,7 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             throws OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException,
             TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException,
             PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
-            MerchantInsufficientOutgoingBalanceException {
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
         outgoingPaymentService.update(outgoingPayment.getId())
                 .withState(newState)
                 .build();
