@@ -59,6 +59,7 @@ public class IncomingPaymentBuilderImpl implements InitializableIncomingPaymentB
                 .paymentMethodId(existingIncomingPayment.getPaymentMethodId())
                 .amount(existingIncomingPayment.getAmount())
                 .currency(existingIncomingPayment.getCurrency())
+                .bank(existingIncomingPayment.getBank())
                 .currentState(existingIncomingPayment.getCurrentState())
                 .createdDate(existingIncomingPayment.getCreatedDate())
                 .updatedDate(Instant.now());

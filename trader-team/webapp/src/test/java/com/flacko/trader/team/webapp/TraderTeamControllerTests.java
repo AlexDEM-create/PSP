@@ -2,6 +2,7 @@ package com.flacko.trader.team.webapp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.flacko.balance.service.BalanceService;
 import com.flacko.common.bank.Bank;
 import com.flacko.common.country.Country;
 import com.flacko.common.currency.Currency;
@@ -89,6 +90,9 @@ public class TraderTeamControllerTests {
 
     @Autowired
     private TerminalService terminalService;
+
+    @Autowired
+    private BalanceService balanceService;
 
     private String incomingPaymentId;
     private String outgoingPaymentId;
@@ -201,6 +205,7 @@ public class TraderTeamControllerTests {
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(5000))
                 .withCurrency(Currency.RUB)
+                .withBank(Bank.SBER)
                 .withState(PaymentState.VERIFYING)
                 .build()
                 .getId();
