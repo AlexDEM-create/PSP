@@ -89,18 +89,6 @@ public class BalanceController {
         return balanceRestMapper.mapModelToResponse(balance);
     }
 
-    @PatchMapping("/merchants/{merchantId}/incoming/deposit")
-    public BalanceResponse depositMerchantIncomingBalance(@PathVariable String merchantId,
-                                                          @RequestBody BalanceUpdateRequest balanceUpdateRequest)
-            throws BalanceNotFoundException, TraderTeamNotFoundException, MerchantNotFoundException,
-            BalanceMissingRequiredAttributeException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
-            MerchantInvalidFeeRateException, MerchantMissingRequiredAttributeException {
-        BalanceBuilder builder = balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.INCOMING)
-                .deposit(balanceUpdateRequest.amount());
-        Balance balance = builder.build();
-        return balanceRestMapper.mapModelToResponse(balance);
-    }
-
     @PatchMapping("/merchants/{merchantId}/incoming/withdraw")
     public BalanceResponse withdrawMerchantIncomingBalance(@PathVariable String merchantId,
                                                            @RequestBody BalanceUpdateRequest balanceUpdateRequest)
@@ -136,5 +124,21 @@ public class BalanceController {
         Balance balance = builder.build();
         return balanceRestMapper.mapModelToResponse(balance);
     }
+
+    @PatchMapping("/merchants/{merchantId}/transfer")
+    public BalanceResponse transferFromIncomingToOutgoing(@PathVariable String merchantId,
+                                                          @RequestBody BalanceUpdateRequest balanceUpdateRequest)
+            throws BalanceNotFoundException, UserNotFoundException, BalanceInvalidCurrentBalanceException,
+            TraderTeamNotFoundException, MerchantNotFoundException, MerchantInvalidFeeRateException,
+            MerchantMissingRequiredAttributeException, BalanceMissingRequiredAttributeException {
+        balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.INCOMING)
+                .withdraw(balanceUpdateRequest.amount())
+                .build();
+        Balance outgoingBalance = balanceService.update(merchantId, EntityType.MERCHANT, BalanceType.OUTGOING)
+                .deposit(balanceUpdateRequest.amount())
+                .build();
+        return balanceRestMapper.mapModelToResponse(outgoingBalance);
+    }
+
 
 }
