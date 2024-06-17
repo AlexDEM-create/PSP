@@ -1,7 +1,9 @@
 package com.flacko.payment.impl.incoming;
 
+import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.MerchantNotFoundException;
+import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.id.IdGenerator;
@@ -96,6 +98,12 @@ public class IncomingPaymentBuilderImpl implements InitializableIncomingPaymentB
     }
 
     @Override
+    public IncomingPaymentBuilder withBank(Bank bank) {
+        pojoBuilder.bank(bank);
+        return this;
+    }
+
+    @Override
     public IncomingPaymentBuilder withState(PaymentState newState) throws IncomingPaymentIllegalStateTransitionException {
         if (!currentState.canChangeTo(newState)) {
             throw new IncomingPaymentIllegalStateTransitionException(id, currentState, newState);
@@ -141,6 +149,9 @@ public class IncomingPaymentBuilderImpl implements InitializableIncomingPaymentB
         }
         if (pojo.getCurrency() == null) {
             throw new IncomingPaymentMissingRequiredAttributeException("currency", Optional.of(pojo.getId()));
+        }
+        if (pojo.getBank() == null) {
+            throw new IncomingPaymentMissingRequiredAttributeException("bank", Optional.of(pojo.getId()));
         }
         if (pojo.getCurrentState() == null) {
             throw new IncomingPaymentMissingRequiredAttributeException("currentState", Optional.of(pojo.getId()));

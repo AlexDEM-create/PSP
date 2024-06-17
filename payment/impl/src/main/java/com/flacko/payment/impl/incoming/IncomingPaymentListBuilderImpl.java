@@ -1,5 +1,7 @@
 package com.flacko.payment.impl.incoming;
 
+import com.flacko.common.bank.Bank;
+import com.flacko.common.currency.Currency;
 import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.incoming.IncomingPayment;
 import com.flacko.payment.service.incoming.IncomingPaymentListBuilder;
@@ -23,6 +25,8 @@ public class IncomingPaymentListBuilderImpl implements IncomingPaymentListBuilde
     private Optional<String> merchantId = Optional.empty();
     private Optional<String> traderTeamId = Optional.empty();
     private Optional<String> paymentMethodId = Optional.empty();
+    private Optional<Currency> currency = Optional.empty();
+    private Optional<Bank> bank = Optional.empty();
     private Optional<PaymentState> currentState = Optional.empty();
     private Optional<Instant> startDate = Optional.empty();
     private Optional<Instant> endDate = Optional.empty();
@@ -42,6 +46,18 @@ public class IncomingPaymentListBuilderImpl implements IncomingPaymentListBuilde
     @Override
     public IncomingPaymentListBuilder withPaymentMethodId(String paymentMethodId) {
         this.paymentMethodId = Optional.of(paymentMethodId);
+        return this;
+    }
+
+    @Override
+    public IncomingPaymentListBuilder withCurrency(Currency currency) {
+        this.currency = Optional.of(currency);
+        return this;
+    }
+
+    @Override
+    public IncomingPaymentListBuilder withBank(Bank bank) {
+        this.bank = Optional.of(bank);
         return this;
     }
 
@@ -81,6 +97,14 @@ public class IncomingPaymentListBuilderImpl implements IncomingPaymentListBuilde
         if (paymentMethodId.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("paymentMethodId"), paymentMethodId.get()));
+        }
+        if (currency.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("currency"), currency.get()));
+        }
+        if (bank.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("bank"), bank.get()));
         }
         if (currentState.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->

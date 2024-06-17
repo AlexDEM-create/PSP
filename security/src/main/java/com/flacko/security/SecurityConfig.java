@@ -152,6 +152,10 @@ public class SecurityConfig {
                         .hasAnyAuthority(UserRole.TRADER_TEAM.name(), UserRole.USER_SUPPORT.name(),
                                 UserRole.USER_ADMIN.name()))
 
+                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET, "/payments")
+                        .hasAnyAuthority(UserRole.MERCHANT.name(), UserRole.TRADER_TEAM.name(),
+                                UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
+
                 // incoming payments
                 // stats
 
