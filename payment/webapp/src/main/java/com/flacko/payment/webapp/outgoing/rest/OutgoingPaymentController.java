@@ -31,9 +31,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor
@@ -61,8 +63,7 @@ public class OutgoingPaymentController {
                                               @RequestParam(CURRENCY) Optional<Currency> currency,
                                               @RequestParam(RECIPIENT) Optional<String> recipient,
                                               @RequestParam(BANK) Optional<Bank> bank,
-                                              @RequestParam(RECIPIENT_PAYMENT_METHOD_TYPE)
-                                                      Optional<RecipientPaymentMethodType> recipientPaymentMethodType,
+                                              @RequestParam(RECIPIENT_PAYMENT_METHOD_TYPE) Optional<RecipientPaymentMethodType> recipientPaymentMethodType,
                                               @RequestParam(CURRENT_STATE) Optional<PaymentState> currentState,
                                               @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
                                               @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
@@ -75,13 +76,32 @@ public class OutgoingPaymentController {
         bank.ifPresent(builder::withBank);
         recipientPaymentMethodType.ifPresent(builder::withRecipientPaymentMethodType);
         currentState.ifPresent(builder::withCurrentState);
-        return builder.build()
+
+        List<OutgoingPaymentResponse> payments = builder.build()
                 .stream()
                 .map(outgoingPaymentRestMapper::mapModelToResponse)
+                .collect(Collectors.toList());
+
+        List<OutgoingPaymentResponse> initiatedPayments = payments.stream()
+                .filter(payment -> payment.currentState() == PaymentState.INITIATED)
+                .sorted(Comparator.comparing(OutgoingPaymentResponse::createdDate).reversed())
+                .collect(Collectors.toList());
+
+        List<OutgoingPaymentResponse> otherPayments = payments.stream()
+                .filter(payment -> payment.currentState() != PaymentState.INITIATED)
+                .sorted(Comparator.comparing(OutgoingPaymentResponse::createdDate).reversed())
+                .collect(Collectors.toList());
+
+        List<OutgoingPaymentResponse> combinedPayments = Stream.concat(initiatedPayments.stream(),
+                otherPayments.stream())
+                .collect(Collectors.toList());
+
+        return combinedPayments.stream()
                 .skip(offset)
                 .limit(limit)
                 .collect(Collectors.toList());
     }
+
 
     @GetMapping("/{outgoingPaymentId}")
     public OutgoingPaymentResponse get(@PathVariable String outgoingPaymentId) throws OutgoingPaymentNotFoundException {

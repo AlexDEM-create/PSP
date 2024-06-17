@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -68,6 +69,7 @@ public class ReceiptPaymentVerificationController {
                 .map(receiptPaymentVerificationRestMapper::mapModelToResponse)
                 .skip(offset)
                 .limit(limit)
+                .sorted(Comparator.comparing(ReceiptPaymentVerificationResponse::createdDate).reversed())
                 .collect(Collectors.toList());
     }
 

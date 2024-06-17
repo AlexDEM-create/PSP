@@ -41,6 +41,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor
@@ -71,18 +72,22 @@ public class AppealController {
         List<AppealResponse> appeals = builder.build()
                 .stream()
                 .map(appealRestMapper::mapModelToResponse)
+                .collect(Collectors.toList());
+
+        List<AppealResponse> initiatedAppeals = appeals.stream()
                 .filter(appeal -> appeal.currentState() == AppealState.INITIATED)
                 .sorted(Comparator.comparing(AppealResponse::createdDate).reversed())
                 .collect(Collectors.toList());
 
-        appeals.addAll(builder.build()
-                .stream()
-                .map(appealRestMapper::mapModelToResponse)
+        List<AppealResponse> otherAppeals = appeals.stream()
                 .filter(appeal -> appeal.currentState() != AppealState.INITIATED)
                 .sorted(Comparator.comparing(AppealResponse::createdDate).reversed())
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
 
-        return appeals.stream()
+        List<AppealResponse> combinedAppeals = Stream.concat(initiatedAppeals.stream(), otherAppeals.stream())
+                .collect(Collectors.toList());
+
+        return combinedAppeals.stream()
                 .skip(offset)
                 .limit(limit)
                 .collect(Collectors.toList());

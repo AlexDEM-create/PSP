@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -82,6 +83,7 @@ public class TraderTeamController {
                 .map(traderTeamRestMapper::mapModelToResponse)
                 .skip(offset)
                 .limit(limit)
+                .sorted(Comparator.comparing(TraderTeamResponse::createdDate).reversed())
                 .collect(Collectors.toList());
     }
 

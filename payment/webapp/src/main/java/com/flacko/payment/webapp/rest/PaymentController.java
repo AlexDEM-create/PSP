@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,9 +50,26 @@ public class PaymentController {
         currency.ifPresent(builder::withCurrency);
         bank.ifPresent(builder::withBank);
         currentState.ifPresent(builder::withCurrentState);
-        return builder.build()
+
+        List<PaymentResponse> payments = builder.build()
                 .stream()
                 .map(paymentRestMapper::mapModelToResponse)
+                .collect(Collectors.toList());
+
+        List<PaymentResponse> initiatedPayments = payments.stream()
+                .filter(payment -> payment.currentState() == PaymentState.INITIATED)
+                .sorted(Comparator.comparing(PaymentResponse::createdDate).reversed())
+                .collect(Collectors.toList());
+
+        List<PaymentResponse> otherPayments = payments.stream()
+                .filter(payment -> payment.currentState() != PaymentState.INITIATED)
+                .sorted(Comparator.comparing(PaymentResponse::createdDate).reversed())
+                .collect(Collectors.toList());
+
+        List<PaymentResponse> combinedPayments = Stream.concat(initiatedPayments.stream(), otherPayments.stream())
+                .collect(Collectors.toList());
+
+        return combinedPayments.stream()
                 .skip(offset)
                 .limit(limit)
                 .collect(Collectors.toList());

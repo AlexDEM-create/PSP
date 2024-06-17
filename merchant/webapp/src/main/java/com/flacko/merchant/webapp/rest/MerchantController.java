@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -58,6 +59,7 @@ public class MerchantController {
                 .map(merchantRestMapper::mapModelToResponse)
                 .skip(offset)
                 .limit(limit)
+                .sorted(Comparator.comparing(MerchantResponse::createdDate).reversed())
                 .collect(Collectors.toList());
     }
 
