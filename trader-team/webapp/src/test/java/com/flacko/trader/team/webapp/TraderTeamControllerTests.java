@@ -165,6 +165,7 @@ public class TraderTeamControllerTests {
                 .withName("test_merchant")
                 .withUserId(traderTeamUserId1)
                 .withLeaderId(traderTeamLeaderId1)
+                .withCountry(Country.RUSSIA)
                 .withTraderIncomingFeeRate(BigDecimal.valueOf(0.018))
                 .withTraderOutgoingFeeRate(BigDecimal.valueOf(0.018))
                 .withLeaderIncomingFeeRate(BigDecimal.valueOf(0.002))
@@ -184,6 +185,7 @@ public class TraderTeamControllerTests {
 
         paymentMethodId = paymentMethodService.create()
                 .withNumber("1234567812345678")
+                .withAccountLastFourDigits("1234")
                 .withFirstName("John")
                 .withLastName("Grey")
                 .withCurrency(Currency.RUB)

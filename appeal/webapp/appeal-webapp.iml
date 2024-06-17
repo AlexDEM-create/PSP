@@ -56,12 +56,12 @@
     <orderEntry type="module" module-name="trader-team-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="payment-method-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="user-impl" scope="RUNTIME" />
-    <orderEntry type="module" module-name="balance-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="trader-team-impl" scope="RUNTIME" />
+    <orderEntry type="module" module-name="balance-service" scope="RUNTIME" />
     <orderEntry type="module" module-name="payment-method-impl" scope="RUNTIME" />
+    <orderEntry type="module" module-name="merchant-impl" scope="RUNTIME" />
     <orderEntry type="module" module-name="terminal-service" scope="TEST" />
     <orderEntry type="module" module-name="terminal-impl" scope="TEST" />
-    <orderEntry type="module" module-name="merchant-impl" scope="TEST" />
     <orderEntry type="module" module-name="balance-impl" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.10.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.3.0" level="project" />
