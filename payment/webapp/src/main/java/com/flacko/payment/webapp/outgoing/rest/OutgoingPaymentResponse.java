@@ -20,7 +20,7 @@ public record OutgoingPaymentResponse(@JsonProperty(ID) String id,
                                       @JsonProperty(BANK) Bank bank,
                                       @JsonProperty(RECIPIENT_PAYMENT_METHOD_TYPE)
                                       RecipientPaymentMethodType recipientPaymentMethodType,
-                                      @JsonProperty(PARTNER_PAYMENT_ID) String partnerPaymentId,
+                                      @JsonProperty(PARTNER_PAYMENT_ID) Optional<String> partnerPaymentId,
                                       @JsonProperty(CURRENT_STATE) PaymentState currentState,
                                       @JsonProperty(CREATED_DATE) ZonedDateTime createdDate,
                                       @JsonProperty(UPDATED_DATE) ZonedDateTime updatedDate) {

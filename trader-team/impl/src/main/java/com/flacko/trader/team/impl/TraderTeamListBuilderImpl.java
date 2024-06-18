@@ -19,6 +19,7 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
 
     private final TraderTeamRepository traderTeamRepository;
 
+    private Optional<String> userId = Optional.empty();
     private Optional<Boolean> verified = Optional.empty();
     private Optional<Boolean> incomingOnline = Optional.empty();
     private Optional<Boolean> outgoingOnline = Optional.empty();
@@ -26,6 +27,12 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
     private Optional<String> leaderId = Optional.empty();
     private Optional<Country> country = Optional.empty();
     private Optional<Boolean> archived = Optional.empty();
+
+    @Override
+    public TraderTeamListBuilder withUserId(String userId) {
+        this.userId = Optional.of(userId);
+        return this;
+    }
 
     @Override
     public TraderTeamListBuilder withVerified(Boolean verified) {
@@ -76,6 +83,10 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
 
     private Specification<TraderTeam> createSpecification() {
         Specification<TraderTeam> spec = Specification.where(null);
+        if (userId.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("userId"), userId.get()));
+        }
         if (verified.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("verified"), verified.get()));
@@ -103,6 +114,9 @@ public class TraderTeamListBuilderImpl implements TraderTeamListBuilder {
         if (archived.isPresent() && archived.get()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.isNotNull(root.get("deletedDate")));
+        } else {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.isNull(root.get("deletedDate")));
         }
         return spec;
     }

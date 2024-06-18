@@ -3,6 +3,7 @@ package com.flacko.appeal.impl;
 import com.flacko.appeal.service.Appeal;
 import com.flacko.appeal.service.AppealSource;
 import com.flacko.appeal.service.AppealState;
+import com.flacko.appeal.service.PaymentDirection;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,6 +19,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @Entity
 @Table(name = "appeals")
@@ -39,6 +41,10 @@ public class AppealPojo implements Appeal {
     private String paymentId;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "payment_direction", nullable = false)
+    private PaymentDirection paymentDirection;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private AppealSource source;
 
@@ -46,11 +52,18 @@ public class AppealPojo implements Appeal {
     @Column(name = "current_state", nullable = false)
     private AppealState currentState;
 
+    @Column
+    private String message;
+
     @Column(name = "created_date", nullable = false)
     private Instant createdDate;
 
     @Column(name = "updated_date", nullable = false)
     private Instant updatedDate;
+
+    public Optional<String> getMessage() {
+        return Optional.ofNullable(message);
+    }
 
     @PrePersist
     protected void onCreate() {

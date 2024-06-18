@@ -1,12 +1,13 @@
 package com.flacko.appeal.webapp.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.flacko.appeal.service.AppealSource;
+
+import java.util.Optional;
 
 public record AppealCreateRequest(@JsonProperty(PAYMENT_ID) String paymentId,
-                                  @JsonProperty(SOURCE) AppealSource source) {
+                                  @JsonProperty(MESSAGE) Optional<String> message) {
 
     private static final String PAYMENT_ID = "payment_id";
-    private static final String SOURCE = "source";
+    private static final String MESSAGE = "message";
 
 }

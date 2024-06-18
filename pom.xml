@@ -44,7 +44,10 @@
         <module>currency/impl</module>
         <module>currency/webapp</module>
 
-        <module>reporting</module>
+        <module>stats/service</module>
+        <module>stats/impl</module>
+        <module>stats/webapp</module>
+
         <module>notification</module>
         <module>security</module>
         <module>common</module>

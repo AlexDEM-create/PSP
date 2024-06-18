@@ -5,7 +5,13 @@ import com.flacko.balance.service.BalanceType;
 import com.flacko.balance.service.EntityType;
 import com.flacko.common.country.Country;
 import com.flacko.common.currency.CurrencyParser;
-import com.flacko.common.exception.*;
+import com.flacko.common.exception.BalanceInvalidCurrentBalanceException;
+import com.flacko.common.exception.BalanceMissingRequiredAttributeException;
+import com.flacko.common.exception.MerchantInvalidFeeRateException;
+import com.flacko.common.exception.MerchantMissingRequiredAttributeException;
+import com.flacko.common.exception.MerchantNotFoundException;
+import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.id.IdGenerator;
 import com.flacko.common.operation.CrudOperation;
 import com.flacko.merchant.service.Merchant;
@@ -17,6 +23,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
 
@@ -55,6 +62,7 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
                 .country(existingMerchant.getCountry())
                 .incomingFeeRate(existingMerchant.getIncomingFeeRate())
                 .outgoingFeeRate(existingMerchant.getOutgoingFeeRate())
+                .webhook(existingMerchant.getWebhook().orElse(null))
                 .outgoingTrafficStopped(existingMerchant.isOutgoingTrafficStopped())
                 .createdDate(existingMerchant.getCreatedDate())
                 .updatedDate(now)
@@ -93,6 +101,12 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
     }
 
     @Override
+    public MerchantBuilder withWebhook(URL webhook) {
+        pojoBuilder.webhook(webhook);
+        return this;
+    }
+
+    @Override
     public MerchantBuilder withOutgoingTrafficStopped(boolean outgoingTrafficStopped) {
         pojoBuilder.outgoingTrafficStopped(outgoingTrafficStopped);
         return this;
@@ -100,6 +114,7 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
 
     @Override
     public MerchantBuilder withArchived() {
+        crudOperation = CrudOperation.DELETE;
         pojoBuilder.deletedDate(now);
         return this;
     }
@@ -137,7 +152,7 @@ public class MerchantBuilderImpl implements InitializableMerchantBuilder {
             throw new MerchantMissingRequiredAttributeException("id", Optional.empty());
         }
         if (pojo.getName() == null || pojo.getName().isBlank()) {
-            throw new MerchantMissingRequiredAttributeException("name", Optional.of(pojo.getName()));
+            throw new MerchantMissingRequiredAttributeException("name", Optional.of(pojo.getId()));
         }
         if (pojo.getUserId() == null || pojo.getUserId().isBlank()) {
             throw new MerchantMissingRequiredAttributeException("userId", Optional.of(pojo.getId()));

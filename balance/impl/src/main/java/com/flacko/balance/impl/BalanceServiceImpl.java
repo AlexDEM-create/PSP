@@ -1,6 +1,11 @@
 package com.flacko.balance.impl;
 
-import com.flacko.balance.service.*;
+import com.flacko.balance.service.Balance;
+import com.flacko.balance.service.BalanceBuilder;
+import com.flacko.balance.service.BalanceListBuilder;
+import com.flacko.balance.service.BalanceService;
+import com.flacko.balance.service.BalanceType;
+import com.flacko.balance.service.EntityType;
 import com.flacko.common.exception.BalanceNotFoundException;
 import com.flacko.common.exception.MerchantNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
@@ -53,8 +58,7 @@ public class BalanceServiceImpl implements BalanceService {
                     .getId();
             entityType = EntityType.TRADER_TEAM;
         } else if (user.getRole() == UserRole.TRADER_TEAM_LEADER) {
-            entityId = traderTeamService.getByLeaderId(user.getId())
-                    .getId();
+            entityId = user.getId();
             entityType = EntityType.TRADER_TEAM_LEADER;
         } else {
             throw new BalanceNotFoundException(user.getRole(), user.getId());

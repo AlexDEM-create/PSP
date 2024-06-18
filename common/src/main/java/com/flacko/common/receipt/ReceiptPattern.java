@@ -94,6 +94,14 @@ public class ReceiptPattern {
             РОССИЯВ БАНК
             (?P<recipient_bank>.+)$""";
 
+    private static final String TINKOFF_BANK_CARD_INTERNAL_PATTERN = "";
+
+    private static final String TINKOFF_BANK_CARD_EXTERNAL_PATTERN = "";
+
+    private static final String TINKOFF_PHONE_NUMBER_INTERNAL_PATTERN = "";
+
+    private static final String TINKOFF_PHONE_NUMBER_EXTERNAL_PATTERN = "";
+
     public static String getPattern(Bank bank, ReceiptPatternType type) {
         return switch (bank) {
             case SBER -> switch (type) {
@@ -102,7 +110,7 @@ public class ReceiptPattern {
                 case PHONE_NUMBER_INTERNAL -> SBER_PHONE_NUMBER_INTERNAL_PATTERN;
                 case PHONE_NUMBER_EXTERNAL -> SBER_PHONE_NUMBER_EXTERNAL_PATTERN;
             };
-            case RAIFFEISEN -> switch (type) {
+            case TINKOFF -> switch (type) {
                 case BANK_CARD_INTERNAL -> "Pattern for Bank A - Type 1";
                 case BANK_CARD_EXTERNAL -> "Pattern for Bank A - Type 2";
                 case PHONE_NUMBER_INTERNAL -> "Pattern for Bank A - Type 3";

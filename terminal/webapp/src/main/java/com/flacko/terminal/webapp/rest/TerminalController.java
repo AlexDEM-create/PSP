@@ -8,8 +8,17 @@ import com.flacko.terminal.service.TerminalListBuilder;
 import com.flacko.terminal.service.TerminalService;
 import com.flacko.terminal.service.exception.TerminalMissingRequiredAttributeException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,6 +58,7 @@ public class TerminalController {
                 .map(terminalRestMapper::mapModelToResponse)
                 .skip(offset)
                 .limit(limit)
+                .sorted(Comparator.comparing(TerminalResponse::createdDate).reversed())
                 .collect(Collectors.toList());
     }
 
@@ -62,12 +72,6 @@ public class TerminalController {
             throws TerminalMissingRequiredAttributeException, TraderTeamNotFoundException {
         TerminalBuilder builder = terminalService.create();
         builder.withTraderTeamId(terminalCreateRequest.traderTeamId());
-        if (terminalCreateRequest.model().isPresent()) {
-            builder.withModel(terminalCreateRequest.model().get());
-        }
-        if (terminalCreateRequest.operatingSystem().isPresent()) {
-            builder.withOperatingSystem(terminalCreateRequest.operatingSystem().get());
-        }
         Terminal terminal = builder.build();
         return terminalRestMapper.mapModelToResponse(terminal);
     }
@@ -82,10 +86,16 @@ public class TerminalController {
     }
 
     @PatchMapping("/{terminalId}/verify")
-    public TerminalResponse verify(@PathVariable String terminalId)
+    public TerminalResponse verify(@PathVariable String terminalId, TerminalVerifyRequest terminalVerifyRequest)
             throws TerminalNotFoundException, TerminalMissingRequiredAttributeException, TraderTeamNotFoundException {
         TerminalBuilder builder = terminalService.update(terminalId);
         builder.withVerified();
+        if (terminalVerifyRequest.model().isPresent()) {
+            builder.withModel(terminalVerifyRequest.model().get());
+        }
+        if (terminalVerifyRequest.operatingSystem().isPresent()) {
+            builder.withOperatingSystem(terminalVerifyRequest.operatingSystem().get());
+        }
         Terminal terminal = builder.build();
         return terminalRestMapper.mapModelToResponse(terminal);
     }

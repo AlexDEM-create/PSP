@@ -5,11 +5,17 @@ import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.incoming.IncomingPaymentListBuilder;
 import com.flacko.payment.service.incoming.IncomingPaymentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,9 +44,27 @@ public class IncomingPaymentController {
         traderTeamId.ifPresent(builder::withTraderTeamId);
         paymentMethodId.ifPresent(builder::withPaymentMethodId);
         currentState.ifPresent(builder::withCurrentState);
-        return builder.build()
+
+        List<IncomingPaymentResponse> payments = builder.build()
                 .stream()
                 .map(incomingPaymentRestMapper::mapModelToResponse)
+                .collect(Collectors.toList());
+
+        List<IncomingPaymentResponse> initiatedPayments = payments.stream()
+                .filter(payment -> payment.currentState() == PaymentState.INITIATED)
+                .sorted(Comparator.comparing(IncomingPaymentResponse::createdDate).reversed())
+                .collect(Collectors.toList());
+
+        List<IncomingPaymentResponse> otherPayments = payments.stream()
+                .filter(payment -> payment.currentState() != PaymentState.INITIATED)
+                .sorted(Comparator.comparing(IncomingPaymentResponse::createdDate).reversed())
+                .collect(Collectors.toList());
+
+        List<IncomingPaymentResponse> combinedPayments = Stream.concat(initiatedPayments.stream(),
+                otherPayments.stream())
+                .collect(Collectors.toList());
+
+        return combinedPayments.stream()
                 .skip(offset)
                 .limit(limit)
                 .collect(Collectors.toList());
@@ -52,7 +76,8 @@ public class IncomingPaymentController {
     }
 
 //    @PostMapping("/initiate/incoming")
-//    public IncomingPaymentInitiateResponse initiateIncoming(@RequestBody IncomingPaymentInitiateRequest paymentInitiateRequest) {
+//    public IncomingPaymentInitiateResponse initiateIncoming(@RequestBody IncomingPaymentInitiateRequest
+//    paymentInitiateRequest) {
 //        return incomingPaymentRestMapper.mapToInitiateResponse(
 //                paymentService.create(incomingPaymentRestMapper.mapToModel(paymentInitiateRequest)));
 //    }

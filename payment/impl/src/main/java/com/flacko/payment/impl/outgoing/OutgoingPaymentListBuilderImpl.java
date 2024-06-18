@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,8 @@ public class OutgoingPaymentListBuilderImpl implements OutgoingPaymentListBuilde
     private Optional<Bank> bank = Optional.empty();
     private Optional<RecipientPaymentMethodType> recipientPaymentMethodType = Optional.empty();
     private Optional<PaymentState> currentState = Optional.empty();
+    private Optional<Instant> startDate = Optional.empty();
+    private Optional<Instant> endDate = Optional.empty();
 
     @Override
     public OutgoingPaymentListBuilder withMerchantId(String merchantId) {
@@ -80,6 +83,18 @@ public class OutgoingPaymentListBuilderImpl implements OutgoingPaymentListBuilde
     }
 
     @Override
+    public OutgoingPaymentListBuilder withStartDate(Instant startDate) {
+        this.startDate = Optional.ofNullable(startDate);
+        return this;
+    }
+
+    @Override
+    public OutgoingPaymentListBuilder withEndDate(Instant endDate) {
+        this.endDate = Optional.ofNullable(endDate);
+        return this;
+    }
+
+    @Override
     public List<OutgoingPayment> build() {
         return outgoingPaymentRepository.findAll(createSpecification());
     }
@@ -117,6 +132,14 @@ public class OutgoingPaymentListBuilderImpl implements OutgoingPaymentListBuilde
         if (currentState.isPresent()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.equal(root.get("currentState"), currentState.get()));
+        }
+        if (startDate.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.greaterThanOrEqualTo(root.get("createdDate"), startDate.get()));
+        }
+        if (endDate.isPresent()) {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.lessThanOrEqualTo(root.get("createdDate"), endDate.get()));
         }
         return spec;
     }

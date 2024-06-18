@@ -4,6 +4,7 @@ import com.flacko.appeal.service.Appeal;
 import com.flacko.appeal.service.AppealBuilder;
 import com.flacko.appeal.service.AppealSource;
 import com.flacko.appeal.service.AppealState;
+import com.flacko.appeal.service.PaymentDirection;
 import com.flacko.appeal.service.exception.AppealIllegalPaymentCurrentStateException;
 import com.flacko.appeal.service.exception.AppealIllegalStateTransitionException;
 import com.flacko.appeal.service.exception.AppealMissingRequiredAttributeException;
@@ -17,7 +18,9 @@ import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeExcept
 import com.flacko.common.exception.OutgoingPaymentNotFoundException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.operation.CrudOperation;
 import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.incoming.IncomingPayment;
 import com.flacko.payment.service.incoming.IncomingPaymentService;
@@ -46,11 +49,14 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
     private final OutgoingPaymentService outgoingPaymentService;
 
     private AppealPojo.AppealPojoBuilder pojoBuilder;
+    private CrudOperation crudOperation;
     private String id;
     private AppealState currentState;
+    private String paymentId;
 
     @Override
     public AppealBuilder initializeNew() {
+        crudOperation = CrudOperation.CREATE;
         id = new IdGenerator().generateId();
         currentState = AppealState.INITIATED;
         pojoBuilder = AppealPojo.builder()
@@ -61,21 +67,26 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
 
     @Override
     public AppealBuilder initializeExisting(Appeal existingAppeal) {
+        crudOperation = CrudOperation.UPDATE;
         pojoBuilder = AppealPojo.builder()
                 .primaryKey(existingAppeal.getPrimaryKey())
                 .id(existingAppeal.getId())
                 .paymentId(existingAppeal.getPaymentId())
+                .paymentDirection(existingAppeal.getPaymentDirection())
                 .source(existingAppeal.getSource())
                 .currentState(existingAppeal.getCurrentState())
+                .message(existingAppeal.getMessage().orElse(null))
                 .createdDate(existingAppeal.getCreatedDate())
                 .updatedDate(Instant.now());
         id = existingAppeal.getId();
         currentState = existingAppeal.getCurrentState();
+        paymentId = existingAppeal.getPaymentId();
         return this;
     }
 
     @Override
     public AppealBuilder withPaymentId(String paymentId) {
+        this.paymentId = paymentId;
         pojoBuilder.paymentId(paymentId);
         return this;
     }
@@ -95,6 +106,12 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
         return this;
     }
 
+    @Override
+    public AppealBuilder withMessage(String message) {
+        pojoBuilder.message(message);
+        return this;
+    }
+
     @Transactional
     @Override
     public Appeal build() throws AppealMissingRequiredAttributeException, IncomingPaymentNotFoundException,
@@ -102,7 +119,9 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException,
             OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
             OutgoingPaymentInvalidAmountException, MerchantNotFoundException, NoEligibleTraderTeamsException,
-            MerchantInsufficientOutgoingBalanceException {
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
+        setPaymentDirection();
+
         AppealPojo appeal = pojoBuilder.build();
         validate(appeal);
         handlePaymentStateChanges(appeal);
@@ -119,21 +138,25 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
         if (pojo.getPaymentId() == null || pojo.getPaymentId().isBlank()) {
             throw new AppealMissingRequiredAttributeException("paymentId", Optional.of(pojo.getId()));
         }
+        if (pojo.getPaymentDirection() == null) {
+            throw new AppealMissingRequiredAttributeException("paymentDirection", Optional.of(pojo.getId()));
+        }
         if (pojo.getSource() == null) {
             throw new AppealMissingRequiredAttributeException("source", Optional.of(pojo.getId()));
         }
-        if (pojo.getSource() == AppealSource.MERCHANT) {
-            IncomingPayment incomingPayment = incomingPaymentService.get(pojo.getPaymentId());
-            if (!ALLOWED_PAYMENT_STATES.contains(incomingPayment.getCurrentState())) {
-                throw new AppealIllegalPaymentCurrentStateException(pojo.getId(), pojo.getPaymentId(),
-                        incomingPayment.getCurrentState());
-            }
-        }
-        if (pojo.getSource() == AppealSource.TRADER_TEAM) {
+        try {
             OutgoingPayment outgoingPayment = outgoingPaymentService.get(pojo.getPaymentId());
-            if (!ALLOWED_PAYMENT_STATES.contains(outgoingPayment.getCurrentState())) {
+            if (crudOperation == CrudOperation.CREATE
+                    && !ALLOWED_PAYMENT_STATES.contains(outgoingPayment.getCurrentState())) {
                 throw new AppealIllegalPaymentCurrentStateException(pojo.getId(), pojo.getPaymentId(),
                         outgoingPayment.getCurrentState());
+            }
+        } catch (OutgoingPaymentNotFoundException e) {
+            IncomingPayment incomingPayment = incomingPaymentService.get(pojo.getPaymentId());
+            if (crudOperation == CrudOperation.CREATE
+                    && !ALLOWED_PAYMENT_STATES.contains(incomingPayment.getCurrentState())) {
+                throw new AppealIllegalPaymentCurrentStateException(pojo.getId(), pojo.getPaymentId(),
+                        incomingPayment.getCurrentState());
             }
         }
         if (pojo.getCurrentState() == null) {
@@ -145,8 +168,8 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             NoEligibleTraderTeamsException, OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException,
             OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
             OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
-            MerchantInsufficientOutgoingBalanceException {
-        if (appeal.getSource() == AppealSource.TRADER_TEAM) {
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
+        if (appeal.getPaymentDirection() == PaymentDirection.OUTGOING) {
             OutgoingPayment outgoingPayment = outgoingPaymentService.get(appeal.getPaymentId());
             switch (appeal.getCurrentState()) {
                 case REJECTED -> assignNewTraderTeam(outgoingPayment);
@@ -160,9 +183,9 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException,
             TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException,
             PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
-            MerchantInsufficientOutgoingBalanceException {
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
         outgoingPaymentService.update(outgoingPayment.getId())
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.of(outgoingPayment.getTraderTeamId()))
                 .withState(PaymentState.INITIATED)
                 .build();
     }
@@ -171,11 +194,20 @@ public class AppealBuilderImpl implements InitializableAppealBuilder {
             throws OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException,
             TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException,
             PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
-            MerchantInsufficientOutgoingBalanceException {
+            MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
         outgoingPaymentService.update(outgoingPayment.getId())
                 .withState(newState)
                 .build();
     }
 
+    private void setPaymentDirection() throws IncomingPaymentNotFoundException {
+        try {
+            outgoingPaymentService.get(paymentId);
+            pojoBuilder.paymentDirection(PaymentDirection.OUTGOING);
+        } catch (OutgoingPaymentNotFoundException e) {
+            incomingPaymentService.get(paymentId);
+            pojoBuilder.paymentDirection(PaymentDirection.INCOMING);
+        }
+    }
 
 }

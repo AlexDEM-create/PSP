@@ -1,0 +1,5 @@
+ALTER TABLE appeals
+    ADD COLUMN payment_direction VARCHAR(50) NOT NULL DEFAULT 'OUTGOING',
+    ADD COLUMN message VARCHAR(255) NULL;
+ALTER TABLE appeals
+    ALTER COLUMN payment_direction DROP DEFAULT;

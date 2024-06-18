@@ -59,6 +59,9 @@ public class BalanceListBuilderImpl implements BalanceListBuilder {
         if (archived.isPresent() && archived.get()) {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.isNotNull(root.get("deletedDate")));
+        } else {
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.isNull(root.get("deletedDate")));
         }
         return spec;
     }

@@ -15,12 +15,12 @@ public enum PaymentState {
     private Set<PaymentState> nextPossibleStates;
 
     static {
-        INITIATED.nextPossibleStates = EnumSet.of(VERIFYING);
-        VERIFYING.nextPossibleStates = EnumSet.of(VERIFIED, FAILED_TO_VERIFY);
+        INITIATED.nextPossibleStates = EnumSet.of(INITIATED, VERIFYING);
+        VERIFYING.nextPossibleStates = EnumSet.of(INITIATED, VERIFIED, FAILED_TO_VERIFY);
         VERIFIED.nextPossibleStates = EnumSet.of(DISPUTED);
-        FAILED_TO_VERIFY.nextPossibleStates = EnumSet.of(DISPUTED);
+        FAILED_TO_VERIFY.nextPossibleStates = EnumSet.of(INITIATED, DISPUTED);
         DISPUTED.nextPossibleStates = EnumSet.of(VERIFIED, FAILED_TO_VERIFY, INITIATED);
-        VERIFICATION_EXPIRED.nextPossibleStates = EnumSet.of(DISPUTED);
+        VERIFICATION_EXPIRED.nextPossibleStates = EnumSet.of(INITIATED, DISPUTED);
     }
 
     public boolean canChangeTo(PaymentState newState) {

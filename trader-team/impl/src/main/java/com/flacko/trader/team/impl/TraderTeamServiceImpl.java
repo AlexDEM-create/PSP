@@ -12,9 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +63,8 @@ public class TraderTeamServiceImpl implements TraderTeamService {
     }
 
     @Override
-    public TraderTeam getRandomEligibleTraderTeamForOutgoingPayment() throws NoEligibleTraderTeamsException {
+    public TraderTeam getRandomEligibleTraderTeamForOutgoingPayment(Optional<String> currentTraderTeamId)
+            throws NoEligibleTraderTeamsException, TraderTeamNotFoundException {
         List<TraderTeam> eligibleTeams = list()
                 .withVerified(true)
                 .withOutgoingOnline(true)
@@ -72,13 +73,22 @@ public class TraderTeamServiceImpl implements TraderTeamService {
                 .build()
                 .stream()
                 .filter(this::hasEnabledPaymentMethods)
+                .filter(traderTeam -> currentTraderTeamId.isEmpty()
+                        || !traderTeam.getId().equals(currentTraderTeamId.get()))
                 .toList();
 
         if (eligibleTeams.isEmpty()) {
+            if (currentTraderTeamId.isPresent()) {
+                TraderTeam traderTeam = get(currentTraderTeamId.get());
+                if (isEligibleForOutgoingPayment(traderTeam)) {
+                    return traderTeam;
+                }
+            }
             throw new NoEligibleTraderTeamsException();
         }
-        Random random = new Random();
-        return eligibleTeams.get(random.nextInt(eligibleTeams.size()));
+        SecureRandom random = new SecureRandom();
+        int randomIndex = random.nextInt(eligibleTeams.size());
+        return eligibleTeams.get(randomIndex);
     }
 
     private boolean hasEnabledPaymentMethods(TraderTeam traderTeam) {
@@ -87,6 +97,13 @@ public class TraderTeamServiceImpl implements TraderTeamService {
                 .withEnabled(true)
                 .build()
                 .isEmpty();
+    }
+
+    private boolean isEligibleForOutgoingPayment(TraderTeam traderTeam) {
+        return traderTeam.isVerified()
+                && traderTeam.isOutgoingOnline()
+                && !traderTeam.isKickedOut()
+                && traderTeam.getDeletedDate().isEmpty();
     }
 
 }

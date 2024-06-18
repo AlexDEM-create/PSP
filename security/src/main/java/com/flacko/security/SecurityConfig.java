@@ -10,12 +10,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -36,6 +42,7 @@ public class SecurityConfig {
         authenticationFilter.setFilterProcessesUrl(LOGIN_PATH);
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(LOGIN_PATH).permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.OPTIONS).permitAll())
@@ -43,7 +50,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/appeals")
                         .hasAnyAuthority(UserRole.MERCHANT.name(), UserRole.TRADER_TEAM.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET, "/appeals", "/appeals/*")
-                        .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
+                        .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name(),
+                                UserRole.TRADER_TEAM.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.PATCH,
                         "/appeals/*/review", "/appeals/*/reject", "/appeals/*/resolve")
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
@@ -52,7 +60,8 @@ public class SecurityConfig {
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET,
                         "/merchants", "/merchants/*")
-                        .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
+                        .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name(),
+                                UserRole.MERCHANT.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.DELETE, "/merchants/*")
                         .hasAnyAuthority(UserRole.USER_ADMIN.name()))
 
@@ -61,7 +70,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET,
                         "/trader-teams", "/trader-teams/*")
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name(),
-                                UserRole.TRADER_TEAM_LEADER.name()))
+                                UserRole.TRADER_TEAM_LEADER.name(), UserRole.TRADER_TEAM.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.DELETE, "/trader-teams/*")
                         .hasAnyAuthority(UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.PATCH,
@@ -72,13 +81,13 @@ public class SecurityConfig {
                         "/trader-teams/*/kick-out", "/trader-teams/*/get-back")
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
 
+                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET, "/users/me")
+                        .permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/users")
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET,
                         "/users", "/users/*")
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
-                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET, "/users/me")
-                        .permitAll())
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.DELETE, "/users/*")
                         .hasAnyAuthority(UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.PATCH,
@@ -126,10 +135,12 @@ public class SecurityConfig {
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.PATCH,
                         "/balances/trader-teams/*/deposit", "/balances/trader-teams/*/withdraw",
-                        "/balances/merchants/*/incoming/deposit", "/balances/merchants/*/incoming/withdraw",
-                        "/balances/merchants/*/outgoing/deposit", "/balances/merchants/*/outgoing/withdraw")
+                        "/balances/merchants/*/incoming/withdraw", "/balances/merchants/*/outgoing/deposit",
+                        "/balances/merchants/*/outgoing/withdraw", "/balances/merchants/*/transfer")
                         .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
 
+                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/outgoing-payments/test")
+                        .hasAnyAuthority(UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/outgoing-payments")
                         .hasAnyAuthority(UserRole.MERCHANT.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET,
@@ -138,7 +149,12 @@ public class SecurityConfig {
                                 UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
                 .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.PATCH,
                         "/outgoing-payments/*/reassign")
-                        .hasAnyAuthority(UserRole.TRADER_TEAM.name()))
+                        .hasAnyAuthority(UserRole.TRADER_TEAM.name(), UserRole.USER_SUPPORT.name(),
+                                UserRole.USER_ADMIN.name()))
+
+                .authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.GET, "/payments")
+                        .hasAnyAuthority(UserRole.MERCHANT.name(), UserRole.TRADER_TEAM.name(),
+                                UserRole.USER_SUPPORT.name(), UserRole.USER_ADMIN.name()))
 
                 // incoming payments
                 // stats
@@ -150,6 +166,17 @@ public class SecurityConfig {
                 .addFilterBefore(new ResponseHeaderFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList("*"));
+        configuration.setAllowedMethods(Collections.singletonList("*"));
+        configuration.setAllowedHeaders(Collections.singletonList("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
 }

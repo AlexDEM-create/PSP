@@ -1,5 +1,6 @@
 package com.flacko.payment.impl.incoming;
 
+import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.incoming.IncomingPayment;
@@ -53,6 +54,10 @@ public class IncomingPaymentPojo implements IncomingPayment {
 
     @Column(nullable = false)
     private Currency currency;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Bank bank;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "current_state", nullable = false)

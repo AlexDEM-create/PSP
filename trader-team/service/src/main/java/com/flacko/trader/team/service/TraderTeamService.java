@@ -3,7 +3,7 @@ package com.flacko.trader.team.service;
 import com.flacko.common.exception.NoEligibleTraderTeamsException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface TraderTeamService {
 
@@ -19,6 +19,7 @@ public interface TraderTeamService {
 
     TraderTeam getByLeaderId(String leaderId) throws TraderTeamNotFoundException;
 
-    TraderTeam getRandomEligibleTraderTeamForOutgoingPayment() throws NoEligibleTraderTeamsException;
+    TraderTeam getRandomEligibleTraderTeamForOutgoingPayment(Optional<String> currentTraderTeamId)
+            throws NoEligibleTraderTeamsException, TraderTeamNotFoundException;
 
 }

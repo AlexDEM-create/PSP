@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public record PaymentMethodResponse(@JsonProperty(ID) String id,
                                     @JsonProperty(NUMBER) String number,
+                                    @JsonProperty(ACCOUNT_LAST_FOUR_DIGITS) String accountLastFourDigits,
                                     @JsonProperty(FIRST_NAME) String firstName,
                                     @JsonProperty(LAST_NAME) String lastName,
                                     @JsonProperty(CURRENCY) Currency currency,
@@ -22,6 +23,7 @@ public record PaymentMethodResponse(@JsonProperty(ID) String id,
 
     private static final String ID = "id";
     private static final String NUMBER = "number";
+    private static final String ACCOUNT_LAST_FOUR_DIGITS = "account_last_four_digits";
     private static final String FIRST_NAME = "first_name";
     private static final String LAST_NAME = "last_name";
     private static final String CURRENCY = "currency";

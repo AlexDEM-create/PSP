@@ -22,6 +22,7 @@
             <artifactId>security</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>com.flacko</groupId>
             <artifactId>appeal-impl</artifactId>
@@ -52,6 +53,12 @@
             <version>0.0.1-SNAPSHOT</version>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>com.flacko</groupId>
+            <artifactId>merchant-impl</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>runtime</scope>
+        </dependency>
 
         <dependency>
             <groupId>com.flacko</groupId>
@@ -62,12 +69,6 @@
         <dependency>
             <groupId>com.flacko</groupId>
             <artifactId>terminal-impl</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.flacko</groupId>
-            <artifactId>merchant-impl</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>

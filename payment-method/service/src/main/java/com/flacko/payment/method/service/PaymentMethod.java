@@ -14,6 +14,8 @@ public interface PaymentMethod {
 
     String getNumber();
 
+    String getAccountLastFourDigits();
+
     String getFirstName();
 
     String getLastName();

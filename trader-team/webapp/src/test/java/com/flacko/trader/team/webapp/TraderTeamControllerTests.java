@@ -2,6 +2,7 @@ package com.flacko.trader.team.webapp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.flacko.balance.service.BalanceService;
 import com.flacko.common.bank.Bank;
 import com.flacko.common.country.Country;
 import com.flacko.common.currency.Currency;
@@ -16,9 +17,9 @@ import com.flacko.terminal.service.TerminalService;
 import com.flacko.trader.team.service.TraderTeam;
 
 import com.flacko.trader.team.service.TraderTeamService;
-import com.flacko.trader.team.service.exception.TraderTeamIllegalLeaderException;
-import com.flacko.trader.team.service.exception.TraderTeamInvalidFeeRateException;
-import com.flacko.trader.team.service.exception.TraderTeamMissingRequiredAttributeException;
+import com.flacko.common.exception.TraderTeamIllegalLeaderException;
+import com.flacko.common.exception.TraderTeamInvalidFeeRateException;
+import com.flacko.common.exception.TraderTeamMissingRequiredAttributeException;
 import com.flacko.trader.team.webapp.rest.TraderTeamCreateRequest;
 import com.flacko.user.service.User;
 import com.flacko.user.service.UserService;
@@ -41,11 +42,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 import static net.bytebuddy.matcher.ElementMatchers.is;
@@ -89,6 +90,9 @@ public class TraderTeamControllerTests {
 
     @Autowired
     private TerminalService terminalService;
+
+    @Autowired
+    private BalanceService balanceService;
 
     private String incomingPaymentId;
     private String outgoingPaymentId;
@@ -165,6 +169,7 @@ public class TraderTeamControllerTests {
                 .withName("test_merchant")
                 .withUserId(traderTeamUserId1)
                 .withLeaderId(traderTeamLeaderId1)
+                .withCountry(Country.RUSSIA)
                 .withTraderIncomingFeeRate(BigDecimal.valueOf(0.018))
                 .withTraderOutgoingFeeRate(BigDecimal.valueOf(0.018))
                 .withLeaderIncomingFeeRate(BigDecimal.valueOf(0.002))
@@ -184,6 +189,7 @@ public class TraderTeamControllerTests {
 
         paymentMethodId = paymentMethodService.create()
                 .withNumber("1234567812345678")
+                .withAccountLastFourDigits("1234")
                 .withFirstName("John")
                 .withLastName("Grey")
                 .withCurrency(Currency.RUB)
@@ -199,6 +205,7 @@ public class TraderTeamControllerTests {
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(5000))
                 .withCurrency(Currency.RUB)
+                .withBank(Bank.SBER)
                 .withState(PaymentState.VERIFYING)
                 .build()
                 .getId();
@@ -208,7 +215,7 @@ public class TraderTeamControllerTests {
                 .build();
 
         outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.empty())
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(10000))
                 .withCurrency(Currency.RUB)

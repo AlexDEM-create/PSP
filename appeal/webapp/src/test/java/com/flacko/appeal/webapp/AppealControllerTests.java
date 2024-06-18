@@ -38,6 +38,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -90,7 +91,9 @@ public class AppealControllerTests {
     @BeforeEach
     public void setup() throws Exception {
         class RandomStringGenerator {
+
             private static final String ALPHANUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
             public String randomAlphanumeric(int count) {
                 StringBuilder builder = new StringBuilder();
                 Random random = new Random();
@@ -100,6 +103,7 @@ public class AppealControllerTests {
                 }
                 return builder.toString();
             }
+
         }
 
         RandomStringGenerator generator = new RandomStringGenerator();
@@ -178,7 +182,7 @@ public class AppealControllerTests {
                 .build();
 
         outgoingPaymentId = outgoingPaymentService.create(merchantUser.getLogin())
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.empty())
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(10000))
                 .withCurrency(Currency.RUB)
@@ -194,7 +198,7 @@ public class AppealControllerTests {
     @Test
     public void testListAppeals() throws Exception {
         String outgoingPaymentId = outgoingPaymentService.create(merchantLogin)
-                .withRandomTraderTeamId()
+                .withRandomTraderTeamId(Optional.empty())
                 .withPaymentMethodId(paymentMethodId)
                 .withAmount(BigDecimal.valueOf(10000))
                 .withCurrency(Currency.RUB)
@@ -280,7 +284,7 @@ public class AppealControllerTests {
 
     @Test
     public void testCreateAppeal() throws Exception {
-        AppealCreateRequest request = new AppealCreateRequest(outgoingPaymentId, AppealSource.TRADER_TEAM);
+        AppealCreateRequest request = new AppealCreateRequest(outgoingPaymentId, Optional.empty());
         ObjectMapper objectMapper = new ObjectMapper();
 
         mockMvc.perform(post("/appeals")
@@ -290,7 +294,7 @@ public class AppealControllerTests {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").isNotEmpty())
                 .andExpect(jsonPath("$.payment_id").value(request.paymentId()))
-                .andExpect(jsonPath("$.source").value(request.source().name()))
+                .andExpect(jsonPath("$.source").value(AppealSource.TRADER_TEAM.name()))
                 .andExpect(jsonPath("$.current_state").value(AppealState.INITIATED.name()))
                 .andExpect(jsonPath("$.created_date").isNotEmpty())
                 .andExpect(jsonPath("$.updated_date").isNotEmpty());
@@ -300,7 +304,7 @@ public class AppealControllerTests {
     @MethodSource("provideStringsForTest")
     public void testCreateAppealThrowsAppealMissingRequiredAttributeExceptionInvalidPaymentId(String input)
             throws Exception {
-        AppealCreateRequest request = new AppealCreateRequest(input, AppealSource.TRADER_TEAM);
+        AppealCreateRequest request = new AppealCreateRequest(input, Optional.empty());
         ObjectMapper objectMapper = new ObjectMapper();
         mockMvc.perform(post("/appeals")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -326,7 +330,7 @@ public class AppealControllerTests {
 
     @Test
     public void testCreateAppealThrowsPaymentNotFoundException() throws Exception {
-        AppealCreateRequest request = new AppealCreateRequest("nonexistentPaymentId", AppealSource.TRADER_TEAM);
+        AppealCreateRequest request = new AppealCreateRequest("nonexistentPaymentId", Optional.empty());
         ObjectMapper objectMapper = new ObjectMapper();
 
         mockMvc.perform(post("/appeals")
@@ -455,6 +459,7 @@ public class AppealControllerTests {
 
     @TestConfiguration
     static class TestConfig {
+
         @Bean
         public MockMvc mockMvc(WebApplicationContext webApplicationContext) {
             return MockMvcBuilders
@@ -462,6 +467,7 @@ public class AppealControllerTests {
                     .apply(springSecurity())
                     .build();
         }
+
     }
 
 }

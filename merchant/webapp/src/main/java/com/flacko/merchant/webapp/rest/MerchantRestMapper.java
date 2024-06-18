@@ -14,8 +14,9 @@ public class MerchantRestMapper {
                 merchant.getName(),
                 merchant.getUserId(),
                 merchant.getCountry(),
-                merchant.getIncomingFeeRate(),
-                merchant.getOutgoingFeeRate(),
+                merchant.getIncomingFeeRate().movePointRight(2),
+                merchant.getOutgoingFeeRate().movePointRight(2),
+                merchant.getWebhook(),
                 merchant.isOutgoingTrafficStopped(),
                 merchant.getCreatedDate().atZone(ZoneId.systemDefault()),
                 merchant.getUpdatedDate().atZone(ZoneId.systemDefault()));

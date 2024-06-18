@@ -1,7 +1,9 @@
 package com.flacko.payment.impl.incoming;
 
+import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
 import com.flacko.common.exception.MerchantNotFoundException;
+import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
 import com.flacko.common.exception.PaymentMethodNotFoundException;
 import com.flacko.common.exception.TraderTeamNotFoundException;
 import com.flacko.common.id.IdGenerator;
@@ -57,6 +59,7 @@ public class IncomingPaymentBuilderImpl implements InitializableIncomingPaymentB
                 .paymentMethodId(existingIncomingPayment.getPaymentMethodId())
                 .amount(existingIncomingPayment.getAmount())
                 .currency(existingIncomingPayment.getCurrency())
+                .bank(existingIncomingPayment.getBank())
                 .currentState(existingIncomingPayment.getCurrentState())
                 .createdDate(existingIncomingPayment.getCreatedDate())
                 .updatedDate(Instant.now());
@@ -92,6 +95,12 @@ public class IncomingPaymentBuilderImpl implements InitializableIncomingPaymentB
     @Override
     public IncomingPaymentBuilder withCurrency(Currency currency) {
         pojoBuilder.currency(currency);
+        return this;
+    }
+
+    @Override
+    public IncomingPaymentBuilder withBank(Bank bank) {
+        pojoBuilder.bank(bank);
         return this;
     }
 
@@ -141,6 +150,9 @@ public class IncomingPaymentBuilderImpl implements InitializableIncomingPaymentB
         }
         if (pojo.getCurrency() == null) {
             throw new IncomingPaymentMissingRequiredAttributeException("currency", Optional.of(pojo.getId()));
+        }
+        if (pojo.getBank() == null) {
+            throw new IncomingPaymentMissingRequiredAttributeException("bank", Optional.of(pojo.getId()));
         }
         if (pojo.getCurrentState() == null) {
             throw new IncomingPaymentMissingRequiredAttributeException("currentState", Optional.of(pojo.getId()));

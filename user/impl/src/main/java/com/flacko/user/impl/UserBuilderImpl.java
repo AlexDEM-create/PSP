@@ -1,6 +1,7 @@
 package com.flacko.user.impl;
 
 import com.flacko.common.id.IdGenerator;
+import com.flacko.common.operation.CrudOperation;
 import com.flacko.common.role.UserRole;
 import com.flacko.user.service.User;
 import com.flacko.user.service.UserBuilder;
@@ -31,9 +32,11 @@ public class UserBuilderImpl implements InitializableUserBuilder {
     private final PasswordEncoder passwordEncoder;
 
     private UserPojo.UserPojoBuilder pojoBuilder;
+    private CrudOperation crudOperation;
 
     @Override
     public UserBuilder initializeNew() {
+        crudOperation = CrudOperation.CREATE;
         pojoBuilder = UserPojo.builder()
                 .id(new IdGenerator().generateId())
                 .banned(false);
@@ -42,6 +45,7 @@ public class UserBuilderImpl implements InitializableUserBuilder {
 
     @Override
     public UserBuilder initializeExisting(User existingUser) {
+        crudOperation = CrudOperation.UPDATE;
         pojoBuilder = UserPojo.builder()
                 .primaryKey(existingUser.getPrimaryKey())
                 .id(existingUser.getId())
@@ -81,6 +85,7 @@ public class UserBuilderImpl implements InitializableUserBuilder {
 
     @Override
     public UserBuilder withArchived() {
+        crudOperation = CrudOperation.DELETE;
         pojoBuilder.deletedDate(now);
         return this;
     }
@@ -95,7 +100,8 @@ public class UserBuilderImpl implements InitializableUserBuilder {
         return user;
     }
 
-    private void validate(UserPojo pojo) throws UserMissingRequiredAttributeException, UserWeakPasswordException, UserLoginAlreadyInUseException {
+    private void validate(UserPojo pojo) throws UserMissingRequiredAttributeException, UserWeakPasswordException,
+            UserLoginAlreadyInUseException {
         if (pojo.getId() == null || pojo.getId().isBlank()) {
             throw new UserMissingRequiredAttributeException("id", Optional.empty());
         }
@@ -103,7 +109,7 @@ public class UserBuilderImpl implements InitializableUserBuilder {
             throw new UserMissingRequiredAttributeException("login", Optional.of(pojo.getId()));
         } else {
             Optional<User> user = userRepository.findByLogin(pojo.getLogin());
-            if (user.isPresent()) {
+            if (user.isPresent() && (crudOperation == CrudOperation.CREATE || crudOperation == CrudOperation.UPDATE)) {
                 throw new UserLoginAlreadyInUseException(pojo.getLogin());
             }
         }

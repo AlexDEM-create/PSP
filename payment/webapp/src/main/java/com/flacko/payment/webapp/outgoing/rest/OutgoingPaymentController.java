@@ -3,7 +3,16 @@ package com.flacko.payment.webapp.outgoing.rest;
 import com.auth0.jwt.JWT;
 import com.flacko.common.bank.Bank;
 import com.flacko.common.currency.Currency;
-import com.flacko.common.exception.*;
+import com.flacko.common.exception.MerchantInsufficientOutgoingBalanceException;
+import com.flacko.common.exception.MerchantNotFoundException;
+import com.flacko.common.exception.NoEligibleTraderTeamsException;
+import com.flacko.common.exception.OutgoingPaymentIllegalStateTransitionException;
+import com.flacko.common.exception.OutgoingPaymentInvalidAmountException;
+import com.flacko.common.exception.OutgoingPaymentMissingRequiredAttributeException;
+import com.flacko.common.exception.OutgoingPaymentNotFoundException;
+import com.flacko.common.exception.PaymentMethodNotFoundException;
+import com.flacko.common.exception.TraderTeamNotFoundException;
+import com.flacko.common.exception.UserNotFoundException;
 import com.flacko.common.payment.RecipientPaymentMethodType;
 import com.flacko.common.state.PaymentState;
 import com.flacko.payment.service.outgoing.OutgoingPayment;
@@ -12,11 +21,21 @@ import com.flacko.payment.service.outgoing.OutgoingPaymentListBuilder;
 import com.flacko.payment.service.outgoing.OutgoingPaymentService;
 import com.flacko.security.SecurityConfig;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @RequiredArgsConstructor
@@ -44,8 +63,7 @@ public class OutgoingPaymentController {
                                               @RequestParam(CURRENCY) Optional<Currency> currency,
                                               @RequestParam(RECIPIENT) Optional<String> recipient,
                                               @RequestParam(BANK) Optional<Bank> bank,
-                                              @RequestParam(RECIPIENT_PAYMENT_METHOD_TYPE)
-                                                      Optional<RecipientPaymentMethodType> recipientPaymentMethodType,
+                                              @RequestParam(RECIPIENT_PAYMENT_METHOD_TYPE) Optional<RecipientPaymentMethodType> recipientPaymentMethodType,
                                               @RequestParam(CURRENT_STATE) Optional<PaymentState> currentState,
                                               @RequestParam(value = LIMIT, defaultValue = "10") Integer limit,
                                               @RequestParam(value = OFFSET, defaultValue = "0") Integer offset) {
@@ -58,13 +76,32 @@ public class OutgoingPaymentController {
         bank.ifPresent(builder::withBank);
         recipientPaymentMethodType.ifPresent(builder::withRecipientPaymentMethodType);
         currentState.ifPresent(builder::withCurrentState);
-        return builder.build()
+
+        List<OutgoingPaymentResponse> payments = builder.build()
                 .stream()
                 .map(outgoingPaymentRestMapper::mapModelToResponse)
+                .collect(Collectors.toList());
+
+        List<OutgoingPaymentResponse> initiatedPayments = payments.stream()
+                .filter(payment -> payment.currentState() == PaymentState.INITIATED)
+                .sorted(Comparator.comparing(OutgoingPaymentResponse::createdDate).reversed())
+                .collect(Collectors.toList());
+
+        List<OutgoingPaymentResponse> otherPayments = payments.stream()
+                .filter(payment -> payment.currentState() != PaymentState.INITIATED)
+                .sorted(Comparator.comparing(OutgoingPaymentResponse::createdDate).reversed())
+                .collect(Collectors.toList());
+
+        List<OutgoingPaymentResponse> combinedPayments = Stream.concat(initiatedPayments.stream(),
+                otherPayments.stream())
+                .collect(Collectors.toList());
+
+        return combinedPayments.stream()
                 .skip(offset)
                 .limit(limit)
                 .collect(Collectors.toList());
     }
+
 
     @GetMapping("/{outgoingPaymentId}")
     public OutgoingPaymentResponse get(@PathVariable String outgoingPaymentId) throws OutgoingPaymentNotFoundException {
@@ -86,19 +123,61 @@ public class OutgoingPaymentController {
         builder.withRecipient(outgoingPaymentCreateRequest.recipient());
         builder.withBank(outgoingPaymentCreateRequest.bank());
         builder.withRecipientPaymentMethodType(outgoingPaymentCreateRequest.recipientPaymentMethodType());
-        builder.withPartnerPaymentId(outgoingPaymentCreateRequest.partnerPaymentId());
-        builder.withRandomTraderTeamId();
+
+        if (outgoingPaymentCreateRequest.partnerPaymentId().isPresent()) {
+            builder.withPartnerPaymentId(outgoingPaymentCreateRequest.partnerPaymentId().get());
+        }
+
+        builder.withRandomTraderTeamId(Optional.empty());
+        OutgoingPayment outgoingPayment = builder.build();
+        return outgoingPaymentRestMapper.mapModelToCreateResponse(outgoingPayment);
+    }
+
+    @PostMapping("/test")
+    public OutgoingPaymentCreateResponse create(@RequestHeader("Authorization") String tokenWithPrefix,
+                                                @RequestBody TestOutgoingPaymentCreateRequest testOutgoingPaymentCreateRequest)
+            throws TraderTeamNotFoundException, OutgoingPaymentMissingRequiredAttributeException,
+            PaymentMethodNotFoundException, OutgoingPaymentInvalidAmountException, MerchantNotFoundException,
+            UserNotFoundException, NoEligibleTraderTeamsException, MerchantInsufficientOutgoingBalanceException {
+        String token = tokenWithPrefix.substring(SecurityConfig.TOKEN_PREFIX.length());
+        String login = JWT.decode(token).getSubject();
+
+        OutgoingPaymentBuilder builder = outgoingPaymentService.create(login);
+        builder.withAmount(testOutgoingPaymentCreateRequest.amount());
+        builder.withCurrency(testOutgoingPaymentCreateRequest.currency());
+        builder.withRecipient(testOutgoingPaymentCreateRequest.recipient());
+        builder.withBank(testOutgoingPaymentCreateRequest.bank());
+        builder.withRecipientPaymentMethodType(testOutgoingPaymentCreateRequest.recipientPaymentMethodType());
+        builder.withTraderTeamId(testOutgoingPaymentCreateRequest.traderTeamId());
+        builder.withMerchantId(testOutgoingPaymentCreateRequest.merchantId());
+
+        if (testOutgoingPaymentCreateRequest.partnerPaymentId().isPresent()) {
+            builder.withPartnerPaymentId(testOutgoingPaymentCreateRequest.partnerPaymentId().get());
+        }
+
+        OutgoingPayment outgoingPayment = builder.build();
+        return outgoingPaymentRestMapper.mapModelToCreateResponse(outgoingPayment);
+    }
+
+    @PatchMapping("/{outgoingPaymentId}/verify")
+    public OutgoingPaymentCreateResponse verify(@PathVariable String outgoingPaymentId)
+            throws OutgoingPaymentNotFoundException, OutgoingPaymentIllegalStateTransitionException,
+            MerchantInsufficientOutgoingBalanceException, TraderTeamNotFoundException,
+            OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
+            OutgoingPaymentInvalidAmountException, MerchantNotFoundException, UserNotFoundException {
+        OutgoingPaymentBuilder builder = outgoingPaymentService.update(outgoingPaymentId);
+        builder.withState(PaymentState.VERIFYING);
         OutgoingPayment outgoingPayment = builder.build();
         return outgoingPaymentRestMapper.mapModelToCreateResponse(outgoingPayment);
     }
 
     @PatchMapping("/{outgoingPaymentId}/reassign")
     public OutgoingPaymentResponse reassign(@RequestHeader("Authorization") String tokenWithPrefix,
-                                            @PathVariable String outgoingPaymentId) throws UserNotFoundException,
-            OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException, UnauthorizedAccessException,
+                                            @PathVariable String outgoingPaymentId)
+            throws OutgoingPaymentIllegalStateTransitionException, TraderTeamNotFoundException,
             OutgoingPaymentMissingRequiredAttributeException, PaymentMethodNotFoundException,
             OutgoingPaymentInvalidAmountException, MerchantNotFoundException, OutgoingPaymentNotFoundException,
-            NoEligibleTraderTeamsException, MerchantInsufficientOutgoingBalanceException {
+            NoEligibleTraderTeamsException, MerchantInsufficientOutgoingBalanceException, UserNotFoundException {
         String token = tokenWithPrefix.substring(SecurityConfig.TOKEN_PREFIX.length());
         String login = JWT.decode(token).getSubject();
 

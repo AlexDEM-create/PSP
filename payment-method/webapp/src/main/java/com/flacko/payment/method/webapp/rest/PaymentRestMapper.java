@@ -11,6 +11,7 @@ public class PaymentRestMapper {
     PaymentMethodResponse mapModelToResponse(PaymentMethod paymentMethod) {
         return new PaymentMethodResponse(paymentMethod.getId(),
                 paymentMethod.getNumber(),
+                paymentMethod.getAccountLastFourDigits(),
                 paymentMethod.getFirstName(),
                 paymentMethod.getLastName(),
                 paymentMethod.getCurrency(),

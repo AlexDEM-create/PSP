@@ -1,53 +1,53 @@
 version: '3.8'
 
 services:
-  postgres:
-    container_name: postgres
-    image: postgres:latest
-    restart: unless-stopped
-    environment:
-      POSTGRES_DB: fp
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
-      PGDATA: /data/postgres
-    volumes:
-      - postgres:/data/postgres
-    networks:
-      - postgres
-    ports:
-      - "7432:5432"
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U myuser -d fp" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
-    volumes:
-      - pgadmin:/var/lib/pgadmin
-    ports:
-      - "5050:80"
-    networks:
-      - postgres
-    restart: unless-stopped
+  #  postgres:
+  #    container_name: postgres
+  #    image: postgres:latest
+  #    restart: unless-stopped
+  #    environment:
+  #      POSTGRES_DB: fp
+  #      POSTGRES_USER: myuser
+  #      POSTGRES_PASSWORD: mypassword
+  #      PGDATA: /data/postgres
+  #    volumes:
+  #      - postgres:/data/postgres
+  #    networks:
+  #      - postgres
+  #    ports:
+  #      - "7432:5432"
+  #    healthcheck:
+  #      test: [ "CMD-SHELL", "pg_isready -U myuser -d fp" ]
+  #      interval: 10s
+  #      timeout: 5s
+  #      retries: 5
+  #
+  #  pgadmin:
+  #    container_name: pgadmin
+  #    image: dpage/pgadmin4
+  #    environment:
+  #      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+  #      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+  #      PGADMIN_CONFIG_SERVER_MODE: 'False'
+  #    volumes:
+  #      - pgadmin:/var/lib/pgadmin
+  #    ports:
+  #      - "5050:80"
+  #    networks:
+  #      - postgres
+  #    restart: unless-stopped
 
   flyway:
     container_name: flyway
     image: flyway/flyway:latest
-    command: -url=jdbc:postgresql://postgres:5432/fp -user=myuser -password=mypassword -locations=filesystem:/flyway/sql migrate
+    command: -url=jdbc:postgresql://185.191.127.194:5432/fp -user=postgres -password=GFmyjF3eN6d5 -locations=filesystem:/flyway/sql migrate
     volumes:
       - ./migration:/flyway/sql
     networks:
       - postgres
-    depends_on:
-      postgres:
-        condition: service_healthy
+  #    depends_on:
+  #      postgres:
+  #        condition: service_healthy
 
   appeal:
     container_name: appeal
@@ -56,13 +56,13 @@ services:
       dockerfile: appeal/webapp/Dockerfile
     ports:
       - "8081:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=staging
+    #    environment:
+    #      - SPRING_PROFILES_ACTIVE=staging
     networks:
       - backend
       - postgres
     depends_on:
-      - postgres
+      #      - postgres
       - flyway
 
   balance:
@@ -72,13 +72,13 @@ services:
       dockerfile: balance/webapp/Dockerfile
     ports:
       - "8082:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=staging
+    #    environment:
+    #      - SPRING_PROFILES_ACTIVE=staging
     networks:
       - backend
       - postgres
     depends_on:
-      - postgres
+      #      - postgres
       - flyway
 
   payment-method:
@@ -88,13 +88,13 @@ services:
       dockerfile: payment-method/webapp/Dockerfile
     ports:
       - "8083:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=staging
+    #    environment:
+    #      - SPRING_PROFILES_ACTIVE=staging
     networks:
       - backend
       - postgres
     depends_on:
-      - postgres
+      #      - postgres
       - flyway
 
   currency:
@@ -104,13 +104,13 @@ services:
       dockerfile: currency/webapp/Dockerfile
     ports:
       - "8084:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=staging
+    #    environment:
+    #      - SPRING_PROFILES_ACTIVE=staging
     networks:
       - backend
       - postgres
     depends_on:
-      - postgres
+      #      - postgres
       - flyway
 
   merchant:
@@ -120,13 +120,13 @@ services:
       dockerfile: merchant/webapp/Dockerfile
     ports:
       - "8085:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=staging
+    #    environment:
+    #      - SPRING_PROFILES_ACTIVE=staging
     networks:
       - backend
       - postgres
     depends_on:
-      - postgres
+      #      - postgres
       - flyway
 
   payment:
@@ -135,14 +135,14 @@ services:
       context: .
       dockerfile: payment/webapp/Dockerfile
     ports:
-      - "8086:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=staging
+      - "8080:8080"
+    #    environment:
+    #      - SPRING_PROFILES_ACTIVE=staging
     networks:
       - backend
       - postgres
     depends_on:
-      - postgres
+      #      - postgres
       - flyway
 
   payment-verification:
@@ -152,13 +152,13 @@ services:
       dockerfile: payment-verification/webapp/Dockerfile
     ports:
       - "8087:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=staging
+    #    environment:
+    #      - SPRING_PROFILES_ACTIVE=staging
     networks:
       - backend
       - postgres
     depends_on:
-      - postgres
+      #      - postgres
       - flyway
 
   terminal:
@@ -168,13 +168,13 @@ services:
       dockerfile: terminal/webapp/Dockerfile
     ports:
       - "8088:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=staging
+    #    environment:
+    #      - SPRING_PROFILES_ACTIVE=staging
     networks:
       - backend
       - postgres
     depends_on:
-      - postgres
+      #      - postgres
       - flyway
 
   trader-team:
@@ -184,13 +184,13 @@ services:
       dockerfile: trader-team/webapp/Dockerfile
     ports:
       - "8089:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=staging
+    #    environment:
+    #      - SPRING_PROFILES_ACTIVE=staging
     networks:
       - backend
       - postgres
     depends_on:
-      - postgres
+      #      - postgres
       - flyway
 
   user:
@@ -200,13 +200,13 @@ services:
       dockerfile: user/webapp/Dockerfile
     ports:
       - "8090:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=staging
+    #    environment:
+    #      - SPRING_PROFILES_ACTIVE=staging
     networks:
       - backend
       - postgres
     depends_on:
-      - postgres
+      #      - postgres
       - flyway
 
   receipt-data-extractor:
@@ -219,8 +219,35 @@ services:
     networks:
       - backend
       - postgres
-    depends_on:
+  #    depends_on:
+  #      - postgres
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./flacko-ui
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000"
+    networks:
+      - backend
       - postgres
+
+  stats:
+    container_name: stats
+    build:
+      context: .
+      dockerfile: stats/webapp/Dockerfile
+    ports:
+      - "8092:8080"
+    #    environment:
+    #      - SPRING_PROFILES_ACTIVE=staging
+    networks:
+      - backend
+      - postgres
+    depends_on:
+      #      - postgres
+      - flyway
 
 networks:
   postgres:
@@ -228,6 +255,6 @@ networks:
   backend:
     driver: bridge
 
-volumes:
-  postgres:
-  pgadmin:
+#volumes:
+#  postgres:
+#  pgadmin:
